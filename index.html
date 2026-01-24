@@ -3,215 +3,253 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Renault Captur 2026 - Digital Store</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <title>Renault Captur 2026 - Premium Experience</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --r-yellow: #FFCC33; --r-black: #000000; --r-white: #ffffff; }
+        :root { --r-yellow: #FFCC33; --r-black: #000000; --r-white: #ffffff; --r-gray: #f4f4f4; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body, html { height: 100%; overflow: hidden; font-family: 'Montserrat', sans-serif; }
+        body, html { height: 100%; overflow: hidden; font-family: 'Montserrat', sans-serif; background: var(--r-white); }
 
-        /* --- LICZNIK GÓRNY --- */
-        #step-counter {
-            position: fixed; top: 0; left: 0; width: 100%; height: 5px;
-            background: #eee; z-index: 10001;
-        }
-        #step-progress { height: 100%; width: 20%; background: var(--r-yellow); transition: 0.5s; }
-        #step-label { 
-            position: fixed; top: 10px; left: 50%; transform: translateX(-50%);
-            font-weight: 900; font-size: 0.7rem; z-index: 10002; letter-spacing: 2px;
+        /* --- PROGRESS BAR --- */
+        #progress-wrap { position: fixed; top: 0; left: 0; width: 100%; height: 6px; background: #eee; z-index: 10000; }
+        #progress-bar { height: 100%; width: 25%; background: var(--r-yellow); transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        #step-tag { position: fixed; top: 15px; left: 50%; transform: translateX(-50%); font-weight: 900; font-size: 0.7rem; z-index: 10001; letter-spacing: 3px; background: white; padding: 2px 10px; border: 1px solid #000; }
+
+        /* --- SPOTLIGHT (PRZEJŚCIA) --- */
+        #spotlight { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--r-black); color: white; z-index: 20000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        #spotlight h2 { font-size: 3rem; color: var(--r-yellow); margin-bottom: 15px; }
+
+        /* --- COOKIES --- */
+        #cookie-overlay { position: fixed; bottom: 0; left: 0; width: 100%; height: 100px; background: rgba(0,0,0,0.95); color: white; z-index: 15000; display: flex; align-items: center; justify-content: center; gap: 30px; border-top: 3px solid var(--r-yellow); }
+
+        /* --- MAIN LAYOUT --- */
+        main { display: grid; grid-template-columns: 1fr 500px; height: 100vh; padding-top: 6px; }
+        
+        /* LEWA STRONA */
+        .visual-side { background: var(--r-gray); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+        .car-hero { width: 85%; transition: 0.6s transform ease; filter: drop-shadow(0 30px 50px rgba(0,0,0,0.2)); }
+
+        /* PRAWA STRONA */
+        .config-side { 
+            position: relative; padding: 50px; overflow-y: auto; border-left: 1px solid #eee;
+            background-image: linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92)), url('https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=1000');
+            background-size: cover; background-position: center;
         }
 
-        /* --- SPOTLIGHT (SRANIE W BANIE) --- */
-        #spotlight {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--r-black); color: white; z-index: 20000;
-            display: none; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; padding: 40px;
+        /* SLIDER CIEKAWOSTEK (NA DOLE PANELU) */
+        #fact-slider {
+            position: absolute; bottom: 0; left: 0; width: 100%; background: var(--r-black);
+            color: white; padding: 15px; font-size: 0.75rem; display: flex; align-items: center; justify-content: space-between;
         }
-        #spotlight h2 { font-size: 3rem; color: var(--r-yellow); margin-bottom: 20px; }
-        #skip-btn { margin-top: 30px; display: none; }
+        .fact-content { flex: 1; margin: 0 20px; transition: 0.3s; font-style: italic; color: #ccc; }
 
-        /* --- COOKIES & LOCK --- */
-        #cookie-bar {
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 100px;
-            background: rgba(0,0,0,0.9); color: white; z-index: 9999;
-            display: flex; align-items: center; justify-content: center; gap: 20px;
-        }
-        .lock-shield {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 10; cursor: not-allowed; display: flex; align-items: center; 
-            justify-content: center; background: rgba(0,0,0,0.4); opacity: 0; transition: 0.3s;
-        }
-        .lock-shield:hover { opacity: 1; }
-        .lock-shield:hover::after { content: "NAJPIERW ZAAKCEPTUJ COOKIES!"; color: var(--r-yellow); font-weight: 900; font-size: 0.6rem; }
+        /* MODUŁY WYPOSAŻENIA */
+        .cat-box { margin-bottom: 30px; }
+        .cat-title { background: #000; color: #FFCC33; padding: 8px 15px; font-size: 0.8rem; font-weight: 900; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; }
+        .option-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #ddd; font-size: 0.85rem; cursor: pointer; transition: 0.2s; }
+        .option-item:hover { padding-left: 5px; color: #777; }
+        .option-item input { accent-color: var(--r-yellow); width: 18px; height: 18px; }
 
-        /* --- LAYOUT --- */
-        header { height: 80px; display: flex; justify-content: space-between; align-items: center; padding: 0 5%; border-bottom: 1px solid #eee; }
-        main { display: grid; grid-template-columns: 1fr 450px; height: calc(100% - 80px); }
-        .preview { background: #f0f0f0; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .panel { padding: 40px; overflow-y: auto; position: relative; padding-bottom: 150px; }
+        /* PŁATNOŚCI */
+        .pay-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .pay-card { border: 2px solid #eee; padding: 15px; text-align: center; cursor: pointer; border-radius: 5px; background: white; transition: 0.3s; }
+        .pay-card.active { border-color: var(--r-yellow); background: #fffdf0; }
+        .pay-card i { font-size: 1.5rem; display: block; margin-bottom: 5px; }
 
-        /* --- KATEGORIE WYPOSAŻENIA --- */
-        .cat-header {
-            height: 100px; background-size: cover; background-position: center;
-            display: flex; align-items: center; padding: 20px; color: white;
-            margin: 20px 0 10px 0; font-weight: 900; text-shadow: 2px 2px 4px #000;
-        }
-        .item { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #eee; font-size: 0.8rem; cursor: pointer; }
-        .item:hover { background: #f9f9f9; }
-        .item input { accent-color: var(--r-yellow); }
+        /* PRZYCISKI */
+        .btn { background: #000; color: #fff; padding: 18px; border: none; font-weight: 900; width: 100%; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
+        .btn:hover { background: var(--r-yellow); color: #000; }
+        .lock-btn { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; cursor: not-allowed; opacity: 0; }
+        .lock-btn:hover { opacity: 1; background: rgba(255,0,0,0.7); display: flex; align-items: center; justify-content: center; color: white; font-size: 0.6rem; content: "ZEZWÓL NA COOKIES"; }
 
-        .btn { background: #000; color: #fff; padding: 15px; border: none; font-weight: 900; cursor: pointer; width: 100%; }
-        .active { display: block !important; }
-        .step { display: none; }
+        .step { display: none; padding-bottom: 100px; }
+        .active { display: block; }
 
         /* FAKTURA */
-        #invoice { padding: 30px; border: 2px solid #000; font-family: monospace; }
+        #invoice { background: white; padding: 30px; border: 1px solid #000; font-family: 'Roboto Mono', monospace; font-size: 0.7rem; }
     </style>
 </head>
 <body>
 
-    <div id="step-counter"><div id="step-progress"></div></div>
-    <div id="step-label">KROK <span id="cur-num">1</span>/4</div>
+    <div id="progress-wrap"><div id="progress-bar"></div></div>
+    <div id="step-tag">KROK <span id="s-num">1</span>/4</div>
 
     <div id="spotlight">
-        <p style="color: var(--r-yellow); font-weight: 900;">CZY WIESZ, ŻE...</p>
-        <h2 id="spot-title">NOWY NAPĘD E-TECH</h2>
-        <p id="spot-desc">Zapewnia do 80% jazdy miejskiej w trybie elektrycznym.</p>
-        <button id="skip-btn" class="btn" style="width: auto; padding: 10px 40px;" onclick="closeSpotlight()">POMIŃ (3s)</button>
+        <p style="color: var(--r-yellow); font-weight: 900; letter-spacing: 5px;">RENAULT INSIGHT</p>
+        <h2 id="spot-title">NAZWA FUNKCJI</h2>
+        <p id="spot-desc" style="max-width: 500px; line-height: 1.6;">Opis funkcji pojawiający się na 3 sekundy...</p>
+        <button id="skip-btn" class="btn" style="width: auto; margin-top: 30px; padding: 10px 40px; display: none;" onclick="closeSpotlight()">KONTYNUUJ</button>
     </div>
 
-    <div id="cookie-bar">
-        <p style="font-size: 0.7rem;">Używamy cookies, abyś mógł kupić auto. Serio.</p>
-        <button class="btn" style="width: auto; background: var(--r-yellow); color: #000;" onclick="acceptCookies()">ZAAKCEPTUJ</button>
+    <div id="cookie-overlay">
+        <p style="font-size: 0.8rem;">Strona Renault wymaga plików Cookies do przetwarzania konfiguracji i płatności.</p>
+        <button class="btn" style="width: auto; padding: 10px 30px; background: var(--r-yellow); color: black;" onclick="acceptCookies()">AKCEPTUJĘ</button>
     </div>
-
-    <header>
-        <div style="font-weight: 900;">RENAULT STORE</div>
-        <div style="font-weight: 700;"><span id="total-p">105 000</span> PLN</div>
-    </header>
 
     <main>
-        <section class="preview">
-            <img src="https://images.unsplash.com/photo-1595786676378-433f169f14d8?q=80&w=1000" id="car-img" style="width: 80%;">
-            <h1 style="font-weight: 900; margin-top: 20px;">CAPTUR 2026</h1>
+        <section class="visual-side">
+            <img src="https://images.unsplash.com/photo-1595786676378-433f169f14d8?q=80&w=1000" class="car-hero" id="car-main">
+            <div style="position: absolute; bottom: 40px; left: 40px;">
+                <h3 style="font-weight: 900; font-size: 2rem;">RENAULT CAPTUR</h3>
+                <p>Cena Twojej konfiguracji: <strong id="price-display">105 000</strong> PLN</p>
+            </div>
         </section>
 
-        <section class="panel">
+        <section class="config-side">
             <div id="s1" class="step active">
-                <h2>Wybierz bazę</h2>
-                <div class="item" onclick="setBase(0, 'Biel')">Biel Alpejska <span>W cenie</span></div>
-                <div class="item" onclick="setBase(2800, 'Czerń')">Czerń Etoile <span>+2 800 PLN</span></div>
-                <div class="item" onclick="setBase(3500, 'Niebieski')">Niebieski Iron <span>+3 500 PLN</span></div>
+                <h2 style="margin-bottom: 25px; font-weight: 900;">1. LAKIER NADWOZIA</h2>
+                <div class="option-item" onclick="setBase(0, 'Biel Alpejska', 'grayscale(0)')">Biel Alpejska <span>W cenie</span></div>
+                <div class="option-item" onclick="setBase(2900, 'Czerń Etoile', 'brightness(0.3)')">Czerń Etoile <span>+2 900 PLN</span></div>
+                <div class="option-item" onclick="setBase(3200, 'Niebieski Iron', 'hue-rotate(180deg)')">Niebieski Iron <span>+3 200 PLN</span></div>
+                <div class="option-item" onclick="setBase(3500, 'Żółty Miel', 'sepia(1) saturate(5)')">Żółty Miel <span>+3 500 PLN</span></div>
             </div>
 
             <div id="s2" class="step">
-                <h2>Konfiguracja opcji</h2>
+                <h2 style="margin-bottom: 25px; font-weight: 900;">2. WYPOSAŻENIE PREMIUM</h2>
                 
-                <div class="cat-header" style="background-image: url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=60&w=500')">PAKIET ZIMOWY</div>
-                <div class="item"><label><input type="checkbox" onchange="addOpt('Podgrzewane fotele', 1200, this)"> Podgrzewane fotele przednie</label> <span>1 200 PLN</span></div>
-                <div class="item"><label><input type="checkbox" onchange="addOpt('Podgrzewana kierownica', 800, this)"> Podgrzewana kierownica</label> <span>800 PLN</span></div>
-                
-                <div class="cat-header" style="background-image: url('https://images.unsplash.com/photo-1550009158-9ebf69173e03?auto=format&fit=crop&q=60&w=500')">TECH & MULTIMEDIA</div>
-                <div class="item"><label><input type="checkbox" onchange="addOpt('System Harman Kardon', 4500, this)"> Audio Harman Kardon 9 głośników</label> <span>4 500 PLN</span></div>
-                <div class="item"><label><input type="checkbox" onchange="addOpt('Ekran 10.4', 2100, this)"> Ekran dotykowy 10.4 cala</label> <span>2 100 PLN</span></div>
-                <div class="item"><label><input type="checkbox" onchange="addOpt('Kamery 360', 3000, this)"> System kamer 360 stopni</label> <span>3 000 PLN</span></div>
+                <div class="cat-box">
+                    <div class="cat-title">PAKIET ZIMOWY <i class="fas fa-snowflake"></i></div>
+                    <div class="option-item"><label><input type="checkbox" onchange="updOpt('Fotele podgrzewane', 1500, this)"> Fotele przednie podgrzewane</label><span>1 500 PLN</span></div>
+                    <div class="option-item"><label><input type="checkbox" onchange="updOpt('Kierownica podgrzewana', 900, this)"> Kierownica podgrzewana</label><span>900 PLN</span></div>
+                    <div class="option-item"><label><input type="checkbox" onchange="updOpt('Szyba przednia grzana', 1200, this)"> Przednia szyba podgrzewana</label><span>1 200 PLN</span></div>
+                </div>
 
-                <div class="cat-header" style="background-image: url('https://images.unsplash.com/photo-1541443131876-44b03de101c5?auto=format&fit=crop&q=60&w=500')">DESIGN</div>
-                <div class="item"><label><input type="checkbox" onchange="addOpt('Felgi 19', 3800, this)"> Felgi aluminiowe 19" Elia</label> <span>3 800 PLN</span></div>
-                <div class="item"><label><input type="checkbox" onchange="addOpt('Dach szklany', 5500, this)"> Dach szklany panoramiczny</label> <span>5 500 PLN</span></div>
+                <div class="cat-box">
+                    <div class="cat-title">TECHNOLOGIA I DŹWIĘK <i class="fas fa-microchip"></i></div>
+                    <div id="tech-list"></div> </div>
             </div>
 
             <div id="s3" class="step">
-                <h2>Podsumowanie finansowe</h2>
-                <p style="font-size: 0.8rem; margin: 20px 0;">Wpisz kod BLIK, aby wygenerować fakturę proforma.</p>
-                <input type="text" id="blik" maxlength="6" placeholder="KOD BLIK" style="padding: 15px; width: 100%; text-align: center; font-size: 2rem; border: 2px solid #000; margin-bottom: 20px;">
-                <button class="btn" onclick="pay()">ZAPŁAĆ I GENERUJ FAKTURĘ</button>
+                <h2 style="margin-bottom: 25px; font-weight: 900;">3. FINALIZACJA TRANSAKCJI</h2>
+                <div class="pay-grid">
+                    <div class="pay-card active" onclick="setPay('blik')">BLIK</div>
+                    <div class="pay-card" onclick="setPay('card')">KARTA</div>
+                    <div class="pay-card" onclick="setPay('qr')">KOD QR</div>
+                </div>
+
+                <div id="pay-ui" style="padding: 20px; background: #fff; border: 1px solid #ddd; text-align: center;">
+                    <div id="blik-ui">
+                        <input type="text" id="b-code" maxlength="6" placeholder="KOD BLIK" style="width: 100%; padding: 15px; font-size: 2rem; text-align: center; letter-spacing: 5px;">
+                    </div>
+                    <div id="card-ui" style="display:none;">
+                        <input type="text" placeholder="NUMER KARTY" style="width:100%; padding:10px; margin-bottom:10px;">
+                        <div style="display:flex; gap:10px;"><input type="text" placeholder="MM/YY"><input type="text" placeholder="CVC"></div>
+                    </div>
+                    <div id="qr-ui" style="display:none;">
+                        <div style="width: 150px; height: 150px; background: #000; margin: 0 auto; color: white; display: flex; align-items: center; justify-content: center;">QR SCAN</div>
+                    </div>
+                    <button class="btn" style="margin-top: 20px;" onclick="processOrder()">POTWIERDŹ PŁATNOŚĆ</button>
+                </div>
             </div>
 
             <div id="s4" class="step">
                 <div id="invoice">
-                    <h3>FAKTURA PROFORMA #2026/RN</h3>
-                    <p style="font-size: 0.7rem; margin-bottom: 20px;">Sprzedawca: Renault Retail Group</p>
-                    <div id="invoice-items" style="font-size: 0.8rem;"></div>
-                    <hr style="margin: 15px 0;">
-                    <h2 id="inv-total"></h2>
+                    <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
+                        <h2 style="font-size: 1.2rem;">FAKTURA PROFORMA</h2>
+                        <p>NR: #RN/<span id="inv-rand"></span>/2026</p>
+                    </div>
+                    <div id="inv-details"></div>
+                    <div style="margin-top: 20px; border-top: 2px solid #000; padding-top: 10px; font-weight: 900; font-size: 1rem;">
+                        DO ZAPŁATY: <span id="inv-total"></span> PLN
+                    </div>
                 </div>
-                <button class="btn" style="margin-top: 20px; background: var(--r-yellow); color: #000;" onclick="window.print()">POBIERZ DOKUMENT (PDF)</button>
+                <button class="btn" style="margin-top: 20px;" onclick="window.print()">POBIERZ FAKTURĘ (OKAZAĆ U DEALERA)</button>
             </div>
 
-            <div id="nav" style="margin-top: 30px; display: flex; gap: 10px; position: relative;">
-                <button class="btn" style="background: #eee; color: #000;" onclick="move(-1)">WSTECZ</button>
-                <div style="position: relative; flex: 1;">
-                    <div id="lock" class="lock-shield"></div>
-                    <button class="btn" onclick="move(1)">DALEJ</button>
+            <div id="nav" style="margin-top: 40px; display: flex; gap: 10px; position: relative;">
+                <button class="btn" style="background: #eee; color: #000;" onclick="move(-1)">Wstecz</button>
+                <div style="flex: 1; position: relative;">
+                    <div id="lock" class="lock-btn">PROSZĘ O ZEZWOLENIE</div>
+                    <button class="btn" onclick="move(1)">Dalej</button>
                 </div>
+            </div>
+
+            <div id="fact-slider">
+                <span onclick="prevFact()" style="cursor:pointer">◀</span>
+                <div class="fact-content" id="fact-text">Czy wiesz, że 100% tapicerki pochodzi z recyklingu?</div>
+                <span onclick="nextFact()" style="cursor:pointer">▶</span>
             </div>
         </section>
     </main>
 
     <script>
-        let curStep = 1;
+        let step = 1;
         let basePrice = 105000;
         let optPrice = 0;
-        let selected = [];
-        let cookiesAccepted = false;
+        let selectedOpts = [];
+        let isCookied = false;
+        let factIdx = 0;
 
-        const funFacts = [
-            { t: "ASYSTENT PAROWANIA", d: "Twój Captur zaparkuje sam, podczas gdy Ty pijesz kawę." },
-            { t: "RECYKLING", d: "Tapicerka jest wykonana w 100% z przetworzonych butelek PET." },
-            { t: "OŚWIETLENIE", d: "System Multi-Sense oferuje 8 kolorów dopasowanych do Twojego nastroju." }
+        const facts = [
+            "Wnętrze Captura zawiera 26 kg tworzyw sztucznych pochodzących z recyklingu.",
+            "System E-Tech zapewnia do 80% czasu jazdy miejskiej na silniku elektrycznym.",
+            "Nowe reflektory LED Pure Vision mają o 30% większy zasięg niż poprzednia generacja.",
+            "Renault Captur jest produkowany w fabryce w Valladolid z certyfikatem zero odpadów.",
+            "Nagłośnienie Harman Kardon posiada 9 głośników dostrojonych do akustyki wnętrza."
         ];
 
+        const moreOpts = [
+            "System kamer 360", 2500, "Audio Harman Kardon", 4500, "Ekran OpenR 10.4", 2100, 
+            "Indukcyjna ładowarka", 900, "Asystent martwego pola", 1800, "Relingi dachowe", 1100,
+            "Przyciemniane szyby", 800, "Hak holowniczy", 3200, "Pakiet ADAS (Autonomiczny)", 6500,
+            "Ambient Light (8 kolorów)", 700, "Cyfrowe zegary 10\"", 1500, "Dach panoramiczny", 5500
+        ];
+
+        function init() {
+            const list = document.getElementById('tech-list');
+            for(let i=0; i<moreOpts.length; i+=2) {
+                list.innerHTML += `
+                    <div class="option-item">
+                        <label><input type="checkbox" onchange="updOpt('${moreOpts[i]}', ${moreOpts[i+1]}, this)"> ${moreOpts[i]}</label>
+                        <span>${moreOpts[i+1].toLocaleString()} PLN</span>
+                    </div>
+                `;
+            }
+            setInterval(nextFact, 6000);
+        }
+
         function acceptCookies() {
-            cookiesAccepted = true;
-            document.getElementById('cookie-bar').style.display = 'none';
+            isCookied = true;
+            document.getElementById('cookie-overlay').style.display = 'none';
             document.getElementById('lock').style.display = 'none';
         }
 
-        function setBase(p, name) {
+        function setBase(p, name, filter) {
             basePrice = 105000 + p;
-            updateUI();
+            document.getElementById('car-main').style.filter = filter;
+            updatePrice();
         }
 
-        function addOpt(name, p, el) {
-            if(el.checked) {
-                optPrice += p;
-                selected.push({name, p});
-            } else {
-                optPrice -= p;
-                selected = selected.filter(x => x.name !== name);
-            }
-            updateUI();
+        function updOpt(name, p, el) {
+            if(el.checked) { optPrice += p; selectedOpts.push({name, p}); }
+            else { optPrice -= p; selectedOpts = selectedOpts.filter(o => o.name !== name); }
+            updatePrice();
         }
 
-        function updateUI() {
-            let total = basePrice + optPrice;
-            document.getElementById('total-p').innerText = total.toLocaleString();
-            document.getElementById('cur-num').innerText = curStep;
-            document.getElementById('step-progress').style.width = (curStep * 25) + "%";
+        function updatePrice() {
+            let t = basePrice + optPrice;
+            document.getElementById('price-display').innerText = t.toLocaleString();
+            document.getElementById('inv-total').innerText = t.toLocaleString();
         }
 
         function move(dir) {
             if(dir === 1) {
-                if(!cookiesAccepted) return;
+                if(!isCookied) return;
                 showSpotlight();
             } else {
-                changeStep(dir);
+                changeStep(-1);
             }
         }
 
         function showSpotlight() {
             const spot = document.getElementById('spotlight');
-            const fact = funFacts[Math.floor(Math.random()*funFacts.length)];
-            document.getElementById('spot-title').innerText = fact.t;
-            document.getElementById('spot-desc').innerText = fact.d;
-            
             spot.style.display = 'flex';
+            const f = facts[Math.floor(Math.random()*facts.length)];
+            document.getElementById('spot-title').innerText = "CZY WIESZ, ŻE...";
+            document.getElementById('spot-desc').innerText = f;
+            
             const btn = document.getElementById('skip-btn');
             btn.style.display = 'none';
-            
             setTimeout(() => {
                 btn.style.display = 'block';
                 btn.innerText = "KONTYNUUJ";
@@ -224,28 +262,38 @@
         }
 
         function changeStep(dir) {
-            document.getElementById(`s${curStep}`).classList.remove('active');
-            curStep += dir;
-            document.getElementById(`s${curStep}`).classList.add('active');
-            updateUI();
-            if(curStep === 4) generateInvoice();
+            document.getElementById(`s${step}`).classList.remove('active');
+            step += dir;
+            document.getElementById(`s${step}`).classList.add('active');
+            document.getElementById('s-num').innerText = step;
+            document.getElementById('progress-bar').style.width = (step * 25) + "%";
+            if(step === 4) generateInvoice();
         }
 
-        function pay() {
-            if(document.getElementById('blik').value.length === 6) {
-                move(1);
-            } else alert("Wpisz 6 cyfr BLIK!");
+        function setPay(type) {
+            document.querySelectorAll('.pay-card').forEach(c => c.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            document.getElementById('blik-ui').style.display = (type === 'blik') ? 'block' : 'none';
+            document.getElementById('card-ui').style.display = (type === 'card') ? 'block' : 'none';
+            document.getElementById('qr-ui').style.display = (type === 'qr') ? 'block' : 'none';
+        }
+
+        function processOrder() {
+            changeStep(1);
+            document.getElementById('nav').style.display = 'none';
         }
 
         function generateInvoice() {
-            const box = document.getElementById('invoice-items');
-            box.innerHTML = `<p>Renault Captur 2026 - Podstawa: ${basePrice.toLocaleString()} PLN</p>`;
-            selected.forEach(o => {
-                box.innerHTML += `<p>${o.name}: ${o.p.toLocaleString()} PLN</p>`;
-            });
-            document.getElementById('inv-total').innerText = "SUMA: " + (basePrice + optPrice).toLocaleString() + " PLN";
-            document.getElementById('nav').style.display = 'none';
+            document.getElementById('inv-rand').innerText = Math.floor(Math.random()*99999);
+            let html = `<p>MODEL: RENAULT CAPTUR 2026</p><p>WERSJA BAZOWA: ${basePrice.toLocaleString()} PLN</p><br>`;
+            selectedOpts.forEach(o => { html += `<p>+ ${o.name}: ${o.p.toLocaleString()} PLN</p>`; });
+            document.getElementById('inv-details').innerHTML = html;
         }
+
+        function nextFact() { factIdx = (factIdx + 1) % facts.length; document.getElementById('fact-text').innerText = facts[factIdx]; }
+        function prevFact() { factIdx = (factIdx - 1 + facts.length) % facts.length; document.getElementById('fact-text').innerText = facts[factIdx]; }
+
+        init();
     </script>
 </body>
 </html>
