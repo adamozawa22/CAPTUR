@@ -3,238 +3,232 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Konfigurator Renault Captur 2026</title>
+    <title>Renault Captur 2026 - Konfigurator Pełny</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --r-yellow: #FFCC33; --r-black: #000000; --r-white: #ffffff; --r-gray: #f4f4f4; }
-        
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body, html { height: 100vh; width: 100vw; overflow: hidden; font-family: 'Montserrat', sans-serif; }
+        body, html { height: 100vh; width: 100vw; overflow: hidden; font-family: 'Montserrat', sans-serif; background: white; }
 
-        /* --- GŁÓWNY PODZIAŁ --- */
-        .app-container { display: grid; grid-template-columns: 1fr 650px; height: 100vh; }
+        /* --- LAYOUT --- */
+        .wrapper { display: grid; grid-template-columns: 1fr 650px; height: 100vh; }
 
-        /* LEWA STRONA - PODGLĄD (STAŁA) */
-        .visual-panel { background: var(--r-gray); position: relative; display: flex; align-items: center; justify-content: center; border-right: 1px solid #ddd; }
-        .car-display { width: 85%; transition: 0.5s; filter: drop-shadow(0 20px 50px rgba(0,0,0,0.1)); }
+        /* LEWA STRONA (STAŁA) */
+        .preview-side { background: var(--r-gray); position: relative; display: flex; align-items: center; justify-content: center; border-right: 1px solid #ddd; }
+        .car-img { width: 85%; transition: 0.5s ease-in-out; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.1)); }
         
-        .floating-info { position: absolute; bottom: 40px; left: 40px; display: flex; flex-direction: column; gap: 15px; }
-        .badge-tech { background: white; padding: 15px 20px; border-left: 8px solid var(--r-yellow); font-weight: 700; font-size: 0.9rem; box-shadow: 0 10px 30px rgba(0,0,0,0.05); max-width: 400px; }
-        .price-box { background: var(--r-black); color: white; padding: 25px; border-radius: 4px; box-shadow: 10px 10px 0 var(--r-yellow); }
-        .price-box h2 { font-weight: 900; color: var(--r-yellow); letter-spacing: 1px; }
+        .info-overlay { position: absolute; bottom: 30px; left: 30px; display: flex; flex-direction: column; gap: 10px; }
+        .tech-tip { background: white; padding: 15px; border-left: 6px solid var(--r-yellow); font-weight: 700; font-size: 0.85rem; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .price-tag { background: var(--r-black); color: white; padding: 20px; border-radius: 4px; box-shadow: 8px 8px 0 var(--r-yellow); }
+        .price-tag h2 { font-weight: 900; color: var(--r-yellow); font-size: 1.8rem; }
 
-        /* PRAWA STRONA - INTERFEJS */
-        .ui-panel { display: flex; flex-direction: column; height: 100vh; background: white; }
+        /* PRAWA STRONA (UI) */
+        .config-side { display: flex; flex-direction: column; height: 100vh; }
 
-        /* GÓRA - PASEK POSTĘPU */
-        .ui-header { padding: 30px 40px 10px 40px; background: white; }
-        .progress-container { height: 12px; background: #eee; border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
-        #progress-bar { height: 100%; width: 25%; background: var(--r-yellow); transition: 0.4s; }
-        .step-info { font-weight: 900; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; }
+        /* GÓRNY PASEK - POPRAWIONY */
+        .config-header { padding: 30px 40px 15px; border-bottom: 1px solid #eee; }
+        .progress-track { height: 12px; background: #eee; border-radius: 20px; overflow: hidden; margin-bottom: 8px; }
+        .progress-fill { height: 100%; width: 25%; background: var(--r-yellow); transition: 0.6s cubic-bezier(0.17, 0.67, 0.83, 0.67); }
+        .step-label { font-weight: 900; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: #999; }
 
-        /* ŚRODEK - PRZEWIJANIE (TU BYŁ BŁĄD) */
-        .ui-scrollable { flex: 1; overflow-y: auto; padding: 10px 40px 120px 40px; scroll-behavior: smooth; }
+        /* ŚRODEK - SCROLLOWALNY */
+        .config-main { flex: 1; overflow-y: auto; padding: 20px 40px 120px; scroll-behavior: smooth; }
         
-        /* DÓŁ - PRZYCISKI (STAŁE) */
-        .ui-footer { padding: 25px 40px; border-top: 1px solid #eee; display: flex; gap: 15px; background: white; }
+        /* DOLNA NAWIGACJA */
+        .config-footer { padding: 20px 40px; border-top: 1px solid #eee; display: flex; gap: 15px; background: white; position: sticky; bottom: 0; }
 
-        /* ELEMENTY KONFIGURACJI */
-        .section-header { font-weight: 900; font-size: 1.5rem; margin: 20px 0; text-transform: uppercase; border-bottom: 3px solid var(--r-black); padding-bottom: 10px; }
-        .cat-tag { background: #f0f0f0; padding: 8px 12px; font-weight: 700; font-size: 0.7rem; margin: 20px 0 10px 0; display: inline-block; }
+        /* KARTY I SEKCJE */
+        .title { font-weight: 900; font-size: 1.6rem; margin: 10px 0 25px; text-transform: uppercase; }
+        .sub-tag { background: #000; color: #fff; padding: 5px 10px; font-size: 0.65rem; font-weight: 900; display: inline-block; margin-bottom: 15px; }
         
-        .card { display: flex; align-items: center; border: 1px solid #ddd; border-radius: 10px; padding: 10px; margin-bottom: 12px; cursor: pointer; transition: 0.2s; }
-        .card:hover { border-color: var(--r-yellow); background: #fffdf5; }
-        .card.selected { border: 2px solid var(--r-yellow); background: #fffdf5; }
-        .card img { width: 80px; height: 60px; object-fit: cover; border-radius: 6px; margin-right: 15px; background: #eee; }
-        .card-txt { flex: 1; }
-        .card-txt strong { display: block; font-size: 0.9rem; }
-        .card-txt span { font-size: 0.8rem; color: #666; }
-        .card input { width: 20px; height: 20px; accent-color: var(--r-yellow); }
+        .card { display: flex; align-items: center; border: 1px solid #ddd; border-radius: 8px; padding: 12px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; }
+        .card:hover { border-color: var(--r-yellow); }
+        .card.selected { border: 2px solid var(--r-black); background: #fffdf5; }
+        .card img { width: 70px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 15px; background: #f0f0f0; }
+        .card-info { flex: 1; }
+        .card-info b { display: block; font-size: 0.9rem; }
+        .card-info i { font-style: normal; font-size: 0.8rem; color: #777; }
+        .card input { width: 18px; height: 18px; accent-color: var(--r-yellow); }
 
         /* PRZYCISKI */
-        .btn { flex: 1; padding: 20px; border: none; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.3s; }
-        .btn-black { background: black; color: white; }
-        .btn-black:hover { background: var(--r-yellow); color: black; }
-        .btn-gray { background: #eee; color: black; }
+        .btn { flex: 1; padding: 18px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; font-size: 0.85rem; }
+        .btn-primary { background: black; color: white; }
+        .btn-primary:hover { background: var(--r-yellow); color: black; }
+        .btn-secondary { background: #eee; color: black; }
 
-        .step-content { display: none; }
-        .step-content.active { display: block; }
+        .step-page { display: none; }
+        .step-page.active { display: block; }
+
+        /* KOLORY - KÓŁECZKA */
+        .color-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 30px; }
+        .color-dot { height: 80px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 700; text-align: center; padding: 5px; }
+        .color-dot.active { border: 3px solid var(--r-black); }
     </style>
 </head>
 <body>
 
-    <main class="app-container">
-        <section class="visual-panel">
-            <img src="https://images.unsplash.com/photo-1595786676378-433f169f14d8?q=80&w=1000" id="main-car-img" class="car-display">
+<div class="wrapper">
+    <section class="preview-side">
+        <img src="https://images.unsplash.com/photo-1595786676378-433f169f14d8?q=80&w=1000" id="car-view" class="car-img">
+        <div class="info-overlay">
+            <div class="tech-tip" id="tech-msg">Silnik benzynowy TCe 90 to sprawdzona i dynamiczna konstrukcja.</div>
+            <div class="price-tag">
+                <span style="font-size: 0.7rem; text-transform: uppercase; opacity: 0.7;">Suma konfiguracji</span>
+                <h2><span id="total-price">89 900</span> PLN</h2>
+            </div>
+        </div>
+    </section>
+
+    <section class="config-side">
+        <div class="config-header">
+            <div class="progress-track"><div class="progress-fill" id="p-bar"></div></div>
+            <div class="step-label">Krok <span id="s-num">1</span> / 4</div>
+        </div>
+
+        <div class="config-main" id="scroll-box">
             
-            <div class="floating-info">
-                <div class="badge-tech" id="fact-box">System E-Tech: do 80% jazdy miejskiej na prądzie.</div>
-                <div class="price-box">
-                    <span>Cena Twojej wersji:</span>
-                    <h2><span id="price-val">95 500</span> PLN</h2>
+            <div class="step-page active" id="pg-1">
+                <h2 class="title">Wybierz bazę</h2>
+                
+                <div class="sub-tag">SILNIK</div>
+                <div class="card selected" onclick="setEng(0, 'TCe 90 (Benzyna)', 'Normalny silnik: niskie koszty eksploatacji.', this)">
+                    <div class="card-info"><b>TCe 90</b><i>Benzyna, Skrzynia manualna</i></div>
+                    <span>W cenie</span><input type="radio" name="e" checked>
                 </div>
-            </div>
-        </section>
-
-        <section class="ui-panel">
-            <div class="ui-header">
-                <div class="progress-container"><div id="progress-bar"></div></div>
-                <div class="step-info">Krok <span id="step-num">1</span> z 4</div>
-            </div>
-
-            <div class="ui-scrollable" id="scroll-box">
-                <div class="step-content active" id="st-1">
-                    <h2 class="section-header">Silnik i Lakier</h2>
-                    
-                    <div class="cat-tag">WYBIERZ PALIWO</div>
-                    <div class="card selected" onclick="pickEngine(0, 'LPG', this)">
-                        <img src="https://images.unsplash.com/photo-1550005813-f9001736a877?q=80&w=150">
-                        <div class="card-txt"><strong>TCe 100 LPG</strong><span>Zasięg do 1100km, fabryczny GAZ</span></div>
-                        <input type="radio" name="e" checked>
-                    </div>
-                    <div class="card" onclick="pickEngine(14500, 'Hybrid', this)">
-                        <img src="https://images.unsplash.com/photo-1593941707882-a5bba14938c7?q=80&w=150">
-                        <div class="card-txt"><strong>E-Tech Full Hybrid 145</strong><span>Niskie spalanie, automat</span></div>
-                        <input type="radio" name="e">
-                    </div>
-
-                    <div class="cat-tag">LAKIER</div>
-                    <div class="card selected" onclick="pickColor(0, 'grayscale(0)', this)">
-                        <div class="card-txt"><strong>Biel Alpejska</strong><span>Standardowy</span></div>
-                        <input type="radio" name="c" checked>
-                    </div>
-                    <div class="card" onclick="pickColor(2900, 'hue-rotate(200deg) brightness(0.7)', this)">
-                        <div class="card-txt"><strong>Niebieski Iron</strong><span>Metalizowany (+2 900 PLN)</span></div>
-                        <input type="radio" name="c">
-                    </div>
+                <div class="card" onclick="setEng(5500, 'TCe 100 LPG', 'Zasięg na LPG i benzynie to ponad 1100 km.', this)">
+                    <div class="card-info"><b>TCe 100 LPG</b><i>Fabryczny gaz, oszczędność</i></div>
+                    <span>+5 500 PLN</span><input type="radio" name="e">
+                </div>
+                <div class="card" onclick="setEng(18500, 'Hybrid 145', 'Hybryda: odzyskuj energię podczas hamowania.', this)">
+                    <div class="card-info"><b>E-Tech Full Hybrid 145</b><i>Automat, tryb EV</i></div>
+                    <span>+18 500 PLN</span><input type="radio" name="e">
                 </div>
 
-                <div class="step-content" id="st-2">
-                    <h2 class="section-header">Wyposażenie Opcjonalne</h2>
-                    <p style="font-size: 0.8rem; margin-bottom: 20px;">Wybierz dodatki do swojego Captura (możesz zaznaczyć wiele):</p>
-                    
-                    <div id="options-list">
-                        </div>
-                </div>
-
-                <div class="step-content" id="st-3">
-                    <h2 class="section-header">Wybierz Dealera</h2>
-                    <div id="dealer-list">
-                        </div>
-                </div>
-
-                <div class="step-content" id="st-4">
-                    <h2 class="section-header">Podsumowanie</h2>
-                    <div id="final-bill" style="background: #f9f9f9; padding: 20px; border: 2px solid #000;">
-                        </div>
+                <div class="sub-tag" style="margin-top:20px;">KOLOR NADWOZIA (5 DO WYBORU)</div>
+                <div class="color-grid">
+                    <div class="color-dot active" onclick="setCol(0, 'grayscale(0)', 'Biel', this)" style="background:#fff;">BIEL</div>
+                    <div class="color-dot" onclick="setCol(2500, 'hue-rotate(200deg) brightness(0.6)', 'Niebieski', this)" style="background:#2b52a2; color:white;">BLUE</div>
+                    <div class="color-dot" onclick="setCol(2500, 'hue-rotate(340deg) saturate(2) brightness(0.8)', 'Czerwony', this)" style="background:#a22b2b; color:white;">RED</div>
+                    <div class="color-dot" onclick="setCol(2900, 'brightness(0.2)', 'Czerń', this)" style="background:#111; color:white;">BLACK</div>
+                    <div class="color-dot" onclick="setCol(2500, 'contrast(0.5) brightness(0.8)', 'Szary', this)" style="background:#777; color:white;">GREY</div>
                 </div>
             </div>
 
-            <div class="ui-footer">
-                <button class="btn btn-gray" onclick="nav(-1)">Wstecz</button>
-                <button class="btn btn-black" id="btn-next" onclick="nav(1)">Dalej</button>
+            <div class="step-page" id="pg-2">
+                <h2 class="title">Dodatki</h2>
+                <div id="opt-container"></div>
             </div>
-        </section>
-    </main>
 
-    <script>
-        let curStep = 1;
-        let priceBase = 95500;
-        let priceEng = 0;
-        let priceCol = 0;
-        let priceOpts = 0;
+            <div class="step-page" id="pg-3">
+                <h2 class="title">Dealerzy</h2>
+                <div id="dealer-container"></div>
+            </div>
 
-        const options = [
-            ["Felgi 18\" Pasadena", 2500], ["Dach Panoramiczny", 4200], ["Audio Bose Premium", 3500],
-            ["Kamera 360", 2100], ["Podgrzewane fotele", 1200], ["Podgrzewana kierownica", 800],
-            ["Tapicerka skórzana", 4800], ["Ładowarka indukcyjna", 600], ["System Blind Spot", 1500],
-            ["Aktywny Tempomat", 2900], ["Asystent Parkowania", 1800], ["Przyciemniane szyby", 900],
-            ["Lakier dwukolorowy", 2200], ["Światła Full LED", 3000], ["Półka w bagażniku", 400],
-            ["Alarm obwodowy", 1100], ["Dywaniki tekstylne", 250], ["Hak holowniczy", 3200],
-            ["Pakiet Winter", 1900], ["Ekran 10\" OpenR", 2400]
-        ];
+            <div class="step-page" id="pg-4">
+                <h2 class="title">Twój wybór</h2>
+                <div id="summary" style="background:#000; color:#fff; padding:30px; line-height:2;"></div>
+            </div>
 
-        const dealers = ["Warszawa Mory", "Kraków Anndora", "Wrocław Nawrot", "Gdańsk Zdunek", "Poznań Karlik", "Łódź Jaszpol", "Szczecin Kozłowski", "Lublin Nazaruk", "Katowice Pietrzak", "Gdynia Pusz"];
+        </div>
 
-        function init() {
-            const optCont = document.getElementById('options-list');
-            options.forEach((o, i) => {
-                optCont.innerHTML += `
-                    <div class="card" onclick="toggleOpt(${o[1]}, this)">
-                        <img src="https://picsum.photos/id/${10+i}/80/60">
-                        <div class="card-txt"><strong>${o[0]}</strong><span>+${o[1]} PLN</span></div>
-                        <input type="checkbox">
-                    </div>
-                `;
-            });
+        <div class="config-footer">
+            <button class="btn btn-secondary" onclick="move(-1)">Wstecz</button>
+            <button class="btn btn-primary" id="next-btn" onclick="move(1)">Dalej</button>
+        </div>
+    </section>
+</div>
 
-            const dealCont = document.getElementById('dealer-list');
-            dealers.forEach(d => {
-                dealCont.innerHTML += `
-                    <div class="card" onclick="selectCard(this, 'radio')">
-                        <div class="card-txt"><strong>Renault ${d}</strong><span>Autoryzowany partner</span></div>
-                        <input type="radio" name="d">
-                    </div>
-                `;
-            });
+<script>
+    let currentStep = 1;
+    let basePrice = 89900;
+    let engPrice = 0;
+    let colPrice = 0;
+    let optPrice = 0;
+
+    const extras = [
+        ["Felgi 18 cali", 2600], ["Dach panoramiczny", 4500], ["Audio Bose", 3200],
+        ["Kamery 360", 2500], ["Podgrzewane fotele", 1300], ["Podgrzewana kierownica", 900],
+        ["Skórzana tapicerka", 5200], ["Ładowarka indukcyjna", 700], ["Blind Spot", 1600],
+        ["Tempomat aktywny", 3000], ["Park Assist", 1900], ["Szyby przyciemniane", 1000],
+        ["Dach Black", 2000], ["LED Pure Vision", 3500], ["Bagażnik Double", 500],
+        ["Alarm", 1200], ["Dywaniki Gumowe", 300], ["Hak", 3800], ["Winter Pack", 2100], ["Ekran 10 cali", 2800]
+    ];
+
+    function init() {
+        const optBox = document.getElementById('opt-container');
+        extras.forEach((ex, i) => {
+            optBox.innerHTML += `
+                <div class="card" onclick="toggleOpt(${ex[1]}, this)">
+                    <img src="https://picsum.photos/id/${20+i}/70/50">
+                    <div class="card-info"><b>${ex[0]}</b><i>Wyposażenie dodatkowe</i></div>
+                    <span>+${ex[1]} PLN</span><input type="checkbox">
+                </div>`;
+        });
+
+        const dealBox = document.getElementById('dealer-container');
+        ["Warszawa", "Kraków", "Gdańsk", "Wrocław", "Poznań", "Łódź", "Katowice", "Lublin", "Białystok", "Szczecin"].forEach(city => {
+            dealBox.innerHTML += `
+                <div class="card" onclick="selectOnly(this)">
+                    <div class="card-info"><b>Renault ${city}</b><i>Autoryzowany salon sprzedaży</i></div>
+                    <input type="radio" name="d">
+                </div>`;
+        });
+    }
+
+    function setEng(p, name, tip, el) {
+        engPrice = p;
+        document.getElementById('tech-msg').innerText = tip;
+        selectOnly(el);
+        updateUI();
+    }
+
+    function setCol(p, filter, name, el) {
+        colPrice = p;
+        document.getElementById('car-view').style.filter = filter;
+        document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+        el.classList.add('active');
+        updateUI();
+    }
+
+    function toggleOpt(p, el) {
+        const cb = el.querySelector('input');
+        cb.checked = !cb.checked;
+        if(cb.checked) { optPrice += p; el.classList.add('selected'); }
+        else { optPrice -= p; el.classList.remove('selected'); }
+        updateUI();
+    }
+
+    function selectOnly(el) {
+        el.parentNode.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+        el.querySelector('input').checked = true;
+    }
+
+    function updateUI() {
+        const total = basePrice + engPrice + colPrice + optPrice;
+        document.getElementById('total-price').innerText = total.toLocaleString();
+    }
+
+    function move(dir) {
+        let next = currentStep + dir;
+        if(next < 1 || next > 4) return;
+        document.getElementById(`pg-${currentStep}`).classList.remove('active');
+        currentStep = next;
+        document.getElementById(`pg-${currentStep}`).classList.add('active');
+        
+        document.getElementById('s-num').innerText = currentStep;
+        document.getElementById('p-bar').style.width = (currentStep * 25) + "%";
+        document.getElementById('scroll-box').scrollTop = 0;
+
+        if(currentStep === 4) {
+            document.getElementById('summary').innerHTML = `<h2>Konfiguracja gotowa!</h2><p>Cena końcowa: ${document.getElementById('total-price').innerText} PLN</p><p>Prześlemy ofertę do wybranego dealera.</p>`;
+            document.getElementById('next-btn').innerText = "WYŚLIJ";
+        } else {
+            document.getElementById('next-btn').innerText = "DALEJ";
         }
+    }
 
-        function toggleOpt(val, el) {
-            const chk = el.querySelector('input');
-            chk.checked = !chk.checked;
-            if(chk.checked) { priceOpts += val; el.classList.add('selected'); }
-            else { priceOpts -= val; el.classList.remove('selected'); }
-            updPrice();
-        }
-
-        function selectCard(el, type) {
-            if(type === 'radio') {
-                el.parentNode.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
-                el.classList.add('selected');
-                el.querySelector('input').checked = true;
-            }
-        }
-
-        function pickEngine(p, type, el) {
-            priceEng = p;
-            selectCard(el, 'radio');
-            document.getElementById('fact-box').innerText = (type==='LPG') ? "Silnik LPG: najtańsza jazda na rynku." : "Hybryda: odzyskujesz energię przy hamowaniu.";
-            updPrice();
-        }
-
-        function pickColor(p, filter, el) {
-            priceCol = p;
-            selectCard(el, 'radio');
-            document.getElementById('main-car-img').style.filter = filter;
-            updPrice();
-        }
-
-        function updPrice() {
-            const total = priceBase + priceEng + priceCol + priceOpts;
-            document.getElementById('price-val').innerText = total.toLocaleString();
-        }
-
-        function nav(dir) {
-            let next = curStep + dir;
-            if(next < 1 || next > 4) return;
-            
-            document.getElementById(`st-${curStep}`).classList.remove('active');
-            curStep = next;
-            document.getElementById(`st-${curStep}`).classList.add('active');
-            
-            document.getElementById('step-num').innerText = curStep;
-            document.getElementById('progress-bar').style.width = (curStep * 25) + "%";
-            document.getElementById('scroll-box').scrollTop = 0;
-
-            if(curStep === 4) {
-                document.getElementById('final-bill').innerHTML = `<h3>Twoja konfiguracja gotowa!</h3> Cena końcowa: ${document.getElementById('price-val').innerText} PLN. <br> Dealer skontaktuje się z Tobą w ciągu 24h.`;
-                document.getElementById('btn-next').innerText = "ZAMAWIAM";
-            } else {
-                document.getElementById('btn-next').innerText = "DALEJ";
-            }
-        }
-
-        init();
-    </script>
+    init();
+</script>
 </body>
 </html>
