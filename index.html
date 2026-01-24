@@ -3,286 +3,277 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Renault Captur 2025 - Konfigurator Advanced</title>
+    <title>Renault Captur 2025 - Konfigurator Systemowy</title>
     
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
     <style>
         :root {
-            --renault-yellow: #FFCC33;
-            --renault-black: #000000;
-            --renault-white: #ffffff;
-            --renault-gray: #f4f4f4;
-            --header-height: 80px;
+            --r-yellow: #FFCC33;
+            --r-black: #000000;
+            --r-white: #ffffff;
+            --r-gray: #f9f9f9;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body, html { height: 100%; overflow: hidden; font-family: 'Montserrat', sans-serif; }
+        body, html { height: 100%; overflow: hidden; font-family: 'Montserrat', sans-serif; background: var(--r-white); }
 
-        /* --- MODAL REGULAMINU --- */
-        #legal-modal {
+        /* --- BLOKADA COOKIES & PRZYCISKU --- */
+        #cookie-overlay {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 140px;
+            background: rgba(0,0,0,0.95); color: white; z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+            border-top: 5px solid var(--r-yellow); transition: 0.5s;
+        }
+
+        .nav-lock-container { position: relative; width: 70%; }
+        .lock-shield {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 10; cursor: not-allowed; display: flex;
+            align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.1); border-radius: 5px; opacity: 0;
+        }
+        .lock-shield:hover { opacity: 1; background: rgba(200,0,0,0.8); }
+        .lock-shield:hover::after { content: "PROSZĘ ZAAKCEPTOWAĆ COOKIES"; color: white; font-weight: 700; font-size: 0.7rem; }
+
+        /* --- MODAL STARTOWY --- */
+        #start-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 2000;
-            display: flex; align-items: center; justify-content: center;
+            background: var(--r-black); z-index: 10000; display: flex; align-items: center; justify-content: center;
         }
-        .modal-content {
-            background: white; padding: 40px; width: 90%; max-width: 600px;
-            border-radius: 8px; max-height: 80vh; overflow-y: auto;
-        }
-
-        /* --- COOKIES BAR (ZASŁANIAJĄCY) --- */
-        #cookie-bar {
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 120px;
-            background: var(--renault-black); color: white; z-index: 1500;
-            display: flex; align-items: center; justify-content: center;
-            padding: 20px; text-align: center; border-top: 4px solid var(--renault-yellow);
-        }
+        .modal-box { background: white; padding: 40px; width: 500px; border-radius: 4px; }
 
         /* --- LAYOUT --- */
         header {
-            height: var(--header-height); display: flex; justify-content: space-between;
-            align-items: center; padding: 0 5%; position: fixed; width: 100%; top: 0;
-            z-index: 1000; background: white; border-bottom: 1px solid #eee;
+            height: 80px; display: flex; justify-content: space-between; align-items: center;
+            padding: 0 5%; border-bottom: 1px solid #eee; background: white;
         }
+        main { display: grid; grid-template-columns: 1fr 500px; height: calc(100% - 80px); }
+        .preview { background: var(--r-gray); display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .panel { padding: 40px; overflow-y: auto; border-left: 1px solid #eee; padding-bottom: 200px; }
 
-        main {
-            margin-top: var(--header-height); height: calc(100% - var(--header-height));
-            display: grid; grid-template-columns: 1fr 500px;
+        /* --- FORMULARZ --- */
+        .equip-box { margin-bottom: 25px; border: 1px solid #eee; padding: 15px; border-radius: 5px; }
+        .equip-box h3 { font-size: 0.8rem; background: #000; color: #FFCC33; padding: 5px 10px; margin-bottom: 10px; }
+        .item { display: flex; align-items: center; margin-bottom: 8px; font-size: 0.8rem; cursor: pointer; }
+        .item input { margin-right: 10px; accent-color: var(--r-yellow); }
+
+        .btn { 
+            background: var(--r-black); color: white; padding: 15px; width: 100%; 
+            border: none; font-weight: 700; cursor: pointer; text-transform: uppercase;
         }
+        .btn:disabled { background: #555; cursor: not-allowed; }
 
-        .preview-section { background: var(--renault-gray); display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .config-panel { background: white; height: 100%; overflow-y: auto; padding: 40px; border-left: 1px solid #eee; padding-bottom: 150px; }
-
-        /* --- WYPOSAŻENIE (PODKATEGORIE) --- */
-        .equip-category { margin-bottom: 30px; }
-        .equip-category h3 { 
-            background: var(--renault-black); color: var(--renault-yellow); 
-            padding: 8px 15px; font-size: 0.9rem; margin-bottom: 15px; 
+        /* --- FAKTURA --- */
+        #invoice-view {
+            background: white; padding: 40px; font-family: 'Roboto Mono', monospace;
+            color: #000; border: 1px solid #ccc; line-height: 1.4;
         }
-        .equip-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
-        .equip-item {
-            display: flex; align-items: center; padding: 12px; border: 1px solid #eee;
-            border-radius: 6px; cursor: pointer; transition: 0.2s; font-size: 0.85rem;
-        }
-        .equip-item:hover { background: #f9f9f9; }
-        .equip-item input { margin-right: 12px; accent-color: var(--renault-yellow); }
+        .inv-header { display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 20px; }
+        .inv-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.7rem; }
+        .inv-table th { text-align: left; border-bottom: 1px solid #000; }
 
-        /* Reszta styli jak poprzednio */
-        .step-content { display: none; }
-        .step-content.active { display: block; }
-        .btn { background: var(--renault-black); color: white; padding: 18px; border: none; cursor: pointer; font-weight: 600; width: 100%; }
-        .car-img { width: 80%; transition: 0.5s; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.2)); }
-
-        @media (max-width: 900px) {
-            main { grid-template-columns: 1fr; overflow-y: auto; }
-            .preview-section { height: 40vh; }
-        }
+        .step { display: none; }
+        .active { display: block; }
     </style>
 </head>
 <body>
 
-    <div id="legal-modal">
-        <div class="modal-content">
-            <h2 style="margin-bottom: 20px;">Weryfikacja i Regulamin</h2>
-            <div style="font-size: 0.9rem; line-height: 1.6; margin-bottom: 20px;">
-                <label style="display: block; margin-bottom: 10px;">
-                    <input type="checkbox" class="legal-check"> Oświadczam, że jestem osobą niekaraną.
-                </label>
-                <label style="display: block; margin-bottom: 10px;">
-                    <input type="checkbox" class="legal-check"> Posiadam ważne prawo jazdy kat. B.
-                </label>
-                <label style="display: block; margin-bottom: 10px;">
-                    <input type="checkbox" class="legal-check"> Akceptuję weryfikację w bazach BIK/KRD.
-                </label>
-                <label style="display: block; margin-bottom: 10px;">
-                    <input type="checkbox" class="legal-check"> Potwierdzam zapoznanie się z regulaminem Renault 2026.
-                </label>
+    <div id="start-modal">
+        <div class="modal-box">
+            <h2 style="margin-bottom: 20px; font-weight: 900;">WERYFIKACJA SYSTEMOWA</h2>
+            <div style="font-size: 0.85rem; margin-bottom: 20px;">
+                <label><input type="checkbox" class="start-check"> Akceptuję regulamin sprzedaży Renault 2026</label><br><br>
+                <label><input type="checkbox" class="start-check"> Potwierdzam status osoby niekaranej</label><br><br>
+                <label><input type="checkbox" class="start-check"> Wyrażam zgodę na przetwarzanie danych w BIK</label>
             </div>
-            <button class="btn" onclick="closeLegal()">ROZPOCZNIJ KONFIGURACJĘ</button>
+            <button class="btn" onclick="startApp()">URUCHOM KONFIGURATOR</button>
         </div>
     </div>
 
-    <div id="cookie-bar">
-        <div style="max-width: 800px;">
-            <p style="font-size: 0.8rem; margin-bottom: 10px;">Ta strona używa plików cookies w celu personalizacji oferty Renault. Musisz zaakceptować politykę prywatności, aby uzyskać dostęp do przycisków sterowania.</p>
-            <button class="btn" style="padding: 10px 20px; width: auto; background: var(--renault-yellow); color: black;" onclick="acceptCookies()">AKCEPTUJĘ I PRZECHODZĘ DALEJ</button>
+    <div id="cookie-overlay">
+        <div style="text-align: center; width: 80%;">
+            <p style="font-size: 0.8rem; margin-bottom: 15px;">Aby odblokować nawigację i proces składania zamówienia, zaakceptuj politykę plików cookies.</p>
+            <button class="btn" style="background: var(--r-yellow); color: black; width: auto; padding: 10px 40px;" onclick="unlockNav()">AKCEPTUJĘ WSZYSTKO</button>
         </div>
     </div>
 
     <header>
-        <div class="logo">Renault <span>Captur</span></div>
-        <div style="font-weight: 800;"><span id="header-price">105 000</span> PLN</div>
+        <div style="font-weight: 900; font-size: 1.4rem;">RENAULT</div>
+        <div style="font-weight: 700;">TOTAL: <span id="price-h">105 000</span> PLN</div>
     </header>
 
     <main>
-        <section class="preview-section">
-            <img src="https://images.unsplash.com/photo-1595786676378-433f169f14d8?q=80&w=1000" id="car-preview" class="car-img">
-            <h1 style="margin-top: 20px;">Captur 2025</h1>
+        <section class="preview">
+            <img src="https://images.unsplash.com/photo-1595786676378-433f169f14d8?q=80&w=1000" id="car-img" style="width: 80%; transition: 0.5s;">
+            <h1 id="car-name" style="font-weight: 900; letter-spacing: -2px; font-size: 3rem;">CAPTUR 2025</h1>
         </section>
 
-        <section class="config-panel">
-            <div id="step-1" class="step-content active">
-                <h2>1. Wybierz Kolor</h2>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px;">
-                    <div class="option-card" onclick="selectColor(0, 'Biel', 'grayscale(0)')" style="border: 2px solid var(--renault-yellow); padding: 10px; text-align: center; cursor: pointer;">Biel Alpejska</div>
-                    <div class="option-card" onclick="selectColor(2500, 'Czerń', 'brightness(0.3)')" style="border: 1px solid #ccc; padding: 10px; text-align: center; cursor: pointer;">Czerń Etoile</div>
-                </div>
+        <section class="panel">
+            <div id="s1" class="step active">
+                <h2 style="margin-bottom: 20px;">LAKIER I PODSTAWA</h2>
+                <div class="equip-box" onclick="setColor(0, 'Biel Alpejska', 'grayscale(0)')" style="cursor:pointer">Biel Alpejska (0 PLN)</div>
+                <div class="equip-box" onclick="setColor(2500, 'Czerń Etoile', 'brightness(0.3)')" style="cursor:pointer">Czerń Etoile (2 500 PLN)</div>
+                <div class="equip-box" onclick="setColor(3000, 'Żółty Miel', 'sepia(1) saturate(5) hue-rotate(10deg)')" style="cursor:pointer">Żółty Miel (3 000 PLN)</div>
             </div>
 
-            <div id="step-2" class="step-content">
-                <h2>2. Wyposażenie (27 opcji)</h2>
-                
-                <div class="equip-category">
-                    <h3>BEZPIECZEŃSTWO</h3>
-                    <div class="equip-grid" id="safety-list"></div>
-                </div>
-
-                <div class="equip-category">
-                    <h3>MULTIMEDIA I TECH</h3>
-                    <div class="equip-grid" id="tech-list"></div>
-                </div>
-
-                <div class="equip-category">
-                    <h3>KOMFORT WNĘTRZA</h3>
-                    <div class="equip-grid" id="comfort-list"></div>
-                </div>
-
-                <div class="equip-category">
-                    <h3>WYGLĄD ZEWNĘTRZNY</h3>
-                    <div class="equip-grid" id="ext-list"></div>
-                </div>
+            <div id="s2" class="step">
+                <h2 style="margin-bottom: 20px;">WYPOSAŻENIE (27 OPCJI)</h2>
+                <div id="options-container"></div>
             </div>
 
-            <div id="step-3" class="step-content">
-                <h2>3. Płatność i Salon</h2>
-                <select id="salon" class="btn" style="background: white; color: black; border: 1px solid #ccc; margin-bottom: 20px;">
-                    <option>Warszawa - Jerozolimskie</option>
-                    <option>Kraków - Zakopiańska</option>
-                </select>
-                <div id="blik-area">
-                    <p>Wybierz BLIK i wpisz kod:</p>
-                    <input type="text" id="blik-code" maxlength="6" style="width: 100%; padding: 15px; font-size: 2rem; text-align: center; margin: 10px 0;">
-                    <button class="btn" onclick="payBlik()">ZAPŁAĆ ZALICZKĘ</button>
-                </div>
+            <div id="s3" class="step">
+                <h2 style="margin-bottom: 20px;">FINAŁ I PŁATNOŚĆ</h2>
+                <input type="text" id="blik" placeholder="KOD BLIK (6 CYFR)" class="btn" style="background: white; color: black; border: 2px solid #000; margin-bottom: 20px; text-align: center; font-size: 1.5rem;">
+                <button class="btn" onclick="processPayment()">AUTORYZUJ I GENERUJ FAKTURĘ</button>
+                <div id="loader" style="display:none; text-align:center; margin-top:20px;">Autoryzacja w banku...</div>
             </div>
 
-            <div id="step-4" class="step-content">
-                <h2>4. Podsumowanie</h2>
-                <div id="final-receipt" style="background: #f9f9f9; padding: 20px; font-family: monospace; border: 1px dashed #000;">
-                    <p>RENAULT CAPTUR 2025</p>
-                    <hr>
-                    <div id="items-summary"></div>
-                    <hr>
-                    <h3 id="final-total"></h3>
+            <div id="s4" class="step">
+                <div id="invoice-view">
+                    <div class="inv-header">
+                        <div>
+                            <strong>FAKTURA PROFORMA</strong><br>
+                            Nr: #RN/2026/CAP/<span id="inv-num"></span>
+                        </div>
+                        <div style="text-align: right;">
+                            <strong>DEALER RENAULT</strong><br>
+                            Autoryzowany Punkt Sprzedaży
+                        </div>
+                    </div>
+                    <p>Nabywca: Klient Indywidualny (Weryfikacja Pozytywna)</p>
+                    <table class="inv-table">
+                        <thead>
+                            <tr><th>Pozycja</th><th>Cena</th></tr>
+                        </thead>
+                        <tbody id="inv-rows"></tbody>
+                    </table>
+                    <div style="text-align: right; font-weight: 700; font-size: 1.2rem; border-top: 2px solid #000;">
+                        SUMA: <span id="inv-total"></span> PLN
+                    </div>
+                    <div style="margin-top: 30px; font-size: 0.6rem;">
+                        Dokument wygenerowany systemowo. Prosimy o okazanie niniejszej faktury u dealera w celu sfinalizowania odbioru pojazdu Renault Captur 2025.
+                    </div>
                 </div>
+                <button class="btn" style="margin-top: 20px;" onclick="window.print()">POBIERZ / DRUKUJ FAKTURĘ</button>
             </div>
 
-            <div class="nav-buttons" id="nav-container" style="display: flex; gap: 10px; margin-top: 30px;">
-                <button class="btn" style="background: #eee; color: #000;" onclick="move(-1)">Wstecz</button>
-                <button class="btn" onclick="move(1)">Dalej</button>
+            <div id="nav" style="margin-top: 40px; display: flex; gap: 10px; position: relative;">
+                <button class="btn" style="background: #ccc; color: black;" onclick="nav(-1)">WSTECZ</button>
+                <div class="nav-lock-container">
+                    <div id="lock" class="lock-shield"></div>
+                    <button id="next-btn" class="btn" onclick="nav(1)">DALEJ</button>
+                </div>
             </div>
         </section>
     </main>
 
     <script>
-        let currentStep = 1;
-        let totalPrice = 105000;
-        let optionsPrice = 0;
+        let step = 1;
+        let base = 105000;
+        let extPrice = 0;
+        let selectedOptions = [];
+        let colorName = "Biel Alpejska";
+        let navLocked = true;
 
-        const options = [
-            { n: "Aktywny system wspomagania nagłego hamowania", p: 0, cat: "safety" },
-            { n: "System kontroli bezpiecznej odległości", p: 0, cat: "safety" },
-            { n: "System utrzymywania pasa ruchu", p: 0, cat: "safety" },
-            { n: "Czujnik martwego pola", p: 1500, cat: "safety" },
-            { n: "Kamera 360 stopni", p: 2500, cat: "safety" },
-            { n: "System rozpoznawania znaków drogowych", p: 0, cat: "safety" },
-            { n: "System wykrywania zmęczenia kierowcy", p: 500, cat: "safety" },
-            
-            { n: "System OpenR link 10,4\"", p: 0, cat: "tech" },
-            { n: "Nagłośnienie Harman Kardon 9 głośników", p: 4000, cat: "tech" },
-            { n: "Ładowarka indukcyjna do smartfona", p: 800, cat: "tech" },
-            { n: "Cyfrowy wyświetlacz wskaźników 10\"", p: 1200, cat: "tech" },
-            { n: "Bezprzewodowy Android Auto/Apple CarPlay", p: 0, cat: "tech" },
-            { n: "Adaptacyjny tempomat", p: 2000, cat: "tech" },
-            
-            { n: "Podgrzewane fotele przednie", p: 1200, cat: "comfort" },
-            { n: "Podgrzewana kierownica", p: 600, cat: "comfort" },
-            { n: "Klimatyzacja automatyczna dwustrefowa", p: 1500, cat: "comfort" },
-            { n: "Elektrycznie regulowany fotel kierowcy", p: 2200, cat: "comfort" },
-            { n: "Tapicerka ze skóry ekologicznej", p: 3000, cat: "comfort" },
-            { n: "Oświetlenie Ambient LED", p: 800, cat: "comfort" },
-            { n: "Panoramiczny dach szklany", p: 4500, cat: "comfort" },
-            
-            { n: "Felgi aluminiowe 19\"", p: 3500, cat: "ext" },
-            { n: "Relingi dachowe czarne", p: 1000, cat: "ext" },
-            { n: "Reflektory Full LED Pure Vision", p: 0, cat: "ext" },
-            { n: "Przyciemniane szyby tylne", p: 900, cat: "ext" },
-            { n: "Lusterka boczne w kolorze czarnym", p: 400, cat: "ext" },
-            { n: "Dwukolorowe nadwozie (dach)", p: 2500, cat: "ext" },
-            { n: "Hak holowniczy składany", p: 3200, cat: "ext" }
+        const allOptions = [
+            "Aktywny system nagłego hamowania", "Kamera 360", "Czujnik martwego pola", "Easy Park Assist", 
+            "System kontroli pasów", "Tempomat adaptacyjny", "Rozpoznawanie znaków", "Full LED Pure Vision",
+            "Ekran OpenR 10\"", "Audio Harman Kardon", "Indukcja tel.", "Zestaw zegarów 10\"", 
+            "Android Auto Wireless", "Podgrzewane fotele", "Podgrzewana kierownica", "Klimatronic 2-strefy",
+            "Dach panoramiczny", "Tapicerka Alcantara", "Ambient Light", "Lusterka Fotochromatyczne",
+            "Felgi 19\" Diamond", "Relingi dachowe", "Przyciemniane szyby", "Antena płetwa rekina",
+            "Hak składany", "Pakiet chrom", "Dywaniki Premium"
         ];
 
-        function initOptions() {
-            options.forEach(opt => {
-                const div = document.createElement('div');
-                div.className = 'equip-item';
-                div.innerHTML = `<input type="checkbox" onchange="calcPrice(this, ${opt.p})"> <span>${opt.n} (+${opt.p} PLN)</span>`;
-                document.getElementById(opt.cat + '-list').appendChild(div);
+        function startApp() {
+            let checks = document.querySelectorAll('.start-check');
+            if([...checks].every(c => c.checked)) {
+                document.getElementById('start-modal').style.display = 'none';
+            } else alert("Musisz zaakceptować wszystkie zgody.");
+        }
+
+        function unlockNav() {
+            navLocked = false;
+            document.getElementById('cookie-overlay').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('cookie-overlay').style.display = 'none';
+                document.getElementById('lock').style.display = 'none';
+            }, 500);
+        }
+
+        function renderOptions() {
+            const container = document.getElementById('options-container');
+            allOptions.forEach((opt, i) => {
+                let p = (i % 3 === 0) ? 0 : (i * 250); // Przykładowe ceny
+                container.innerHTML += `
+                    <div class="item">
+                        <input type="checkbox" onchange="toggleOpt('${opt}', ${p}, this)">
+                        ${opt} (+${p} PLN)
+                    </div>
+                `;
             });
         }
 
-        function calcPrice(el, price) {
-            if(el.checked) optionsPrice += price;
-            else optionsPrice -= price;
-            updateDisplay();
+        function toggleOpt(name, p, el) {
+            if(el.checked) {
+                extPrice += p;
+                selectedOptions.push({name, p});
+            } else {
+                extPrice -= p;
+                selectedOptions = selectedOptions.filter(o => o.name !== name);
+            }
+            updatePrice();
         }
 
-        function updateDisplay() {
-            const final = totalPrice + optionsPrice;
-            document.getElementById('header-price').innerText = final.toLocaleString();
+        function setColor(p, name, filter) {
+            base = 105000 + p;
+            colorName = name;
+            document.getElementById('car-img').style.filter = filter;
+            updatePrice();
         }
 
-        function closeLegal() {
-            const checks = document.querySelectorAll('.legal-check');
-            let ok = true;
-            checks.forEach(c => { if(!c.checked) ok = false; });
-            if(ok) document.getElementById('legal-modal').style.display = 'none';
-            else alert("Zaznacz wszystkie zgody!");
+        function updatePrice() {
+            let total = base + extPrice;
+            document.getElementById('price-h').innerText = total.toLocaleString();
         }
 
-        function acceptCookies() {
-            document.getElementById('cookie-bar').style.display = 'none';
+        function nav(dir) {
+            if(navLocked && dir > 0) return;
+            document.getElementById(`s${step}`).classList.remove('active');
+            step += dir;
+            document.getElementById(`s${step}`).classList.add('active');
         }
 
-        function move(dir) {
-            document.getElementById(`step-${currentStep}`).classList.remove('active');
-            currentStep += dir;
-            document.getElementById(`step-${currentStep}`).classList.add('active');
-            if(currentStep === 4) showFinal();
+        function processPayment() {
+            let code = document.getElementById('blik').value;
+            if(code.length !== 6) return alert("Błędny kod BLIK");
+            
+            document.getElementById('loader').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('loader').innerText = "Płatność zautoryzowana!";
+                setTimeout(() => {
+                    generateInvoice();
+                    nav(1);
+                    document.getElementById('nav').style.display = 'none';
+                }, 1000);
+            }, 2000);
         }
 
-        function selectColor(p, name, filter) {
-            totalPrice = 105000 + p;
-            document.getElementById('car-preview').style.filter = filter;
-            updateDisplay();
+        function generateInvoice() {
+            document.getElementById('inv-num').innerText = Math.floor(Math.random()*90000) + 10000;
+            const table = document.getElementById('inv-rows');
+            table.innerHTML = `<tr><td>Renault Captur 2025 (Baza)</td><td>105 000 PLN</td></tr>`;
+            table.innerHTML += `<tr><td>Lakier: ${colorName}</td><td>Wliczone</td></tr>`;
+            selectedOptions.forEach(o => {
+                table.innerHTML += `<tr><td>${o.name}</td><td>${o.p} PLN</td></tr>`;
+            });
+            document.getElementById('inv-total').innerText = (base + extPrice).toLocaleString();
         }
 
-        function payBlik() {
-            if(document.getElementById('blik-code').value.length === 6) {
-                alert("Płatność zaakceptowana!");
-                move(1);
-            } else alert("Podaj kod BLIK!");
-        }
-
-        function showFinal() {
-            document.getElementById('final-total').innerText = "SUMA: " + (totalPrice + optionsPrice).toLocaleString() + " PLN";
-            document.getElementById('items-summary').innerHTML = "Płatność BLIK: ZATWIERDZONA<br>Odbiór: " + document.getElementById('salon').value;
-        }
-
-        initOptions();
+        renderOptions();
     </script>
 </body>
 </html>
