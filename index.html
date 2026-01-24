@@ -437,4 +437,231 @@
                             <p>Karta</p>
                         </div>
                         <div class="pay-btn" onclick="selectPayment('blik')">
-                            <i class="fas fa-mobile-alt" style="
+                            <i class="fas fa-mobile-alt" style="font-size: 1.8rem; margin-bottom: 10px;"></i>
+                            <p>BLIK</p>
+                        </div>
+                    </div>
+
+                    <div id="blik-interface">
+                        <p style="font-weight:600;">Wpisz kod z aplikacji bankowej:</p>
+                        <input type="text" maxlength="6" class="blik-input" id="blik-code" placeholder="000000" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                        <button class="btn" onclick="processBlik()">Zapłać</button>
+                        <div class="spinner" id="blik-spinner"></div>
+                    </div>
+                </div>
+
+                <div class="step-content" id="step-5">
+                    <h2>Zamówienie Przyjęte!</h2>
+                    <p class="desc">Dziękujemy za wybór Renault.</p>
+                    
+                    <div class="receipt-container">
+                        <div class="receipt" id="final-receipt">
+                            <div style="text-align: center; border-bottom: 1px dashed #000; padding-bottom: 15px; margin-bottom: 15px;">
+                                <h3 style="font-size: 1.4rem;">RENAULT STORE</h3>
+                                <p>ul. Cybernetyki 2025</p>
+                                <p id="receipt-date" style="font-size:0.8rem; color:#555; margin-top:5px;"></p>
+                            </div>
+                            
+                            <div class="receipt-body">
+                                <div class="receipt-row"><span>Model:</span><span>Captur 2025</span></div>
+                                <div class="receipt-row"><span>Wersja:</span><span>Techno E-Tech</span></div>
+                                <div class="receipt-row"><span>Kolor:</span><span id="rec-color">-</span></div>
+                                <div class="receipt-row"><span>Felgi:</span><span id="rec-wheels">-</span></div>
+                                <div class="receipt-row"><span>Salon:</span><span id="rec-salon">-</span></div>
+                                <div class="receipt-row" style="margin-top:10px; color:green;"><span>Weryfikacja:</span><span>ZATWIERDZONA</span></div>
+                                
+                                <div class="receipt-total">
+                                    <div class="receipt-row"><span>SUMA:</span><span id="rec-total">0</span></div>
+                                </div>
+                            </div>
+                            <div style="text-align: center; margin-top: 20px; font-size: 0.7rem; color:#777;">
+                                Nr transakcji: #RN-2025-XC<br>
+                                Paragon fiskalny
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-outline" style="margin-top:20px;" onclick="location.reload()">Konfiguruj ponownie</button>
+                </div>
+
+                <div class="nav-buttons" id="nav-btns">
+                    <button class="btn btn-outline" id="btn-prev" onclick="changeStep(-1)" disabled style="width: 30%;">Wstecz</button>
+                    <button class="btn" id="btn-next" onclick="changeStep(1)" style="width: 70%;">Dalej</button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        AOS.init({ duration: 800, once: true });
+
+        // STAN
+        let currentStep = 1;
+        let configState = {
+            basePrice: 105000,
+            colorPrice: 0,
+            colorName: 'Biel Alpejska',
+            wheelPrice: 0,
+            wheelName: '17" Bahamas',
+            totalPrice: 105000,
+            salon: ''
+        };
+
+        // ELEMENTY
+        const steps = document.querySelectorAll('.step-content');
+        const dots = document.querySelectorAll('.step-dot');
+        const btnNext = document.getElementById('btn-next');
+        const btnPrev = document.getElementById('btn-prev');
+        const navBtns = document.getElementById('nav-btns');
+        const carImg = document.getElementById('car-preview');
+
+        // NAWIGACJA
+        function changeStep(direction) {
+            // Walidacja Kroku 3
+            if(direction === 1 && currentStep === 3 && !validateStep3(true)) return;
+
+            // Zmiana widoku
+            steps[currentStep - 1].classList.remove('active');
+            currentStep += direction;
+            steps[currentStep - 1].classList.add('active');
+
+            // Obsługa guzików
+            btnPrev.disabled = currentStep === 1;
+
+            if(currentStep === 4) {
+                btnNext.style.display = 'none'; // Krok płatności - ukryj guzik Dalej
+            } else if (currentStep === 5) {
+                navBtns.style.display = 'none'; // Koniec - ukryj nawigację
+                generateReceipt();
+            } else {
+                btnNext.style.display = 'inline-block';
+                btnNext.style.width = '70%'; // Reset stylu
+            }
+
+            updateDots();
+            
+            // Przewijanie panelu konfiguracyjnego na górę
+            document.querySelector('.config-panel').scrollTop = 0;
+        }
+
+        function updateDots() {
+            dots.forEach((dot, index) => {
+                dot.classList.remove('active', 'completed');
+                if (index + 1 === currentStep) {
+                    dot.classList.add('active');
+                } else if (index + 1 < currentStep) {
+                    dot.classList.add('completed');
+                    dot.innerHTML = '<i class="fas fa-check"></i>';
+                } else {
+                    dot.innerHTML = index + 1;
+                }
+            });
+        }
+
+        // LOGIKA KOLORÓW
+        function selectColor(element, name, price, filterVal) {
+            document.querySelectorAll('#step-1 .option-card').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            configState.colorName = name;
+            configState.colorPrice = price;
+            
+            // Efekt wizualny
+            carImg.style.opacity = 0.5;
+            carImg.style.transform = "scale(0.98)";
+            setTimeout(() => {
+                carImg.style.filter = filterVal;
+                carImg.style.opacity = 1;
+                carImg.style.transform = "scale(1)";
+            }, 300);
+
+            updateTotal();
+        }
+
+        // LOGIKA FELG
+        function selectWheels(element, name, price) {
+            document.querySelectorAll('.wheel-option').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            configState.wheelName = name;
+            configState.wheelPrice = price;
+            updateTotal();
+        }
+
+        // WALIDACJA (5 checkboxów)
+        function validateStep3(triggerError = false) {
+            const checks = document.querySelectorAll('.verify-check');
+            const msg = document.getElementById('validation-msg');
+            let allChecked = true;
+
+            checks.forEach(c => {
+                if(!c.checked) allChecked = false;
+            });
+
+            if (allChecked) {
+                msg.textContent = "";
+                return true;
+            } else {
+                if(triggerError) msg.textContent = "Musisz zaznaczyć wszystkie 5 zgód, aby przejść dalej.";
+                return false;
+            }
+        }
+
+        // PŁATNOŚĆ I BLIK
+        function selectPayment(method) {
+            document.querySelectorAll('.pay-btn').forEach(btn => btn.classList.remove('active'));
+            if (method === 'card') {
+                alert('Płatność kartą chwilowo niedostępna. Wybierz BLIK.');
+            } else {
+                event.currentTarget.classList.add('active');
+                document.getElementById('blik-interface').style.display = 'block';
+                setTimeout(() => document.getElementById('blik-code').focus(), 100);
+            }
+        }
+
+        function processBlik() {
+            const codeInput = document.getElementById('blik-code');
+            const spinner = document.getElementById('blik-spinner');
+            
+            if (codeInput.value.length !== 6) {
+                alert("Kod musi mieć 6 cyfr!");
+                return;
+            }
+
+            codeInput.disabled = true;
+            spinner.style.display = 'block';
+
+            // Symulacja
+            setTimeout(() => {
+                spinner.style.display = 'none';
+                configState.salon = document.getElementById('showroom-select').value;
+                changeStep(1); // Przejście do kroku 5 (Paragon)
+            }, 2500);
+        }
+
+        // CENA
+        function updateTotal() {
+            configState.totalPrice = configState.basePrice + configState.colorPrice + configState.wheelPrice;
+            const formatted = configState.totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+            document.getElementById('header-price').textContent = formatted;
+        }
+
+        // PARAGON
+        function generateReceipt() {
+            document.getElementById('rec-color').textContent = configState.colorName;
+            document.getElementById('rec-wheels').textContent = configState.wheelName;
+            document.getElementById('rec-salon').textContent = configState.salon.split('-')[0];
+            document.getElementById('rec-total').textContent = configState.totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " PLN";
+            
+            const now = new Date();
+            document.getElementById('receipt-date').textContent = now.toLocaleDateString() + " " + now.toLocaleTimeString();
+
+            const receipt = document.getElementById('final-receipt');
+            setTimeout(() => {
+                receipt.classList.add('printing');
+            }, 300);
+        }
+        
+        // Start
+        updateTotal();
+    </script>
+</body>
+</html>
