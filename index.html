@@ -545,4 +545,280 @@
         
         .receipt::before, .receipt::after {
             content: ''; position: absolute; left: 0; width: 100%; height: 10px;
-            background: radial-gradient(circle, var(--white) 50%, transparent 5
+            background: radial-gradient(circle, var(--white) 50%, transparent 55%) center bottom;
+            background-size: 20px 20px;
+        }
+        .receipt::before { top: -10px; transform: rotate(180deg); }
+        .receipt::after { bottom: -10px; }
+
+        .receipt-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            border-bottom: 1px dotted #ddd;
+            padding-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .receipt-total {
+            font-size: 1.8rem;
+            font-weight: 900;
+            margin-top: 30px;
+            border-top: 3px solid var(--black);
+            padding-top: 20px;
+            color: var(--success-green);
+        }
+
+        /* Controls */
+        .wizard-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 60px;
+            border-top: 1px solid var(--gray-light);
+            padding-top: 30px;
+        }
+
+        /* Loader */
+        .loader {
+            display: none;
+            border: 5px solid rgba(0,0,0,0.1);
+            border-top: 5px solid var(--renault-yellow);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+            margin-left: 20px;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Responsiveness */
+        @media (max-width: 768px) {
+            h2 { font-size: 2rem; }
+            .hero-content h1 { font-size: 3rem; }
+            .hero { padding-top: 60px; }
+            .wizard-container { padding: 30px 20px; }
+            .payment-methods { flex-direction: column; }
+            .blik-input-group { flex-direction: column; }
+            .blik-input { width: 100%; }
+            .wizard-controls { flex-direction: column-reverse; gap: 20px; }
+            .wizard-controls .btn { width: 100%; text-align: center; }
+            .step-indicator { width: 35px; height: 35px; font-size: 0.9rem; }
+             .visualizer-caption { left: 10px; bottom: 10px; font-size: 0.9rem; padding: 8px 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container nav-flex">
+            <div class="logo">RENAULT</div>
+            <nav>
+                <button onclick="scrollToConfig()" class="btn btn-outline" style="border:none; font-weight: 700;">Konfigurator Captur</button>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero reveal">
+        <div class="container hero-content">
+            <h4 style="color: var(--renault-yellow); text-transform: uppercase; letter-spacing: 2px;">Premiera 2025</h4>
+            <h1>Nowy Renault Captur</h1>
+            <p class="hero-subtitle">Zaprojektowany, by żyć pełnią życia. Odkryj nową definicję miejskiego SUV-a z napędem hybrydowym E-Tech.</p>
+            <button onclick="scrollToConfig()" class="btn">Rozpocznij konfigurację</button>
+        </div>
+    </section>
+
+    <section id="konfigurator" class="configurator-section">
+        <div class="container">
+            <h2 class="reveal" style="text-align: center; margin-bottom: 50px;">Stwórz swojego Captura</h2>
+            
+            <div class="wizard-container reveal">
+                <div class="progress-bar">
+                    <div class="progress-line-active" id="progress-line"></div>
+                    <div class="step-indicator active" id="ind-1">1</div>
+                    <div class="step-indicator" id="ind-2">2</div>
+                    <div class="step-indicator" id="ind-3">3</div>
+                    <div class="step-indicator" id="ind-4">4</div>
+                    <div class="step-indicator" id="ind-5">5</div>
+                    <div class="step-indicator" id="ind-6">✓</div>
+                </div>
+
+                <div id="visualizer-wrapper" class="visualizer-wrapper">
+                    <div class="car-visualizer">
+                        <img id="main-visualizer-img" src="https://placehold.co/1600x900/D32F2F/FFFFFF?text=Captur+Czerwony+Flamme&font=montserrat" alt="Wizualizacja">
+                        <div class="visualizer-caption" id="visualizer-caption">
+                            Wizualizacja: Czerwony Flamme
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-content active" id="step-1">
+                    <h3>1. Wybierz kolor nadwozia</h3>
+                    <div class="options-grid">
+                        <div class="option-card selected" onclick="selectColor('Czerwony Flamme', '#D32F2F', this)">
+                            <div class="image-preview-container">
+                                <img src="https://placehold.co/400x300/D32F2F/FFFFFF?text=Czerwony&font=montserrat" alt="Czerwony">
+                            </div>
+                            <h4>Czerwony Flamme</h4>
+                            <p>Bez dopłaty</p>
+                        </div>
+                        <div class="option-card" onclick="selectColor('Szary Cassiopee', '#757575', this)">
+                             <div class="image-preview-container">
+                                <img src="https://placehold.co/400x300/757575/FFFFFF?text=Szary&font=montserrat" alt="Szary">
+                            </div>
+                            <h4>Szary Cassiopee</h4>
+                            <p>+ 2 500 PLN</p>
+                        </div>
+                        <div class="option-card" onclick="selectColor('Czarny Etoile', '#212121', this)">
+                             <div class="image-preview-container">
+                                <img src="https://placehold.co/400x300/212121/FFFFFF?text=Czarny&font=montserrat" alt="Czarny">
+                            </div>
+                            <h4>Czarny Etoile</h4>
+                            <p>+ 2 800 PLN</p>
+                        </div>
+                         <div class="option-card" onclick="selectColor('Niebieski Iron', '#1565C0', this)">
+                             <div class="image-preview-container">
+                                <img src="https://placehold.co/400x300/1565C0/FFFFFF?text=Niebieski&font=montserrat" alt="Niebieski">
+                            </div>
+                            <h4>Niebieski Iron</h4>
+                            <p>+ 3 000 PLN</p>
+                        </div>
+                        <div class="option-card" onclick="selectColor('Biały Quartz', '#EEEEEE', this)">
+                             <div class="image-preview-container">
+                                <img src="https://placehold.co/400x300/EEEEEE/333333?text=Biały&font=montserrat" alt="Biały">
+                            </div>
+                            <h4>Biały Quartz</h4>
+                            <p>+ 3 200 PLN</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-content" id="step-2">
+                    <h3>2. Dobierz obręcze kół</h3>
+                    <div class="options-grid">
+                        <div class="option-card selected" onclick="selectRims('17-calowe BAHAMAS', 0, this)">
+                            <div class="image-preview-container" style="border-radius: 50%; width: 140px; height: 140px; margin: 0 auto 20px;">
+                                <img src="https://placehold.co/300x300/CCCCCC/333333?text=17'+Standard&font=montserrat" style="border-radius: 50%;" alt="Felgi 17">
+                            </div>
+                            <h4>17" BAHAMAS</h4>
+                            <p>Standard</p>
+                        </div>
+                        <div class="option-card" onclick="selectRims('18-calowe PASADENA', 3000, this)">
+                            <div class="image-preview-container" style="border-radius: 50%; width: 140px; height: 140px; margin: 0 auto 20px;">
+                                <img src="https://placehold.co/300x300/999999/333333?text=18'+Sport&font=montserrat" style="border-radius: 50%;" alt="Felgi 18">
+                            </div>
+                            <h4>18" PASADENA</h4>
+                            <p>+ 3 000 PLN</p>
+                        </div>
+                        <div class="option-card" onclick="selectRims('19-calowe RS LINE', 5500, this)">
+                            <div class="image-preview-container" style="border-radius: 50%; width: 140px; height: 140px; margin: 0 auto 20px;">
+                                <img src="https://placehold.co/300x300/333333/FFCC33?text=19'+RS+Line&font=montserrat" style="border-radius: 50%;" alt="Felgi 19 RS">
+                            </div>
+                            <h4>19" RS LINE</h4>
+                            <p>+ 5 500 PLN</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-content" id="step-3">
+                    <h3>3. Wybierz punkt odbioru</h3>
+                    <p style="margin-bottom: 25px; color: var(--gray-dark);">Wybierz autoryzowanego dealera Renault, u którego odbierzesz swój samochód.</p>
+                    <div class="dealer-select-wrapper">
+                        <select id="dealer-select" class="dealer-select">
+                            <option value="Renault Warszawa - Al. Jerozolimskie">Warszawa (Al. Jerozolimskie)</option>
+                            <option value="Renault Kraków - Armii Krajowej">Kraków (Armii Krajowej)</option>
+                            <option value="Renault Gdańsk - Grunwaldzka">Gdańsk (Grunwaldzka)</option>
+                            <option value="Renault Poznań - Głogowska">Poznań (Głogowska)</option>
+                            <option value="Renault Wrocław - Karkonoska">Wrocław (Karkonoska)</option>
+                        </select>
+                    </div>
+                </div>
+
+                 <div class="step-content" id="step-4">
+                    <h3>4. Wymogi formalne i prawne</h3>
+                    <p style="margin-bottom: 25px; color: var(--gray-dark);">Przed przejściem do płatności, prosimy o odpowiedź na poniższe pytania wymagane przepisami prawa.</p>
+                    
+                    <div class="questions-container">
+                        <div class="question-group">
+                            <p>1. Czy jesteś osobą zajmującą eksponowane stanowisko polityczne (PEP)?</p>
+                            <div class="radio-options">
+                                <label class="radio-label">Tak
+                                    <input type="radio" name="q1_pep" value="yes" onchange="validateQuestions()">
+                                    <span class="checkmark"></span>
+                                </label>
+                                <label class="radio-label">Nie
+                                    <input type="radio" name="q1_pep" value="no" onchange="validateQuestions()">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                         <div class="question-group">
+                            <p>2. Czy byłeś(-aś) karany(-a) za przestępstwa skarbowe lub gospodarcze?</p>
+                             <div class="radio-options">
+                                <label class="radio-label">Tak
+                                    <input type="radio" name="q2_crime" value="yes" onchange="validateQuestions()">
+                                    <span class="checkmark"></span>
+                                </label>
+                                <label class="radio-label">Nie
+                                    <input type="radio" name="q2_crime" value="no" onchange="validateQuestions()">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                         <div class="question-group">
+                            <p>3. Oświadczam, że środki na zakup pojazdu pochodzą z legalnego źródła.</p>
+                             <div class="radio-options">
+                                <label class="radio-label">Tak
+                                    <input type="radio" name="q3_funds" value="yes" onchange="validateQuestions()">
+                                    <span class="checkmark"></span>
+                                </label>
+                                <label class="radio-label">Nie
+                                    <input type="radio" name="q3_funds" value="no" onchange="validateQuestions()">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <p id="questions-error" style="color: var(--error-red); display: none; margin-top: 20px; font-weight: bold;">
+                            Niestety, na podstawie udzielonych odpowiedzi nie możemy kontynuować procesu online. Prosimy o kontakt z dealerem.
+                        </p>
+                    </div>
+                </div>
+
+
+                <div class="step-content" id="step-5">
+                    <h3>5. Metoda rezerwacji (Zaliczka: 1000 PLN)</h3>
+                    
+                    <div class="payment-methods">
+                        <label class="payment-option-label">
+                            <input type="radio" name="payment" value="card" onchange="handlePaymentMethod(this)" style="accent-color: var(--renault-yellow);">
+                            <span>Karta Kredytowa / Debetowa</span>
+                        </label>
+                        <label class="payment-option-label">
+                            <input type="radio" name="payment" value="blik" onchange="handlePaymentMethod(this)" style="accent-color: var(--renault-yellow);">
+                            <span>BLIK (Szybka płatność)</span>
+                        </label>
+                    </div>
+
+                    <div id="card-info" class="payment-details">
+                        <h4 style="color: var(--error-red);">System płatności kartą w trakcie modernizacji.</h4>
+                        <p>Przepraszamy za utrudnienia. Aby błyskawicznie dokończyć rezerwację, prosimy wybrać metodę BLIK.</p>
+                    </div>
+
+                    <div id="blik-info" class="payment-details">
+                        <h4 style="margin-bottom: 15px;">Zapłać BLIKiem</h4>
+                        <p>Wpisz 6-cyfrowy kod wygenerowany w aplikacji Twojego banku:</p>
+                        <div class="blik-input-group">
+                            <input type="text" id="blik-code" class="blik-input" maxlength="6" placeholder="000000" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                            <button class="btn" id="blik-submit-btn" onclick="processBlik()">Zatwierdź kod</button>
+                            <div class="loader" id="blik-loader"></div>
+                        </div>
+                        <p id="blik-error" style="color: var(--error-red); font-weight: bold; margin-top: 10px; display: none;">Błąd: Wprowadź poprawny, 6-cyfrowy kod BLIK.</p>
+                    </div>
+                </div>
+
+                <div class="step-content" id="step-6">
+                    <div style="text-align: center; margin-bottom: 40px;">
+                        <h3 style="color: var(--success-green); font-size: 2rem;">Gratulacje! Rezerwacja przyjęta.</h3>
+                        <p style="font-size: 1.2
