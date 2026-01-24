@@ -15,10 +15,6 @@
         #progress-bar { height: 100%; width: 25%; background: var(--r-yellow); transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
         #step-tag { position: fixed; top: 15px; left: 50%; transform: translateX(-50%); font-weight: 900; font-size: 0.7rem; z-index: 10001; letter-spacing: 3px; background: white; padding: 2px 10px; border: 1px solid #000; }
 
-        /* --- SPOTLIGHT (PRZEJŚCIA) --- */
-        #spotlight { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--r-black); color: white; z-index: 20000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-        #spotlight h2 { font-size: 3rem; color: var(--r-yellow); margin-bottom: 15px; }
-
         /* --- COOKIES --- */
         #cookie-overlay { position: fixed; bottom: 0; left: 0; width: 100%; height: 100px; background: rgba(0,0,0,0.95); color: white; z-index: 15000; display: flex; align-items: center; justify-content: center; gap: 30px; border-top: 3px solid var(--r-yellow); }
 
@@ -28,6 +24,20 @@
         /* LEWA STRONA */
         .visual-side { background: var(--r-gray); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
         .car-hero { width: 85%; transition: 0.6s transform ease; filter: drop-shadow(0 30px 50px rgba(0,0,0,0.2)); }
+
+        /* BELKA INFO (DOLNA LEWA STRONA) */
+        .info-bar { 
+            position: absolute; 
+            bottom: 0; 
+            left: 0; 
+            background: var(--r-black); 
+            color: white; 
+            padding: 20px 40px; 
+            min-width: 350px;
+            border-top-right-radius: 5px;
+        }
+        .info-bar h3 { font-weight: 900; font-size: 1.5rem; color: var(--r-yellow); text-transform: uppercase; margin-bottom: 5px; }
+        .info-bar p { font-size: 0.9rem; letter-spacing: 1px; }
 
         /* PRAWA STRONA */
         .config-side { 
@@ -54,7 +64,6 @@
         .pay-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .pay-card { border: 2px solid #eee; padding: 15px; text-align: center; cursor: pointer; border-radius: 5px; background: white; transition: 0.3s; }
         .pay-card.active { border-color: var(--r-yellow); background: #fffdf0; }
-        .pay-card i { font-size: 1.5rem; display: block; margin-bottom: 5px; }
 
         /* PRZYCISKI */
         .btn { background: #000; color: #fff; padding: 18px; border: none; font-weight: 900; width: 100%; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
@@ -74,13 +83,6 @@
     <div id="progress-wrap"><div id="progress-bar"></div></div>
     <div id="step-tag">KROK <span id="s-num">1</span>/4</div>
 
-    <div id="spotlight">
-        <p style="color: var(--r-yellow); font-weight: 900; letter-spacing: 5px;">RENAULT INSIGHT</p>
-        <h2 id="spot-title">NAZWA FUNKCJI</h2>
-        <p id="spot-desc" style="max-width: 500px; line-height: 1.6;">Opis funkcji pojawiający się na 3 sekundy...</p>
-        <button id="skip-btn" class="btn" style="width: auto; margin-top: 30px; padding: 10px 40px; display: none;" onclick="closeSpotlight()">KONTYNUUJ</button>
-    </div>
-
     <div id="cookie-overlay">
         <p style="font-size: 0.8rem;">Strona Renault wymaga plików Cookies do przetwarzania konfiguracji i płatności.</p>
         <button class="btn" style="width: auto; padding: 10px 30px; background: var(--r-yellow); color: black;" onclick="acceptCookies()">AKCEPTUJĘ</button>
@@ -89,9 +91,10 @@
     <main>
         <section class="visual-side">
             <img src="https://images.unsplash.com/photo-1595786676378-433f169f14d8?q=80&w=1000" class="car-hero" id="car-main">
-            <div style="position: absolute; bottom: 40px; left: 40px;">
-                <h3 style="font-weight: 900; font-size: 2rem;">RENAULT CAPTUR</h3>
-                <p>Cena Twojej konfiguracji: <strong id="price-display">105 000</strong> PLN</p>
+            
+            <div class="info-bar">
+                <h3>RENAULT CAPTUR</h3>
+                <p>AKTUALNA CENA: <strong id="price-display">105 000</strong> PLN</p>
             </div>
         </section>
 
@@ -108,15 +111,16 @@
                 <h2 style="margin-bottom: 25px; font-weight: 900;">2. WYPOSAŻENIE PREMIUM</h2>
                 
                 <div class="cat-box">
-                    <div class="cat-title">PAKIET ZIMOWY <i class="fas fa-snowflake"></i></div>
+                    <div class="cat-title">PAKIET ZIMOWY</div>
                     <div class="option-item"><label><input type="checkbox" onchange="updOpt('Fotele podgrzewane', 1500, this)"> Fotele przednie podgrzewane</label><span>1 500 PLN</span></div>
                     <div class="option-item"><label><input type="checkbox" onchange="updOpt('Kierownica podgrzewana', 900, this)"> Kierownica podgrzewana</label><span>900 PLN</span></div>
                     <div class="option-item"><label><input type="checkbox" onchange="updOpt('Szyba przednia grzana', 1200, this)"> Przednia szyba podgrzewana</label><span>1 200 PLN</span></div>
                 </div>
 
                 <div class="cat-box">
-                    <div class="cat-title">TECHNOLOGIA I DŹWIĘK <i class="fas fa-microchip"></i></div>
-                    <div id="tech-list"></div> </div>
+                    <div class="cat-title">TECHNOLOGIA I DŹWIĘK</div>
+                    <div id="tech-list"></div> 
+                </div>
             </div>
 
             <div id="s3" class="step">
@@ -153,147 +157,5 @@
                         DO ZAPŁATY: <span id="inv-total"></span> PLN
                     </div>
                 </div>
-                <button class="btn" style="margin-top: 20px;" onclick="window.print()">POBIERZ FAKTURĘ (OKAZAĆ U DEALERA)</button>
+                <button class="btn" style="margin-top: 20px;" onclick="window.print()">POBIERZ FAKTURĘ</button>
             </div>
-
-            <div id="nav" style="margin-top: 40px; display: flex; gap: 10px; position: relative;">
-                <button class="btn" style="background: #eee; color: #000;" onclick="move(-1)">Wstecz</button>
-                <div style="flex: 1; position: relative;">
-                    <div id="lock" class="lock-btn">PROSZĘ O ZEZWOLENIE</div>
-                    <button class="btn" onclick="move(1)">Dalej</button>
-                </div>
-            </div>
-
-            <div id="fact-slider">
-                <span onclick="prevFact()" style="cursor:pointer">◀</span>
-                <div class="fact-content" id="fact-text">Czy wiesz, że 100% tapicerki pochodzi z recyklingu?</div>
-                <span onclick="nextFact()" style="cursor:pointer">▶</span>
-            </div>
-        </section>
-    </main>
-
-    <script>
-        let step = 1;
-        let basePrice = 105000;
-        let optPrice = 0;
-        let selectedOpts = [];
-        let isCookied = false;
-        let factIdx = 0;
-
-        const facts = [
-            "Wnętrze Captura zawiera 26 kg tworzyw sztucznych pochodzących z recyklingu.",
-            "System E-Tech zapewnia do 80% czasu jazdy miejskiej na silniku elektrycznym.",
-            "Nowe reflektory LED Pure Vision mają o 30% większy zasięg niż poprzednia generacja.",
-            "Renault Captur jest produkowany w fabryce w Valladolid z certyfikatem zero odpadów.",
-            "Nagłośnienie Harman Kardon posiada 9 głośników dostrojonych do akustyki wnętrza."
-        ];
-
-        const moreOpts = [
-            "System kamer 360", 2500, "Audio Harman Kardon", 4500, "Ekran OpenR 10.4", 2100, 
-            "Indukcyjna ładowarka", 900, "Asystent martwego pola", 1800, "Relingi dachowe", 1100,
-            "Przyciemniane szyby", 800, "Hak holowniczy", 3200, "Pakiet ADAS (Autonomiczny)", 6500,
-            "Ambient Light (8 kolorów)", 700, "Cyfrowe zegary 10\"", 1500, "Dach panoramiczny", 5500
-        ];
-
-        function init() {
-            const list = document.getElementById('tech-list');
-            for(let i=0; i<moreOpts.length; i+=2) {
-                list.innerHTML += `
-                    <div class="option-item">
-                        <label><input type="checkbox" onchange="updOpt('${moreOpts[i]}', ${moreOpts[i+1]}, this)"> ${moreOpts[i]}</label>
-                        <span>${moreOpts[i+1].toLocaleString()} PLN</span>
-                    </div>
-                `;
-            }
-            setInterval(nextFact, 6000);
-        }
-
-        function acceptCookies() {
-            isCookied = true;
-            document.getElementById('cookie-overlay').style.display = 'none';
-            document.getElementById('lock').style.display = 'none';
-        }
-
-        function setBase(p, name, filter) {
-            basePrice = 105000 + p;
-            document.getElementById('car-main').style.filter = filter;
-            updatePrice();
-        }
-
-        function updOpt(name, p, el) {
-            if(el.checked) { optPrice += p; selectedOpts.push({name, p}); }
-            else { optPrice -= p; selectedOpts = selectedOpts.filter(o => o.name !== name); }
-            updatePrice();
-        }
-
-        function updatePrice() {
-            let t = basePrice + optPrice;
-            document.getElementById('price-display').innerText = t.toLocaleString();
-            document.getElementById('inv-total').innerText = t.toLocaleString();
-        }
-
-        function move(dir) {
-            if(dir === 1) {
-                if(!isCookied) return;
-                showSpotlight();
-            } else {
-                changeStep(-1);
-            }
-        }
-
-        function showSpotlight() {
-            const spot = document.getElementById('spotlight');
-            spot.style.display = 'flex';
-            const f = facts[Math.floor(Math.random()*facts.length)];
-            document.getElementById('spot-title').innerText = "CZY WIESZ, ŻE...";
-            document.getElementById('spot-desc').innerText = f;
-            
-            const btn = document.getElementById('skip-btn');
-            btn.style.display = 'none';
-            setTimeout(() => {
-                btn.style.display = 'block';
-                btn.innerText = "KONTYNUUJ";
-            }, 3000);
-        }
-
-        function closeSpotlight() {
-            document.getElementById('spotlight').style.display = 'none';
-            changeStep(1);
-        }
-
-        function changeStep(dir) {
-            document.getElementById(`s${step}`).classList.remove('active');
-            step += dir;
-            document.getElementById(`s${step}`).classList.add('active');
-            document.getElementById('s-num').innerText = step;
-            document.getElementById('progress-bar').style.width = (step * 25) + "%";
-            if(step === 4) generateInvoice();
-        }
-
-        function setPay(type) {
-            document.querySelectorAll('.pay-card').forEach(c => c.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-            document.getElementById('blik-ui').style.display = (type === 'blik') ? 'block' : 'none';
-            document.getElementById('card-ui').style.display = (type === 'card') ? 'block' : 'none';
-            document.getElementById('qr-ui').style.display = (type === 'qr') ? 'block' : 'none';
-        }
-
-        function processOrder() {
-            changeStep(1);
-            document.getElementById('nav').style.display = 'none';
-        }
-
-        function generateInvoice() {
-            document.getElementById('inv-rand').innerText = Math.floor(Math.random()*99999);
-            let html = `<p>MODEL: RENAULT CAPTUR 2026</p><p>WERSJA BAZOWA: ${basePrice.toLocaleString()} PLN</p><br>`;
-            selectedOpts.forEach(o => { html += `<p>+ ${o.name}: ${o.p.toLocaleString()} PLN</p>`; });
-            document.getElementById('inv-details').innerHTML = html;
-        }
-
-        function nextFact() { factIdx = (factIdx + 1) % facts.length; document.getElementById('fact-text').innerText = facts[factIdx]; }
-        function prevFact() { factIdx = (factIdx - 1 + facts.length) % facts.length; document.getElementById('fact-text').innerText = facts[factIdx]; }
-
-        init();
-    </script>
-</body>
-</html>
