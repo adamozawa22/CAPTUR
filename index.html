@@ -159,3 +159,125 @@
                 </div>
                 <button class="btn" style="margin-top: 20px;" onclick="window.print()">POBIERZ FAKTURĘ</button>
             </div>
+
+            <div id="nav" style="margin-top: 40px; display: flex; gap: 10px; position: relative;">
+                <button class="btn" style="background: #eee; color: #000;" onclick="move(-1)">Wstecz</button>
+                <div style="flex: 1; position: relative;">
+                    <div id="lock" class="lock-btn">PROSZĘ O ZEZWOLENIE</div>
+                    <button class="btn" onclick="move(1)">Dalej</button>
+                </div>
+            </div>
+
+            <div id="fact-slider">
+                <span onclick="prevFact()" style="cursor:pointer">◀</span>
+                <div class="fact-content" id="fact-text">Czy wiesz, że 100% tapicerki pochodzi z recyklingu?</div>
+                <span onclick="nextFact()" style="cursor:pointer">▶</span>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        let step = 1;
+        let basePrice = 105000;
+        let optPrice = 0;
+        let selectedOpts = [];
+        let isCookied = false;
+        let factIdx = 0;
+
+        const facts = [
+            "Wnętrze Captura zawiera 26 kg tworzyw sztucznych pochodzących z recyklingu.",
+            "System E-Tech zapewnia do 80% czasu jazdy miejskiej na silniku elektrycznym.",
+            "Nowe reflektory LED Pure Vision mają o 30% większy zasięg.",
+            "Renault Captur jest produkowany w fabryce Valladolid.",
+            "Nagłośnienie Harman Kardon posiada 9 głośników."
+        ];
+
+        const moreOpts = [
+            "System kamer 360", 2500, "Audio Harman Kardon", 4500, "Ekran OpenR 10.4", 2100, 
+            "Indukcyjna ładowarka", 900, "Asystent martwego pola", 1800, "Relingi dachowe", 1100,
+            "Przyciemniane szyby", 800, "Dach panoramiczny", 5500
+        ];
+
+        function init() {
+            const list = document.getElementById('tech-list');
+            for(let i=0; i<moreOpts.length; i+=2) {
+                list.innerHTML += `
+                    <div class="option-item">
+                        <label><input type="checkbox" onchange="updOpt('${moreOpts[i]}', ${moreOpts[i+1]}, this)"> ${moreOpts[i]}</label>
+                        <span>${moreOpts[i+1].toLocaleString()} PLN</span>
+                    </div>
+                `;
+            }
+            setInterval(nextFact, 6000);
+        }
+
+        function acceptCookies() {
+            isCookied = true;
+            document.getElementById('cookie-overlay').style.display = 'none';
+            document.getElementById('lock').style.display = 'none';
+        }
+
+        function setBase(p, name, filter) {
+            basePrice = 105000 + p;
+            document.getElementById('car-main').style.filter = filter;
+            updatePrice();
+        }
+
+        function updOpt(name, p, el) {
+            if(el.checked) { optPrice += p; selectedOpts.push({name, p}); }
+            else { optPrice -= p; selectedOpts = selectedOpts.filter(o => o.name !== name); }
+            updatePrice();
+        }
+
+        function updatePrice() {
+            let t = basePrice + optPrice;
+            document.getElementById('price-display').innerText = t.toLocaleString();
+            document.getElementById('inv-total').innerText = t.toLocaleString();
+        }
+
+        function move(dir) {
+            if(dir === 1) {
+                if(!isCookied || step >= 4) return;
+                changeStep(1);
+            } else {
+                if(step <= 1) return;
+                changeStep(-1);
+            }
+        }
+
+        function changeStep(dir) {
+            document.getElementById(`s${step}`).classList.remove('active');
+            step += dir;
+            document.getElementById(`s${step}`).classList.add('active');
+            document.getElementById('s-num').innerText = step;
+            document.getElementById('progress-bar').style.width = (step * 25) + "%";
+            if(step === 4) generateInvoice();
+        }
+
+        function setPay(type) {
+            document.querySelectorAll('.pay-card').forEach(c => c.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            document.getElementById('blik-ui').style.display = (type === 'blik') ? 'block' : 'none';
+            document.getElementById('card-ui').style.display = (type === 'card') ? 'block' : 'none';
+            document.getElementById('qr-ui').style.display = (type === 'qr') ? 'block' : 'none';
+        }
+
+        function processOrder() {
+            changeStep(1);
+            document.getElementById('nav').style.display = 'none';
+        }
+
+        function generateInvoice() {
+            document.getElementById('inv-rand').innerText = Math.floor(Math.random()*99999);
+            let html = `<p>MODEL: RENAULT CAPTUR 2026</p><p>WERSJA BAZOWA: ${basePrice.toLocaleString()} PLN</p><br>`;
+            selectedOpts.forEach(o => { html += `<p>+ ${o.name}: ${o.p.toLocaleString()} PLN</p>`; });
+            document.getElementById('inv-details').innerHTML = html;
+        }
+
+        function nextFact() { factIdx = (factIdx + 1) % facts.length; document.getElementById('fact-text').innerText = facts[factIdx]; }
+        function prevFact() { factIdx = (factIdx - 1 + facts.length) % facts.length; document.getElementById('fact-text').innerText = facts[factIdx]; }
+
+        init();
+    </script>
+</body>
+</html>
