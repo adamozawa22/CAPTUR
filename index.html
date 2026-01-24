@@ -1,617 +1,4 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Konfigurator Renault Captur 2025</title>
-    
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> <style>
-        /* --- ZMIENNE I RESET --- */
-        :root {
-            --renault-yellow: #FFCC33;
-            --renault-black: #000000;
-            --renault-dark: #1a1a1a;
-            --renault-white: #ffffff;
-            --renault-gray: #f4f4f4;
-            --text-main: #333333;
-            --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: var(--renault-white);
-            color: var(--text-main);
-            overflow-x: hidden;
-        }
-
-        /* --- UI ELEMENTS --- */
-        h1, h2, h3 { font-weight: 800; letter-spacing: -0.5px; }
-        .btn {
-            background: var(--renault-black);
-            color: var(--renault-white);
-            padding: 15px 30px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            text-transform: uppercase;
-            transition: var(--transition);
-            font-size: 0.9rem;
-            display: inline-block;
-        }
-        .btn:hover {
-            background: var(--renault-yellow);
-            color: var(--renault-black);
-            transform: translateY(-2px);
-        }
-        .btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-        .btn-outline {
-            background: transparent;
-            border: 2px solid var(--renault-black);
-            color: var(--renault-black);
-        }
-        .btn-outline:hover {
-            background: var(--renault-black);
-            color: var(--renault-white);
-        }
-
-        /* --- HEADER --- */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 5%;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid #eee;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            text-transform: uppercase;
-        }
-        .logo span { color: var(--renault-yellow); }
-
-        .price-tag {
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
-
-        /* --- MAIN LAYOUT --- */
-        main {
-            margin-top: 80px;
-            min-height: 100vh;
-            display: grid;
-            grid-template-columns: 1fr 400px; /* Desktop: Podgląd | Panel */
-            gap: 0;
-        }
-
-        /* --- SEKCJA LEWA: PODGLĄD AUTA (STICKY) --- */
-        .preview-section {
-            background: var(--renault-gray);
-            position: relative;
-            height: calc(100vh - 80px);
-            position: sticky;
-            top: 80px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-
-        .car-visual {
-            width: 90%;
-            max-width: 800px;
-            position: relative;
-            transition: var(--transition);
-        }
-
-        .car-img {
-            width: 100%;
-            height: auto;
-            display: block;
-            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.2));
-            /* Domyślny filtr dla bazowego obrazka */
-            transition: filter 0.5s ease; 
-        }
-
-        .car-label {
-            margin-top: 20px;
-            font-size: 2rem;
-            text-align: center;
-            opacity: 0;
-            animation: fadeIn 1s forwards 0.5s;
-        }
-
-        /* --- SEKCJA PRAWA: KROKI KONFIGURATORA --- */
-        .config-panel {
-            background: var(--renault-white);
-            padding: 40px;
-            overflow-y: auto;
-            border-left: 1px solid #eee;
-        }
-
-        .step-indicator {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 40px;
-            position: relative;
-        }
-        .step-indicator::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: #eee;
-            z-index: 0;
-            transform: translateY(-50%);
-        }
-        .step-dot {
-            width: 30px;
-            height: 30px;
-            background: var(--renault-white);
-            border: 2px solid #ddd;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1;
-            font-size: 0.8rem;
-            font-weight: 600;
-            transition: var(--transition);
-        }
-        .step-dot.active {
-            border-color: var(--renault-yellow);
-            background: var(--renault-yellow);
-            color: var(--renault-black);
-        }
-        .step-dot.completed {
-            background: var(--renault-black);
-            border-color: var(--renault-black);
-            color: var(--renault-yellow);
-        }
-
-        /* --- STEP CONTENT STYLES --- */
-        .step-content {
-            display: none;
-            animation: slideIn 0.5s ease;
-        }
-        .step-content.active {
-            display: block;
-        }
-
-        h2 { margin-bottom: 20px; font-size: 1.8rem; }
-        p.desc { color: #666; margin-bottom: 30px; line-height: 1.6; }
-
-        /* KROK 1: KOLORY */
-        .color-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-        }
-        .option-card {
-            border: 1px solid #eee;
-            padding: 15px;
-            cursor: pointer;
-            transition: var(--transition);
-            text-align: center;
-            border-radius: 8px;
-        }
-        .option-card:hover, .option-card.selected {
-            border-color: var(--renault-yellow);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-        }
-        .option-card.selected {
-            background: rgba(255, 204, 51, 0.1);
-        }
-        .color-circle {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin: 0 auto 10px;
-            border: 1px solid rgba(0,0,0,0.1);
-        }
-
-        /* KROK 2: FELGI */
-        .wheel-list { display: flex; flex-direction: column; gap: 15px; }
-        .wheel-option {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            border: 1px solid #eee;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .wheel-option:hover, .wheel-option.selected {
-            border-color: var(--renault-yellow);
-            background: #fafafa;
-        }
-        .wheel-info h4 { margin-bottom: 5px; }
-        .wheel-info span { font-size: 0.9rem; color: #888; }
-
-        /* KROK 3: WERYFIKACJA */
-        .verification-group {
-            margin-bottom: 20px;
-            background: #f9f9f9;
-            padding: 20px;
-            border-radius: 8px;
-        }
-        .checkbox-wrapper {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            cursor: pointer;
-        }
-        .checkbox-wrapper input {
-            margin-right: 15px;
-            transform: scale(1.5);
-            accent-color: var(--renault-yellow);
-        }
-
-        /* KROK 4: PŁATNOŚĆ */
-        .payment-methods {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .pay-btn {
-            padding: 20px;
-            border: 2px solid #eee;
-            background: #fff;
-            cursor: pointer;
-            text-align: center;
-            transition: var(--transition);
-            border-radius: 8px;
-        }
-        .pay-btn.active {
-            border-color: var(--renault-black);
-            background: var(--renault-black);
-            color: var(--renault-yellow);
-        }
-        
-        /* BLIK UI */
-        #blik-interface {
-            display: none;
-            text-align: center;
-            background: #f0f0f0;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
-        .blik-code-container {
-            position: relative;
-            margin: 20px 0;
-        }
-        .blik-input {
-            width: 200px;
-            height: 50px;
-            font-size: 24px;
-            letter-spacing: 10px;
-            text-align: center;
-            border: 2px solid #ccc;
-            border-radius: 5px;
-            font-family: 'Roboto Mono', monospace;
-        }
-        .spinner {
-            display: none;
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(0,0,0,0.1);
-            border-left-color: var(--renault-yellow);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-
-        /* KROK 5: PARAGON */
-        .receipt-container {
-            perspective: 1000px;
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-        }
-        .receipt {
-            background: #fff;
-            width: 100%;
-            max-width: 320px;
-            padding: 30px 20px;
-            font-family: 'Roboto Mono', monospace;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            position: relative;
-            transform-origin: top;
-            transform: rotateX(-90deg); /* Start hidden */
-            opacity: 0;
-        }
-        .receipt.printing {
-            animation: printReceipt 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-        }
-        .receipt::after { /* Efekt ząbków na dole paragonu */
-            content: "";
-            position: absolute;
-            bottom: -10px;
-            left: 0;
-            width: 100%;
-            height: 10px;
-            background: radial-gradient(circle, transparent 50%, #fff 50%) 0 -5px/10px 10px repeat-x;
-            transform: rotate(180deg);
-        }
-        .receipt-header {
-            text-align: center;
-            border-bottom: 1px dashed #000;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-        }
-        .receipt-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 0.85rem;
-        }
-        .receipt-total {
-            border-top: 1px dashed #000;
-            padding-top: 10px;
-            margin-top: 15px;
-            font-weight: 800;
-            font-size: 1.1rem;
-        }
-
-        /* --- NAVIGATION BUTTONS --- */
-        .nav-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-        }
-
-        /* --- ANIMATIONS --- */
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        @keyframes printReceipt {
-            0% { transform: rotateX(-90deg) translateY(-50px); opacity: 0; }
-            100% { transform: rotateX(0deg) translateY(0); opacity: 1; }
-        }
-
-        /* --- RESPONSIVENESS --- */
-        @media (max-width: 900px) {
-            main { grid-template-columns: 1fr; }
-            .preview-section { 
-                height: 40vh; 
-                position: relative; 
-                top: 0;
-                margin-top: 80px;
-            }
-            main { margin-top: 0; }
-            .config-panel { padding: 20px; }
-            .car-label { font-size: 1.5rem; }
-        }
-    </style>
-</head>
-<body>
-
-    <header data-aos="fade-down">
-        <div class="logo">Renault <span>Captur</span></div>
-        <div class="price-tag">Cena: <span id="header-price">105 000</span> PLN</div>
-    </header>
-
-    <main>
-        <section class="preview-section">
-            <div class="car-visual" data-aos="zoom-in">
-                <img src="https://images.unsplash.com/photo-1595786676378-433f169f14d8?q=80&w=1000&auto=format&fit=crop" 
-                     alt="Renault Captur" 
-                     class="car-img" 
-                     id="car-preview">
-            </div>
-            <h1 class="car-label">Renault Captur 2025</h1>
-        </section>
-
-        <section class="config-panel" data-aos="fade-left">
-            
-            <div class="step-indicator">
-                <div class="step-dot active">1</div>
-                <div class="step-dot">2</div>
-                <div class="step-dot">3</div>
-                <div class="step-dot">4</div>
-                <div class="step-dot">5</div>
-            </div>
-
-            <form id="config-form" onsubmit="return false;">
-                
-                <div class="step-content active" id="step-1">
-                    <h2 data-aos="fade-up">Wybierz Styl</h2>
-                    <p class="desc">Zdefiniuj charakter swojego Captura wybierając jeden z ekskluzywnych lakierów.</p>
-                    
-                    <div class="color-grid">
-                        <div class="option-card selected" onclick="selectColor(this, 'Biel Alpejska', 0, 'brightness(1.1) grayscale(0.2)')">
-                            <div class="color-circle" style="background: #f4f4f4;"></div>
-                            <h4>Biel Alpejska</h4>
-                            <p>W cenie</p>
-                        </div>
-                        <div class="option-card" onclick="selectColor(this, 'Czerń Etoilé', 2500, 'brightness(0.4) contrast(1.2)')">
-                            <div class="color-circle" style="background: #111;"></div>
-                            <h4>Czerń Etoilé</h4>
-                            <p>+2 500 PLN</p>
-                        </div>
-                        <div class="option-card" onclick="selectColor(this, 'Szary Highland', 2800, 'sepia(0) saturate(0) brightness(0.7)')">
-                            <div class="color-circle" style="background: #777;"></div>
-                            <h4>Szary Highland</h4>
-                            <p>+2 800 PLN</p>
-                        </div>
-                        <div class="option-card" onclick="selectColor(this, 'Żółty Miel', 3200, 'sepia(1) saturate(5) hue-rotate(5deg) brightness(1.2)')">
-                            <div class="color-circle" style="background: var(--renault-yellow);"></div>
-                            <h4>Żółty Miel</h4>
-                            <p>+3 200 PLN</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="step-content" id="step-2">
-                    <h2>Wybierz Felgi</h2>
-                    <p class="desc">Odpowiednie felgi to podstawa sylwetki.</p>
-
-                    <div class="wheel-list">
-                        <div class="wheel-option selected" onclick="selectWheels(this, '17 cali Bahamas', 0)">
-                            <div class="wheel-info">
-                                <h4>17" Bahamas</h4>
-                                <span>Seryjne, diamentowane</span>
-                            </div>
-                            <div class="wheel-price">W cenie</div>
-                        </div>
-                        <div class="wheel-option" onclick="selectWheels(this, '18 cali Pasadena', 2000)">
-                            <div class="wheel-info">
-                                <h4>18" Pasadena</h4>
-                                <span>Aluminiowe, czarny połysk</span>
-                            </div>
-                            <div class="wheel-price">+2 000 PLN</div>
-                        </div>
-                        <div class="wheel-option" onclick="selectWheels(this, '19 cali Initiale Paris', 4500)">
-                            <div class="wheel-info">
-                                <h4>19" Initiale</h4>
-                                <span>Premium, wzór Eiffela</span>
-                            </div>
-                            <div class="wheel-price">+4 500 PLN</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="step-content" id="step-3">
-                    <h2>Weryfikacja Klienta</h2>
-                    <p class="desc">Wymagania formalne przed zakupem online.</p>
-                    
-                    <div class="verification-group">
-                        <label class="checkbox-wrapper">
-                            <input type="checkbox" id="check-criminal" onchange="validateStep3()">
-                            <span>Oświadczam, że jestem osobą niekaraną.</span>
-                        </label>
-                        <label class="checkbox-wrapper">
-                            <input type="checkbox" id="check-license" onchange="validateStep3()">
-                            <span>Posiadam ważne prawo jazdy kat. B.</span>
-                        </label>
-                        <label class="checkbox-wrapper">
-                            <input type="checkbox" id="check-bik" onchange="validateStep3()">
-                            <span>Akceptuję weryfikację w BIK (Biuro Informacji Kredytowej).</span>
-                        </label>
-                    </div>
-                    <p id="validation-msg" style="color: red; font-size: 0.8rem; height: 20px;"></p>
-                </div>
-
-                <div class="step-content" id="step-4">
-                    <h2>Finalizacja</h2>
-                    
-                    <label style="display:block; margin-bottom: 10px; font-weight:600;">Wybierz Salon Odbioru:</label>
-                    <select id="showroom-select" style="width: 100%; padding: 15px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 30px;">
-                        <option value="Warszawa - Aleje Jerozolimskie">Warszawa - Aleje Jerozolimskie</option>
-                        <option value="Kraków - Zakopiańska">Kraków - Zakopiańska</option>
-                        <option value="Gdańsk - Grunwaldzka">Gdańsk - Grunwaldzka</option>
-                        <option value="Poznań - Głogowska">Poznań - Głogowska</option>
-                    </select>
-
-                    <h3>Metoda Płatności</h3>
-                    <div class="payment-methods">
-                        <div class="pay-btn" onclick="selectPayment('card')">
-                            <i class="fas fa-credit-card" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                            <p>Karta Płatnicza</p>
-                        </div>
-                        <div class="pay-btn" onclick="selectPayment('blik')">
-                            <i class="fas fa-mobile-alt" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                            <p>BLIK</p>
-                        </div>
-                    </div>
-
-                    <div id="blik-interface">
-                        <p>Wpisz kod BLIK z aplikacji bankowej:</p>
-                        <div class="blik-code-container">
-                            <input type="text" maxlength="6" class="blik-input" id="blik-code" placeholder="000000" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                        </div>
-                        <button class="btn" onclick="processBlik()">Zatwierdź Płatność</button>
-                        <div class="spinner" id="blik-spinner"></div>
-                    </div>
-                </div>
-
-                <div class="step-content" id="step-5">
-                    <h2>Gratulacje!</h2>
-                    <p class="desc">Twoje zamówienie zostało przyjęte. Oto Twój cyfrowy dowód zakupu.</p>
-                    
-                    <div class="receipt-container">
-                        <div class="receipt" id="final-receipt">
-                            <div class="receipt-header">
-                                <h3>RENAULT STORE</h3>
-                                <p>ul. Wirtualna 2025</p>
-                                <p id="receipt-date">2025-01-24 12:00</p>
-                            </div>
-                            <div class="receipt-body">
-                                <div class="receipt-row">
-                                    <span>Model:</span>
-                                    <span>Captur 2025</span>
-                                </div>
-                                <div class="receipt-row">
-                                    <span>Kolor:</span>
-                                    <span id="rec-color">Biel</span>
-                                </div>
-                                <div class="receipt-row">
-                                    <span>Felgi:</span>
-                                    <span id="rec-wheels">17"</span>
-                                </div>
-                                <div class="receipt-row">
-                                    <span>Salon:</span>
-                                    <span id="rec-salon">Warszawa</span>
-                                </div>
-                                <div class="receipt-row">
-                                    <span>Weryfikacja BIK:</span>
-                                    <span>POZYTYWNA</span>
-                                </div>
-                                <div class="receipt-total">
-                                    <div class="receipt-row">
-                                        <span>SUMA PLN:</span>
-                                        <span id="rec-total">105 000</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div style="text-align: center; margin-top: 20px; font-size: 0.7rem;">
-                                * Dziękujemy za wybór marki Renault *<br>
-                                Nr transakcji: #RN2025-XC90
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div style="text-align: center; margin-top: 40px;">
-                        <button class="btn btn-outline" onclick="location.reload()">Konfiguruj ponownie</button>
-                    </div>
-                </div>
-
-                <div class="nav-buttons" id="nav-btns">
-                    <button class="btn btn-outline" id="btn-prev" onclick="changeStep(-1)" disabled>Wstecz</button>
-                    <button class="btn" id="btn-next" onclick="changeStep(1)">Dalej</button>
-                </div>
-            </form>
-        </section>
-    </main>
-
-    <script>
+<script>
         // --- INICJALIZACJA AOS ---
         AOS.init({
             duration: 800,
@@ -639,36 +26,42 @@
         const navBtns = document.getElementById('nav-btns');
 
         function changeStep(direction) {
-            // Walidacja przed przejściem dalej
-            if(direction === 1) {
-                if(currentStep === 3 && !validateStep3(true)) return;
-                if(currentStep === 4) return; // Krok 4 wymaga akcji płatności, nie przycisku "Dalej"
+            // Walidacja KROKU 3 (Zgody)
+            if(direction === 1 && currentStep === 3 && !validateStep3(true)) {
+                return;
             }
 
-            // Aktualizacja UI
+            // POPRAWKA: Usunięto blokadę kroku 4, aby BLIK mógł wywołać przejście dalej
+
+            // Aktualizacja UI (ukrycie obecnego)
             steps[currentStep - 1].classList.remove('active');
             
+            // Zmiana numeru kroku
             currentStep += direction;
             
+            // Pokazanie nowego kroku
             steps[currentStep - 1].classList.add('active');
 
-            // Aktualizacja przycisków
+            // Aktualizacja przycisków nawigacji
             btnPrev.disabled = currentStep === 1;
             
-            // Obsługa specjalna dla Kroku 4 i 5
+            // Logika wyświetlania przycisku "Dalej"
             if(currentStep === 4) {
-                btnNext.style.display = 'none'; // Ukryj "Dalej", płatność wymusza przejście
+                // W kroku płatności ukrywamy guzik "Dalej", bo przejście wymusza BLIK
+                btnNext.style.display = 'none'; 
             } else if (currentStep === 5) {
-                navBtns.style.display = 'none'; // Ukryj nawigację na końcu
+                // W podsumowaniu ukrywamy całą nawigację
+                navBtns.style.display = 'none'; 
                 generateReceipt();
             } else {
+                // W pozostałych krokach guzik jest widoczny
                 btnNext.style.display = 'inline-block';
             }
 
-            // Aktualizacja kropek (Stepper)
+            // Aktualizacja paska postępu (kropek)
             updateDots();
             
-            // Re-trigger animacji AOS na nowych elementach (opcjonalne, proste obejście przez opacity)
+            // Przewinięcie do góry
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -688,17 +81,14 @@
 
         // --- KROK 1: KOLOR ---
         function selectColor(element, name, price, filterVal) {
-            // UI Update
             document.querySelectorAll('#step-1 .option-card').forEach(el => el.classList.remove('selected'));
             element.classList.add('selected');
 
-            // State Update
             configState.colorName = name;
             configState.colorPrice = price;
             
-            // Visual Update
             const carImg = document.getElementById('car-preview');
-            carImg.style.opacity = 0.7; // Blink effect
+            carImg.style.opacity = 0.7; 
             setTimeout(() => {
                 carImg.style.filter = filterVal;
                 carImg.style.opacity = 1;
@@ -724,12 +114,12 @@
             const c3 = document.getElementById('check-bik').checked;
             const msg = document.getElementById('validation-msg');
 
+            // Jeśli wszystkie checkboxy są zaznaczone
             if (c1 && c2 && c3) {
-                btnNext.disabled = false;
-                msg.textContent = "";
+                if(msg) msg.textContent = "";
                 return true;
             } else {
-                if(triggerError) msg.textContent = "Musisz zaznaczyć wszystkie zgody, aby kontynuować.";
+                if(triggerError && msg) msg.textContent = "Musisz zaznaczyć wszystkie zgody, aby kontynuować.";
                 return false;
             }
         }
@@ -739,14 +129,15 @@
             document.querySelectorAll('.pay-btn').forEach(btn => btn.classList.remove('active'));
             
             if (method === 'card') {
-                alert('System kartowy w budowie (API Bank maintenance). Proszę wybrać BLIK.');
+                alert('System kartowy w budowie. Proszę wybrać BLIK.');
             } else if (method === 'blik') {
-                // Style active
                 event.currentTarget.classList.add('active');
-                // Show Interface
                 document.getElementById('blik-interface').style.display = 'block';
-                // Auto focus
-                document.getElementById('blik-code').focus();
+                
+                // Mały timeout żeby input był widoczny przed focusem
+                setTimeout(() => {
+                    document.getElementById('blik-code').focus();
+                }, 100);
             }
         }
 
@@ -754,53 +145,47 @@
             const codeInput = document.getElementById('blik-code');
             const spinner = document.getElementById('blik-spinner');
             
+            // Walidacja długości kodu
             if (codeInput.value.length !== 6) {
                 alert("Wpisz poprawny, 6-cyfrowy kod BLIK");
                 return;
             }
 
-            // UI Loading
+            // UI: Zablokuj input i pokaż spinner
             codeInput.disabled = true;
             spinner.style.display = 'block';
 
-            // Simulation
+            // Symulacja procesu (3 sekundy)
             setTimeout(() => {
                 spinner.style.display = 'none';
-                // Transition to Step 5
-                configState.salon = document.getElementById('showroom-select').value;
-                changeStep(1); // Go to step 5 manually
+                
+                // Pobierz wybrany salon przed przejściem dalej
+                const salonSelect = document.getElementById('showroom-select');
+                if(salonSelect) {
+                    configState.salon = salonSelect.value;
+                } else {
+                    configState.salon = "Warszawa - Centrala"; // Fallback
+                }
+
+                // PRZEJŚCIE DO KROKU 5 (Paragon)
+                changeStep(1); 
             }, 3000);
         }
 
         // --- LOGIKA CENOWA ---
         function updateTotal() {
             configState.totalPrice = configState.basePrice + configState.colorPrice + configState.wheelPrice;
-            
-            // Formatowanie ceny ze spacjami (np. 105 000)
             const formatted = configState.totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
             document.getElementById('header-price').textContent = formatted;
         }
 
         // --- KROK 5: GENEROWANIE PARAGONU ---
         function generateReceipt() {
-            // Wypełnianie danych
             document.getElementById('rec-color').textContent = configState.colorName;
             document.getElementById('rec-wheels').textContent = configState.wheelName;
-            document.getElementById('rec-salon').textContent = configState.salon.split('-')[0]; // Tylko miasto
-            document.getElementById('rec-total').textContent = configState.totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " PLN";
             
-            const now = new Date();
-            document.getElementById('receipt-date').textContent = now.toLocaleDateString() + " " + now.toLocaleTimeString();
-
-            // Animacja
-            const receipt = document.getElementById('final-receipt');
-            setTimeout(() => {
-                receipt.classList.add('printing');
-            }, 500);
-        }
-
-        // Init check
-        updateTotal();
-    </script>
-</body>
-</html>
+            // Wyciągnięcie samego miasta z nazwy salonu
+            const salonFull = configState.salon || "Nie wybrano";
+            document.getElementById('rec-salon').textContent = salonFull.split('-')[0];
+            
+            document.getElementById('rec-total').textContent = configState.totalPrice.toString
