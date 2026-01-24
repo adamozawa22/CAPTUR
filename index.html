@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Renault Captur 2026 - Fluid Glass Edition</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <title>Renault Captur 2026 - Fluid Glass Configurator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --glass: rgba(255, 255, 255, 0.15);
-            --glass-border: rgba(255, 255, 255, 0.3);
             --r-yellow: #FFCC33;
-            --r-black: #000000;
+            --glass-bg: rgba(0, 0, 0, 0.5);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --blur: blur(15px);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -18,304 +18,234 @@
         body, html { 
             height: 100%; 
             overflow: hidden; 
-            font-family: 'Montserrat', sans-serif;
-            background: url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=2000') no-repeat center center;
+            font-family: 'Montserrat', sans-serif; 
+            color: white;
+            /* TŁO DLA EFEKTU SZKŁA */
+            background: url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=2000') no-repeat center center fixed;
             background-size: cover;
         }
 
-        /* --- GŁÓWNY KONTENER (BLUR TŁA) --- */
-        .app-container {
-            display: grid;
-            grid-template-columns: 350px 1fr;
-            height: 100vh;
-            backdrop-filter: blur(15px);
-            background: rgba(0, 0, 0, 0.4);
+        /* --- WSPÓLNE STYLE SZKŁA --- */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border: 1px solid var(--glass-border);
         }
 
-        /* --- LEWY PANEL (FLUID GLASS) --- */
-        aside {
-            background: var(--glass);
-            backdrop-filter: blur(25px);
-            border-right: 1px solid var(--glass-border);
-            display: flex;
-            flex-direction: column;
-            padding: 40px;
+        /* --- PROGRESS BAR --- */
+        #progress-wrap { position: fixed; top: 0; left: 0; width: 100%; height: 6px; background: rgba(255,255,255,0.1); z-index: 10000; }
+        #progress-bar { height: 100%; width: 25%; background: var(--r-yellow); transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px var(--r-yellow); }
+        #step-tag { 
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%); 
+            font-weight: 900; font-size: 0.7rem; z-index: 10001; letter-spacing: 3px; 
+            padding: 5px 15px; border-radius: 20px;
+        }
+
+        /* --- SPOTLIGHT (PRZEJŚCIA) --- */
+        #spotlight { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); color: white; z-index: 20000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        #spotlight h2 { font-size: 3rem; color: var(--r-yellow); margin-bottom: 15px; }
+
+        /* --- COOKIES (GLASS) --- */
+        #cookie-overlay { 
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 100px; 
+            z-index: 15000; display: flex; align-items: center; justify-content: center; gap: 30px; 
+            border-top: 3px solid var(--r-yellow);
+        }
+
+        /* --- MAIN LAYOUT --- */
+        header {
+            height: 80px; display: flex; justify-content: space-between; align-items: center;
+            padding: 0 5%; position: relative; z-index: 10;
+        }
+
+        main { display: grid; grid-template-columns: 1fr 500px; height: calc(100% - 80px); position: relative; z-index: 5; }
+        
+        /* LEWA STRONA (GLASS) */
+        .visual-side { 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;
+            border-right: none; 
+        }
+        .car-hero { width: 85%; transition: 0.6s transform ease; filter: drop-shadow(0 30px 50px rgba(0,0,0,0.5)); }
+
+        /* PRAWA STRONA (GLASS PANEL) */
+        .config-side-container {
             position: relative;
-            color: white;
-        }
-
-        .side-img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            border: 1px solid var(--glass-border);
-        }
-
-        .step-info {
-            flex-grow: 1;
-        }
-
-        .step-info h1 { font-size: 2.5rem; font-weight: 900; line-height: 1; margin-bottom: 10px; }
-        .step-info p { font-size: 0.8rem; color: var(--r-yellow); letter-spacing: 2px; text-transform: uppercase; }
-
-        .progress-circle {
-            margin-top: 30px;
-            font-size: 4rem;
-            font-weight: 900;
-            opacity: 0.2;
-        }
-
-        /* --- NAWIGACJA NA DOLE LEWEJ --- */
-        .nav-sidebar {
+            height: 100%;
             display: flex;
             flex-direction: column;
-            gap: 15px;
         }
 
-        /* --- PRAWY PANEL (TREŚĆ) --- */
-        main {
-            padding: 60px;
-            overflow-y: auto;
-            color: white;
+        .config-scroll-area { 
+            padding: 40px; 
+            overflow-y: auto; 
+            flex-grow: 1; /* Zajmuje dostępną przestrzeń */
+            /* Scrollbar styling */
+            scrollbar-width: thin; scrollbar-color: var(--r-yellow) transparent;
         }
+        .config-scroll-area::-webkit-scrollbar { width: 6px; }
+        .config-scroll-area::-webkit-scrollbar-thumb { background: var(--r-yellow); border-radius: 3px; }
 
-        .glass-card {
-            background: var(--glass);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            padding: 30px;
-            border-radius: 20px;
-            margin-bottom: 30px;
-        }
-
-        /* --- ELEMENTY UI --- */
-        .btn {
-            background: var(--r-yellow);
-            color: var(--r-black);
+        /* DOLNA BELKA NAWIGACYJNA (FIXED GLASS) */
+        .bottom-nav-bar {
             padding: 20px;
-            border: none;
-            border-radius: 12px;
-            font-weight: 900;
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: 0.3s;
-            width: 100%;
-        }
-        .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
-        .btn-outline { background: transparent; color: white; border: 1px solid white; }
-
-        .option-item {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            margin-bottom: 10px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 10px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .option-item:hover { background: rgba(255,255,255,0.1); }
-        .option-item input { accent-color: var(--r-yellow); transform: scale(1.5); }
-
-        .cat-title {
-            font-weight: 900;
-            font-size: 0.7rem;
-            letter-spacing: 3px;
-            margin: 30px 0 15px 0;
-            color: var(--r-yellow);
-            text-transform: uppercase;
+            gap: 10px;
+            position: relative;
+            border-top: 1px solid var(--glass-border);
+            box-shadow: 0 -10px 20px rgba(0,0,0,0.1);
         }
 
-        /* --- PŁATNOŚCI --- */
-        .pay-methods { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
-        .pay-box { 
-            background: rgba(255,255,255,0.1); 
-            padding: 20px; border-radius: 15px; text-align: center; 
-            cursor: pointer; border: 1px solid transparent;
+        /* SLIDER CIEKAWOSTEK */
+        #fact-slider {
+            margin-top: 20px; padding: 15px; font-size: 0.75rem; display: flex; 
+            align-items: center; justify-content: space-between; border-radius: 10px;
         }
-        .pay-box.active { border-color: var(--r-yellow); background: rgba(255, 204, 51, 0.2); }
+        .fact-content { flex: 1; margin: 0 20px; transition: 0.3s; font-style: italic; color: #ddd; text-align: center; }
 
-        /* --- FAKTURA --- */
-        #invoice {
-            background: white; color: black; padding: 40px; border-radius: 5px; font-family: monospace;
+        /* MODUŁY WYPOSAŻENIA (GLASS CARDS) */
+        .cat-box { margin-bottom: 30px; background: rgba(255,255,255,0.05); border-radius: 15px; overflow: hidden; }
+        .cat-title { background: rgba(0,0,0,0.3); color: #FFCC33; padding: 12px 20px; font-size: 0.8rem; font-weight: 900; display: flex; align-items: center; justify-content: space-between; }
+        .option-item { display: flex; justify-content: space-between; padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
+        .option-item:hover { background: rgba(255,255,255,0.1); padding-left: 25px; }
+        .option-item input { accent-color: var(--r-yellow); width: 18px; height: 18px; margin-right: 10px;}
+
+        /* PRZYCISKI */
+        .btn { background: var(--r-yellow); color: #000; padding: 18px; border: none; font-weight: 900; width: 100%; cursor: pointer; text-transform: uppercase; transition: 0.3s; border-radius: 8px; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 204, 51, 0.3); }
+        .btn-outline { background: transparent; border: 2px solid rgba(255,255,255,0.5); color: white; }
+        .btn-outline:hover { border-color: var(--r-yellow); color: var(--r-yellow); }
+
+        .lock-btn { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; 
+            cursor: not-allowed; opacity: 0; border-radius: 8px; transition: 0.3s;
         }
+        .lock-btn:hover { opacity: 1; background: rgba(255,0,0,0.6); display: flex; align-items: center; justify-content: center; color: white; font-size: 0.7rem; font-weight: 900; content: "ZEZWÓL NA COOKIES"; backdrop-filter: blur(5px); }
 
         .step { display: none; }
         .active { display: block; }
 
-        /* CIERKAWOSTKI NA DOLE */
-        #fact-slider {
-            background: rgba(0,0,0,0.5); padding: 15px; border-radius: 10px; margin-top: 20px;
-            font-size: 0.75rem; border: 1px solid var(--glass-border);
-        }
+        /* FAKTURA */
+        #invoice { background: rgba(255,255,255,0.9); color: black; padding: 30px; border-radius: 10px; font-family: 'Roboto Mono', monospace; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
-    <div class="app-container">
-        <aside>
-            <img src="https://images.unsplash.com/photo-1617469767053-d3b508a0d182?q=80&w=1000" class="side-img">
-            
-            <div class="step-info">
-                <p>Krok <span id="s-num-label">1</span> z 4</p>
-                <h1 id="s-title">Stylizacja</h1>
-                <div class="progress-circle" id="s-num-big">01</div>
-            </div>
+    <div id="progress-wrap"><div id="progress-bar"></div></div>
+    <div id="step-tag" class="glass">KROK <span id="s-num">1</span>/4</div>
 
-            <div id="fact-slider">
-                <div id="fact-text">Czy wiesz, że 100% tapicerki pochodzi z recyklingu?</div>
-            </div>
-
-            <div class="nav-sidebar">
-                <button class="btn btn-outline" onclick="move(-1)">Wstecz</button>
-                <button class="btn" onclick="move(1)">Dalej</button>
-            </div>
-        </aside>
-
-        <main>
-            <div id="s1" class="step active">
-                <div class="glass-card">
-                    <h2 style="font-size: 2rem; margin-bottom: 20px;">Wybierz swój kolor</h2>
-                    <div class="option-item" onclick="setBase(0, 'Biel Alpejska')">Biel Alpejska <span>W cenie</span></div>
-                    <div class="option-item" onclick="setBase(2900, 'Czerń Etoile')">Czerń Etoile <span>+2 900 PLN</span></div>
-                    <div class="option-item" onclick="setBase(3200, 'Niebieski Iron')">Niebieski Iron <span>+3 200 PLN</span></div>
-                </div>
-                <img src="https://images.unsplash.com/photo-1595786676378-433f169f14d8?q=80&w=1000" style="width: 100%; border-radius: 20px;">
-            </div>
-
-            <div id="s2" class="step">
-                <h2 style="font-size: 2rem; margin-bottom: 20px;">Wyposażenie</h2>
-                
-                <div class="cat-title">Bezpieczeństwo & ADAS</div>
-                <div id="opts-safety"></div>
-
-                <div class="cat-title">Komfort & Multimedia</div>
-                <div id="opts-comfort"></div>
-            </div>
-
-            <div id="s3" class="step">
-                <h2 style="font-size: 2rem; margin-bottom: 20px;">Płatność</h2>
-                <div class="pay-methods glass-card">
-                    <div class="pay-box active" onclick="setPay('blik')">BLIK</div>
-                    <div class="pay-box" onclick="setPay('card')">KARTA</div>
-                    <div class="pay-box" onclick="setPay('qr')">KOD QR</div>
-                </div>
-                <div class="glass-card" style="margin-top: 20px; text-align: center;">
-                    <div id="pay-input-area">
-                        <input type="text" id="blik-val" placeholder="000 000" style="background: transparent; border: none; border-bottom: 2px solid var(--r-yellow); color: white; font-size: 3rem; text-align: center; width: 100%;">
-                    </div>
-                </div>
-            </div>
-
-            <div id="s4" class="step">
-                <div id="invoice">
-                    <h2 style="border-bottom: 2px solid #000; padding-bottom: 10px;">FAKTURA PROFORMA</h2>
-                    <div id="invoice-content" style="margin: 20px 0;"></div>
-                    <h2 id="invoice-total"></h2>
-                </div>
-                <button class="btn" style="margin-top: 20px;" onclick="window.print()">Pobierz jako PDF</button>
-            </div>
-        </main>
+    <div id="spotlight">
+        <p style="color: var(--r-yellow); font-weight: 900; letter-spacing: 5px;">RENAULT INSIGHT</p>
+        <h2 id="spot-title">NAZWA FUNKCJI</h2>
+        <p id="spot-desc" style="max-width: 500px; line-height: 1.6;">Opis funkcji pojawiający się na 3 sekundy...</p>
+        <button id="skip-btn" class="btn" style="width: auto; margin-top: 30px; padding: 10px 40px; display: none;" onclick="closeSpotlight()">KONTYNUUJ</button>
     </div>
 
+    <div id="cookie-overlay" class="glass">
+        <p style="font-size: 0.8rem;">Strona Renault wymaga plików Cookies dla efektu Fluid Glass.</p>
+        <button class="btn" style="width: auto; padding: 10px 30px;" onclick="acceptCookies()">AKCEPTUJĘ</button>
+    </div>
+
+    <header class="glass">
+        <div style="font-weight: 900; font-size: 1.2rem;">RENAULT STORE</div>
+        <div style="font-weight: 700;">TOTAL: <span id="price-display" style="color: var(--r-yellow);">105 000</span> PLN</div>
+    </header>
+
+    <main>
+        <section class="visual-side glass" style="border-right: 0;">
+            <img src="https://images.unsplash.com/photo-1595786676378-433f169f14d8?q=80&w=1000" class="car-hero" id="car-main">
+            <div style="position: absolute; bottom: 40px; left: 40px; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">
+                <h3 style="font-weight: 900; font-size: 2rem;">RENAULT CAPTUR</h3>
+                <p style="opacity: 0.8;">Edycja Limitowana 2026</p>
+            </div>
+        </section>
+
+        <section class="config-side-container glass" style="border-left: 0;">
+            
+            <div class="config-scroll-area">
+                <div id="s1" class="step active">
+                    <h2 style="margin-bottom: 25px; font-weight: 900;">1. LAKIER NADWOZIA</h2>
+                    <div class="cat-box">
+                        <div class="option-item" onclick="setBase(0, 'Biel Alpejska', 'grayscale(0)')">Biel Alpejska <span style="color: var(--r-yellow);">W cenie</span></div>
+                        <div class="option-item" onclick="setBase(2900, 'Czerń Etoile', 'brightness(0.3)')">Czerń Etoile <span>+2 900 PLN</span></div>
+                        <div class="option-item" onclick="setBase(3200, 'Niebieski Iron', 'hue-rotate(180deg)')">Niebieski Iron <span>+3 200 PLN</span></div>
+                    </div>
+                </div>
+
+                <div id="s2" class="step">
+                    <h2 style="margin-bottom: 25px; font-weight: 900;">2. WYPOSAŻENIE</h2>
+                    <div class="cat-box">
+                        <div class="cat-title">PAKIET ZIMOWY <i class="fas fa-snowflake"></i></div>
+                        <div class="option-item"><label><input type="checkbox" onchange="updOpt('Fotele podgrzewane', 1500, this)"> Fotele przednie podgrzewane</label><span>1 500 PLN</span></div>
+                        <div class="option-item"><label><input type="checkbox" onchange="updOpt('Kierownica podgrzewana', 900, this)"> Kierownica podgrzewana</label><span>900 PLN</span></div>
+                    </div>
+                    <div id="tech-list"></div> </div>
+
+                <div id="s3" class="step">
+                   <h2 style="margin-bottom: 25px; font-weight: 900;">3. PŁATNOŚĆ</h2>
+                   <input type="text" id="blik" maxlength="6" placeholder="KOD BLIK" style="padding: 20px; width: 100%; text-align: center; font-size: 2rem; border: 2px solid var(--r-yellow); background: rgba(0,0,0,0.3); color: white; border-radius: 10px;">
+                   <button class="btn" style="margin-top: 20px;" onclick="processOrder()">ZAPŁAĆ I GENERUJ FAKTURĘ</button>
+                </div>
+
+                 <div id="s4" class="step">
+                    <div id="invoice">
+                        <h2 style="border-bottom: 2px solid #000; padding-bottom: 10px;">FAKTURA PROFORMA</h2>
+                        <div id="inv-details" style="margin: 20px 0;"></div>
+                        <div style="border-top: 2px solid #000; padding-top: 10px; font-weight: 900; font-size: 1.2rem;">
+                            DO ZAPŁATY: <span id="inv-total"></span> PLN
+                        </div>
+                    </div>
+                    <button class="btn" style="margin-top: 20px;" onclick="window.print()">POBIERZ PDF</button>
+                </div>
+
+                 <div id="fact-slider" class="glass">
+                    <span onclick="prevFact()" style="cursor:pointer">◀</span>
+                    <div class="fact-content" id="fact-text">Czy wiesz, że 100% tapicerki pochodzi z recyklingu?</div>
+                    <span onclick="nextFact()" style="cursor:pointer">▶</span>
+                </div>
+            </div>
+
+            <div class="bottom-nav-bar glass">
+                <button class="btn btn-outline" onclick="move(-1)">Wstecz</button>
+                <div style="flex: 1; position: relative;">
+                    <div id="lock" class="lock-btn"></div>
+                    <button class="btn" onclick="move(1)">Dalej</button>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
     <script>
-        let curStep = 1;
+        let step = 1;
         let basePrice = 105000;
         let optPrice = 0;
-        let selected = [];
-        
-        const titles = ["Stylizacja", "Opcje", "Finanse", "Podsumowanie"];
-        const facts = [
-            "Wykorzystujemy 26kg plastiku z recyklingu.",
-            "Silniki E-Tech to 150 patentów Renault.",
-            "Światła LED Pure Vision zużywają 50% mniej energii.",
-            "Twoje auto zostanie wyprodukowane w 48h od zatwierdzenia."
-        ];
+        let selectedOpts = [];
+        let isCookied = false;
+        let factIdx = 0;
 
-        const options = [
-            {n: "System kamer 360", p: 2500, c: "safety"},
-            {n: "Aktywny tempomat", p: 3000, c: "safety"},
-            {n: "Asystent martwego pola", p: 1800, c: "safety"},
-            {n: "System nagłośnienia Bose", p: 4200, c: "comfort"},
-            {n: "Dach panoramiczny", p: 5500, c: "comfort"},
-            {n: "Podgrzewane fotele", p: 1200, c: "comfort"},
-            {n: "Ładowarka indukcyjna", p: 800, c: "comfort"},
-            {n: "Oświetlenie Ambient", p: 700, c: "comfort"},
-            {n: "Felgi 19 cali", p: 3800, c: "comfort"}
+        const facts = [
+            "Captur E-Tech zużywa tylko 1.5L/100km w trybie hybrydowym.",
+            "System multimedialny oparty jest na Google Automotive.",
+            "Nowe lakiery posiadają powłokę samoregenerującą drobne rysy."
         ];
+        const moreOpts = ["System kamer 360", 2500, "Audio Harman Kardon", 4500, "Dach panoramiczny", 5500];
 
         function init() {
-            const safety = document.getElementById('opts-safety');
-            const comfort = document.getElementById('opts-comfort');
-            
-            options.forEach(o => {
-                const html = `
+            const list = document.getElementById('tech-list');
+            list.innerHTML += `<div class="cat-box"><div class="cat-title">TECH & DESIGN</div>`;
+            for(let i=0; i<moreOpts.length; i+=2) {
+                list.lastChild.innerHTML += `
                     <div class="option-item">
-                        <label><input type="checkbox" onchange="toggleOpt('${o.n}', ${o.p}, this)"> ${o.n}</label>
-                        <span>+${o.p.toLocaleString()} PLN</span>
+                        <label><input type="checkbox" onchange="updOpt('${moreOpts[i]}', ${moreOpts[i+1]}, this)"> ${moreOpts[i]}</label>
+                        <span>${moreOpts[i+1].toLocaleString()} PLN</span>
                     </div>
                 `;
-                if(o.c === 'safety') safety.innerHTML += html;
-                else comfort.innerHTML += html;
-            });
-
-            setInterval(() => {
-                const f = facts[Math.floor(Math.random()*facts.length)];
-                document.getElementById('fact-text').innerText = f;
-            }, 5000);
-        }
-
-        function toggleOpt(name, p, el) {
-            if(el.checked) {
-                optPrice += p;
-                selected.push({name, p});
-            } else {
-                optPrice -= p;
-                selected = selected.filter(x => x.name !== name);
             }
+            setInterval(nextFact, 5000);
         }
 
-        function setBase(p, name) {
-            basePrice = 105000 + p;
-        }
-
-        function move(dir) {
-            if(curStep + dir < 1 || curStep + dir > 4) return;
-            
-            document.getElementById(`s${curStep}`).classList.remove('active');
-            curStep += dir;
-            document.getElementById(`s${curStep}`).classList.add('active');
-
-            // Aktualizacja sidebara
-            document.getElementById('s-num-label').innerText = curStep;
-            document.getElementById('s-num-big').innerText = "0" + curStep;
-            document.getElementById('s-title').innerText = titles[curStep-1];
-
-            if(curStep === 4) buildInvoice();
-        }
-
-        function setPay(type) {
-            document.querySelectorAll('.pay-box').forEach(b => b.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-            const input = document.getElementById('pay-input-area');
-            if(type === 'blik') input.innerHTML = '<input type="text" placeholder="000 000" style="background: transparent; border: none; border-bottom: 2px solid var(--r-yellow); color: white; font-size: 3rem; text-align: center; width: 100%;">';
-            if(type === 'card') input.innerHTML = '<p>Terminal płatniczy aktywny...</p>';
-            if(type === 'qr') input.innerHTML = '<div style="width:100px; height:100px; background:white; margin:auto;"></div>';
-        }
-
-        function buildInvoice() {
-            const cont = document.getElementById('invoice-content');
-            cont.innerHTML = `<p>Renault Captur 2026 - Baza: ${basePrice.toLocaleString()} PLN</p>`;
-            selected.forEach(o => {
-                cont.innerHTML += `<p>+ ${o.name}: ${o.p.toLocaleString()} PLN</p>`;
-            });
-            document.getElementById('invoice-total').innerText = "SUMA: " + (basePrice + optPrice).toLocaleString() + " PLN";
-        }
-
-        init();
-    </script>
-</body>
-</html>
+        function acceptCookies() {
+            isCookied = true;
+            document.getElementById('cookie-overlay').style.display = 'none';
+            document.getElementById('lock
