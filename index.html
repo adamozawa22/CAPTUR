@@ -821,4 +821,351 @@
                 <div class="step-content" id="step-6">
                     <div style="text-align: center; margin-bottom: 40px;">
                         <h3 style="color: var(--success-green); font-size: 2rem;">Gratulacje! Rezerwacja przyjęta.</h3>
-                        <p style="font-size: 1.2
+                        <p style="font-size: 1.2rem;">Twój nowy Renault Captur jest już o krok bliżej.</p>
+                    </div>
+                    
+                    <div class="receipt">
+                        <div style="text-align: center; margin-bottom: 30px; font-weight: 900; font-size: 1.3rem; letter-spacing: 2px;">PARAGON REZERWACJI ONLINE</div>
+                        <div class="receipt-row">
+                            <span>Model:</span>
+                            <span>Nowy Renault Captur 2025 E-Tech</span>
+                        </div>
+                        <div class="receipt-row">
+                            <span>Kolor nadwozia:</span>
+                            <span id="summary-color">Czerwony Flamme</span>
+                        </div>
+                        <div class="receipt-row">
+                            <span>Obręcze kół:</span>
+                            <span id="summary-rims">17" BAHAMAS</span>
+                        </div>
+                        <div class="receipt-row">
+                            <span>Wybrany dealer:</span>
+                            <span id="summary-dealer">Warszawa</span>
+                        </div>
+                         <div class="receipt-row">
+                            <span>Status weryfikacji:</span>
+                            <span style="color: var(--success-green);">Pozytywna</span>
+                        </div>
+                        <div class="receipt-row">
+                            <span>Metoda płatności:</span>
+                            <span>BLIK (Opłacono zaliczkę 1000 PLN)</span>
+                        </div>
+                        <div class="receipt-total">
+                            <div class="receipt-row" style="border:none; margin-bottom: 0;">
+                                <span>CENA CAŁKOWITA BRUTTO:</span>
+                                <span id="summary-price">110 000 PLN</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 50px;">
+                        <button class="btn" onclick="location.reload()">Skonfiguruj kolejny egzemplarz</button>
+                         <p style="margin-top: 20px; color: var(--gray-dark);">Na podany adres e-mail otrzymasz potwierdzenie oraz dalsze instrukcje od dealera.</p>
+                    </div>
+                </div>
+
+                <div class="wizard-controls" id="wizard-controls">
+                    <button class="btn btn-outline" id="btn-prev" onclick="changeStep(-1)" disabled>← Wstecz</button>
+                    <button class="btn" id="btn-next" onclick="changeStep(1)">Dalej →</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer style="background: var(--black); color: var(--white); padding: 60px 0; text-align: center; margin-top: 100px;">
+        <div class="container">
+            <div class="logo" style="margin-bottom: 20px; display: inline-block;">RENAULT</div>
+            <p>&copy; 2025 Renault Polska. Wszelkie prawa zastrzeżone. Prezentowane ceny są rekomendowanymi cenami detalicznymi brutto.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- STAN APLIKACJI ---
+        let currentStep = 1;
+        const totalSteps = 6; // Zwiększono liczbę kroków
+        const basePrice = 110000;
+
+        const configState = {
+            colorName: 'Czerwony Flamme',
+            colorHex: '#D32F2F',
+            colorPrice: 0,
+            rimsName: '17-calowe BAHAMAS',
+            rimsPrice: 0,
+            dealer: '',
+            totalPrice: 110000,
+            questionsValid: false
+        };
+
+        // --- ANIMACJE SCROLL ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.15, rootMargin: "0px 0px -100px 0px" });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        function scrollToConfig() {
+            document.getElementById('konfigurator').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // --- LOGIKA KONFIGURATORA ---
+        
+        // Wybór koloru
+        function selectColor(name, hex, element) {
+            configState.colorName = name;
+            configState.colorHex = hex;
+            // Prosta logika cen dla demo
+            if (name === 'Czerwony Flamme') configState.colorPrice = 0;
+            else if (name.includes('Szary')) configState.colorPrice = 2500;
+            else if (name.includes('Czarny')) configState.colorPrice = 2800;
+            else if (name.includes('Niebieski')) configState.colorPrice = 3000;
+            else configState.colorPrice = 3200;
+            
+            // UI Update
+            document.querySelectorAll('#step-1 .option-card').forEach(c => c.classList.remove('selected'));
+            element.classList.add('selected');
+            
+            // Aktualizacja wizualizatora z animacją
+            updateVisualizer(name, hex);
+            updateTotal();
+        }
+
+        function updateVisualizer(name, hex) {
+            const visImg = document.getElementById('main-visualizer-img');
+            const visCaption = document.getElementById('visualizer-caption');
+            
+            // Dodaj klasę dla efektu "blur/fade"
+            visImg.classList.add('changing');
+            
+            setTimeout(() => {
+                // Generowanie URL dla placeholdera na podstawie koloru (dla demo)
+                 const bg = hex.replace('#', '');
+                 const text = name.replace(' ', '+');
+                 // Używamy jasnego lub ciemnego tekstu w zależności od tła
+                 const textColor = ['#212121', '#1565C0'].includes(hex) ? 'FFFFFF' : '333333';
+                 
+                visImg.src = `https://placehold.co/1600x900/${bg}/${textColor}?text=Captur+${text}&font=montserrat`;
+                visCaption.innerText = `Wizualizacja: ${name}`;
+                
+                // Usuń efekt po załadowaniu (symulacja)
+                 setTimeout(() => {
+                      visImg.classList.remove('changing');
+                 }, 300);
+            }, 300); // Czas trwania animacji zanikania
+        }
+
+
+        // Wybór felg
+        function selectRims(name, price, element) {
+            configState.rimsName = name;
+            configState.rimsPrice = price;
+            
+            document.querySelectorAll('#step-2 .option-card').forEach(c => c.classList.remove('selected'));
+            element.classList.add('selected');
+            
+            updateTotal();
+        }
+
+        function updateTotal() {
+            configState.totalPrice = basePrice + configState.colorPrice + configState.rimsPrice;
+        }
+
+        // --- WALIDACJA PYTAŃ (KROK 4) ---
+        function validateQuestions() {
+            const q1 = document.querySelector('input[name="q1_pep"]:checked')?.value;
+            const q2 = document.querySelector('input[name="q2_crime"]:checked')?.value;
+            const q3 = document.querySelector('input[name="q3_funds"]:checked')?.value;
+            const errorMsg = document.getElementById('questions-error');
+            const btnNext = document.getElementById('btn-next');
+
+            // Logika: Wymagane NIE dla PEP i Przestępstw, TAK dla Legalnych Źródeł
+            const isValid = (q1 === 'no' && q2 === 'no' && q3 === 'yes');
+            const isComplete = q1 && q2 && q3;
+
+            if (isComplete) {
+                if(isValid) {
+                    configState.questionsValid = true;
+                    btnNext.disabled = false;
+                    errorMsg.style.display = 'none';
+                } else {
+                     configState.questionsValid = false;
+                     btnNext.disabled = true;
+                     errorMsg.style.display = 'block';
+                }
+            } else {
+                 // Jeśli nie wszystkie zaznaczone, po prostu blokujemy bez błędu
+                 btnNext.disabled = true;
+                 errorMsg.style.display = 'none';
+            }
+        }
+
+
+        // --- NAWIGACJA ---
+        function changeStep(direction) {
+            const nextStep = currentStep + direction;
+            const btnNext = document.getElementById('btn-next');
+
+            // Logika przy przechodzeniu DALEJ
+            if (direction === 1) {
+                if (currentStep === 3) {
+                   const dealerSelect = document.getElementById('dealer-select');
+                   configState.dealer = dealerSelect.options[dealerSelect.selectedIndex].text;
+                }
+                
+                if (currentStep === 4 && !configState.questionsValid) {
+                     // Blokada jeśli pytania nie są OK (powinno być już zablokowane przez validateQuestions, ale dla pewności)
+                     return;
+                }
+
+                if (currentStep === 5) {
+                    // Blokada przycisku "Dalej" w kroku płatności - wymuszamy użycie przycisku BLIK
+                    return; 
+                }
+            }
+
+            // Przy wejściu do kroku 4 (pytania), zablokuj przycisk "Dalej" na start
+            if (nextStep === 4) {
+                 setTimeout(() => { validateQuestions(); }, 0);
+            } else {
+                 btnNext.disabled = false;
+            }
+
+            goToStep(nextStep);
+        }
+
+        function goToStep(step) {
+            // Ukryj obecny
+            document.getElementById(`step-${currentStep}`).classList.remove('active');
+            
+            // Pokaż nowy z lekkim opóźnieniem dla płynności
+            setTimeout(() => {
+                 currentStep = step;
+                 document.getElementById(`step-${currentStep}`).classList.add('active');
+                 
+                // Zarządzanie widocznością wizualizatora
+                const visWrapper = document.getElementById('visualizer-wrapper');
+                if (step > 2) {
+                    visWrapper.style.display = 'none';
+                } else {
+                    visWrapper.style.display = 'block';
+                }
+
+                 updateUIState();
+            }, 300);
+            
+            updateProgressBar(step);
+        }
+
+        function updateUIState() {
+            const btnPrev = document.getElementById('btn-prev');
+            const btnNext = document.getElementById('btn-next');
+            const wizardControls = document.getElementById('wizard-controls');
+
+            btnPrev.disabled = currentStep === 1;
+            
+            if (currentStep === 5) {
+                btnNext.style.display = 'none'; // Ukryj "Dalej" w płatnościach
+            } else if (currentStep === totalSteps) {
+                wizardControls.style.display = 'none'; // Ukryj nawigację w podsumowaniu
+                renderSummary();
+            } else {
+                btnNext.style.display = 'inline-block';
+                wizardControls.style.display = 'flex';
+                 // Reset stanu przycisku, walidacja kroku 4 go nadpisze jeśli trzeba
+                 if(currentStep !== 4) btnNext.disabled = false;
+            }
+        }
+
+        function updateProgressBar(targetStep) {
+            // Aktualizacja linii progresu
+            const progressLine = document.getElementById('progress-line');
+            const percent = ((targetStep - 1) / (totalSteps - 1)) * 100;
+            progressLine.style.width = `${percent}%`;
+
+            for (let i = 1; i <= totalSteps; i++) {
+                const el = document.getElementById(`ind-${i}`);
+                el.classList.remove('active', 'completed');
+                
+                if (i < targetStep) {
+                    el.classList.add('completed');
+                    el.innerText = '✓';
+                } else if (i === targetStep) {
+                    el.classList.add('active');
+                    el.innerText = i;
+                    if(i === totalSteps) el.innerText = '✓';
+                } else {
+                    el.innerText = i;
+                    if(i === totalSteps) el.innerText = '✓';
+                }
+            }
+        }
+
+        // --- PŁATNOŚĆ (KROK 5) ---
+        function handlePaymentMethod(radio) {
+            const val = radio.value;
+            const cardInfo = document.getElementById('card-info');
+            const blikInfo = document.getElementById('blik-info');
+
+            if (val === 'card') {
+                cardInfo.style.display = 'block';
+                blikInfo.style.display = 'none';
+            } else {
+                cardInfo.style.display = 'none';
+                blikInfo.style.display = 'block';
+            }
+        }
+
+        function processBlik() {
+            const input = document.getElementById('blik-code');
+            const error = document.getElementById('blik-error');
+            const loader = document.getElementById('blik-loader');
+            const btn = document.getElementById('blik-submit-btn');
+
+            // Walidacja: 6 cyfr
+            if (!/^\d{6}$/.test(input.value)) {
+                error.style.display = 'block';
+                input.style.borderColor = var(--error-red);
+                return;
+            }
+
+            // Sukces walidacji
+            error.style.display = 'none';
+            input.style.borderColor = var(--gray-dark);
+            
+            // Symulacja przetwarzania
+            btn.style.display = 'none';
+            loader.style.display = 'block';
+            input.disabled = true;
+
+            // Symulacja dłuższego procesu płatności (3s)
+            setTimeout(() => {
+                loader.style.display = 'none';
+                goToStep(6); // Przejście do podsumowania
+            }, 3000); 
+        }
+
+        // --- PODSUMOWANIE (KROK 6) ---
+        function renderSummary() {
+            document.getElementById('summary-color').innerText = configState.colorName;
+            document.getElementById('summary-rims').innerText = configState.rimsName;
+            document.getElementById('summary-dealer').innerText = configState.dealer;
+            
+            // Formatowanie ceny ze spacjami jako separatorami tysięcy
+            const formattedPrice = configState.totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") + ' PLN';
+            document.getElementById('summary-price').innerText = formattedPrice;
+        }
+
+        // Inicjalizacja
+        document.addEventListener('DOMContentLoaded', () => {
+             updateProgressBar(1);
+             // Ustaw domyślny stan dealera
+             const dealerSelect = document.getElementById('dealer-select');
+             configState.dealer = dealerSelect.options[dealerSelect.selectedIndex].text;
+        });
+
+    </script>
+</body>
+</html>
