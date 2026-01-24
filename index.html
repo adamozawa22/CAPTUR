@@ -3,281 +3,240 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Renault Captur 2026 - Premium Experience</title>
+    <title>Renault Captur 2026 - Pełna Konfiguracja</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --r-yellow: #FFCC33; --r-black: #000000; --r-white: #ffffff; --r-gray: #f4f4f4; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body, html { height: 100%; overflow: hidden; font-family: 'Montserrat', sans-serif; background: var(--r-white); }
 
-        /* --- PROGRESS BAR --- */
+        /* --- NAWIGACJA GÓRNA --- */
         #progress-wrap { position: fixed; top: 0; left: 0; width: 100%; height: 6px; background: #eee; z-index: 10000; }
         #progress-bar { height: 100%; width: 25%; background: var(--r-yellow); transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
         #step-tag { position: fixed; top: 15px; left: 50%; transform: translateX(-50%); font-weight: 900; font-size: 0.7rem; z-index: 10001; letter-spacing: 3px; background: white; padding: 2px 10px; border: 1px solid #000; }
 
-        /* --- COOKIES --- */
-        #cookie-overlay { position: fixed; bottom: 0; left: 0; width: 100%; height: 100px; background: rgba(0,0,0,0.95); color: white; z-index: 15000; display: flex; align-items: center; justify-content: center; gap: 30px; border-top: 3px solid var(--r-yellow); }
-
-        /* --- MAIN LAYOUT --- */
-        main { display: grid; grid-template-columns: 1fr 500px; height: 100vh; padding-top: 6px; }
+        /* --- UKŁAD GŁÓWNY --- */
+        main { display: grid; grid-template-columns: 1fr 550px; height: 100vh; padding-top: 6px; }
         
-        /* LEWA STRONA */
-        .visual-side { background: var(--r-gray); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
-        .car-hero { width: 85%; transition: 0.6s transform ease; filter: drop-shadow(0 30px 50px rgba(0,0,0,0.2)); }
+        /* LEWA STRONA - WIZUALIZACJA */
+        .visual-side { background: var(--r-gray); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+        .car-hero { width: 80%; transition: 0.6s transform ease; filter: drop-shadow(0 30px 50px rgba(0,0,0,0.15)); }
 
-        /* BELKA INFO (DOLNA LEWA STRONA) */
-        .info-bar { 
-            position: absolute; 
-            bottom: 0; 
-            left: 0; 
-            background: var(--r-black); 
-            color: white; 
-            padding: 20px 40px; 
-            min-width: 350px;
-            border-top-right-radius: 5px;
-        }
-        .info-bar h3 { font-weight: 900; font-size: 1.5rem; color: var(--r-yellow); text-transform: uppercase; margin-bottom: 5px; }
-        .info-bar p { font-size: 0.9rem; letter-spacing: 1px; }
+        /* DOLNE BELKI PO LEWEJ */
+        .left-info-container { position: absolute; bottom: 30px; left: 30px; display: flex; flex-direction: column; gap: 10px; }
+        
+        .info-bar { background: var(--r-black); color: white; padding: 20px; min-width: 320px; border-radius: 4px; box-shadow: 10px 10px 0 var(--r-yellow); }
+        .info-bar h3 { font-weight: 900; font-size: 1.4rem; color: var(--r-yellow); margin-bottom: 5px; }
+        
+        .tech-badge { background: rgba(255,255,255,0.9); color: black; padding: 12px 20px; border-left: 5px solid var(--r-yellow); font-size: 0.8rem; font-weight: 700; max-width: 350px; line-height: 1.4; }
 
-        /* PRAWA STRONA */
+        /* PRAWA STRONA - KONFIGURATOR */
         .config-side { 
-            position: relative; padding: 50px; overflow-y: auto; border-left: 1px solid #eee;
-            background-image: linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92)), url('https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=1000');
-            background-size: cover; background-position: center;
+            position: relative; display: flex; flex-direction: column; height: 100%;
+            background: white; border-left: 1px solid #eee;
         }
 
-        /* SLIDER CIEKAWOSTEK (NA DOLE PANELU) */
-        #fact-slider {
-            position: absolute; bottom: 0; left: 0; width: 100%; background: var(--r-black);
-            color: white; padding: 15px; font-size: 0.75rem; display: flex; align-items: center; justify-content: space-between;
+        .scroll-content { flex: 1; overflow-y: auto; padding: 40px; padding-bottom: 120px; }
+
+        /* STAŁA NAWIGACJA NA DOLE */
+        .fixed-nav { 
+            position: absolute; bottom: 0; left: 0; width: 100%; background: white; 
+            padding: 20px 40px; border-top: 1px solid #eee; display: flex; gap: 15px; z-index: 100;
         }
-        .fact-content { flex: 1; margin: 0 20px; transition: 0.3s; font-style: italic; color: #ccc; }
 
         /* MODUŁY WYPOSAŻENIA */
-        .cat-box { margin-bottom: 30px; }
-        .cat-title { background: #000; color: #FFCC33; padding: 8px 15px; font-size: 0.8rem; font-weight: 900; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; }
-        .option-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #ddd; font-size: 0.85rem; cursor: pointer; transition: 0.2s; }
-        .option-item:hover { padding-left: 5px; color: #777; }
+        .section-title { font-size: 1.2rem; font-weight: 900; margin: 30px 0 15px 0; text-transform: uppercase; border-bottom: 2px solid var(--r-black); padding-bottom: 5px; }
+        .cat-title { background: #f9f9f9; color: #000; padding: 10px; font-size: 0.75rem; font-weight: 900; margin-top: 20px; display: flex; justify-content: space-between; border: 1px solid #eee; }
+        .option-item { display: flex; justify-content: space-between; padding: 14px 10px; border-bottom: 1px solid #eee; font-size: 0.85rem; cursor: pointer; }
+        .option-item:hover { background: #fffcf0; }
         .option-item input { accent-color: var(--r-yellow); width: 18px; height: 18px; }
 
-        /* PŁATNOŚCI */
-        .pay-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .pay-card { border: 2px solid #eee; padding: 15px; text-align: center; cursor: pointer; border-radius: 5px; background: white; transition: 0.3s; }
-        .pay-card.active { border-color: var(--r-yellow); background: #fffdf0; }
-
         /* PRZYCISKI */
-        .btn { background: #000; color: #fff; padding: 18px; border: none; font-weight: 900; width: 100%; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
+        .btn { background: #000; color: #fff; padding: 15px 25px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; flex: 1; }
         .btn:hover { background: var(--r-yellow); color: #000; }
-        .lock-btn { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; cursor: not-allowed; opacity: 0; }
-        .lock-btn:hover { opacity: 1; background: rgba(255,0,0,0.7); display: flex; align-items: center; justify-content: center; color: white; font-size: 0.6rem; content: "ZEZWÓL NA COOKIES"; }
+        .btn-secondary { background: #eee; color: #000; }
 
-        .step { display: none; padding-bottom: 100px; }
-        .active { display: block; }
+        .step { display: none; }
+        .step.active { display: block; }
 
-        /* FAKTURA */
-        #invoice { background: white; padding: 30px; border: 1px solid #000; font-family: 'Roboto Mono', monospace; font-size: 0.7rem; }
+        #cookie-overlay { position: fixed; bottom: 0; left: 0; width: 100%; background: #000; color: #fff; padding: 20px; z-index: 20000; text-align: center; }
     </style>
 </head>
 <body>
 
     <div id="progress-wrap"><div id="progress-bar"></div></div>
-    <div id="step-tag">KROK <span id="s-num">1</span>/4</div>
+    <div id="step-tag">KONFIGURACJA: <span id="s-num">1</span>/4</div>
 
     <div id="cookie-overlay">
-        <p style="font-size: 0.8rem;">Strona Renault wymaga plików Cookies do przetwarzania konfiguracji i płatności.</p>
-        <button class="btn" style="width: auto; padding: 10px 30px; background: var(--r-yellow); color: black;" onclick="acceptCookies()">AKCEPTUJĘ</button>
+        <p>Zaakceptuj pliki cookies, aby zapisać swoją konfigurację Renault. 
+        <button class="btn" style="width: auto; padding: 8px 20px; margin-left: 20px;" onclick="acceptCookies()">AKCEPTUJĘ</button></p>
     </div>
 
     <main>
         <section class="visual-side">
             <img src="https://images.unsplash.com/photo-1595786676378-433f169f14d8?q=80&w=1000" class="car-hero" id="car-main">
             
-            <div class="info-bar">
-                <h3>RENAULT CAPTUR</h3>
-                <p>AKTUALNA CENA: <strong id="price-display">105 000</strong> PLN</p>
+            <div class="left-info-container">
+                <div class="tech-badge" id="tech-fact">
+                    System E-Tech zapewnia do 80% czasu jazdy miejskiej na silniku elektrycznym.
+                </div>
+                <div class="info-bar">
+                    <h3>RENAULT CAPTUR</h3>
+                    <p>SUMA: <strong id="price-display">105 000</strong> PLN</p>
+                </div>
             </div>
         </section>
 
         <section class="config-side">
-            <div id="s1" class="step active">
-                <h2 style="margin-bottom: 25px; font-weight: 900;">1. LAKIER NADWOZIA</h2>
-                <div class="option-item" onclick="setBase(0, 'Biel Alpejska', 'grayscale(0)')">Biel Alpejska <span>W cenie</span></div>
-                <div class="option-item" onclick="setBase(2900, 'Czerń Etoile', 'brightness(0.3)')">Czerń Etoile <span>+2 900 PLN</span></div>
-                <div class="option-item" onclick="setBase(3200, 'Niebieski Iron', 'hue-rotate(180deg)')">Niebieski Iron <span>+3 200 PLN</span></div>
-                <div class="option-item" onclick="setBase(3500, 'Żółty Miel', 'sepia(1) saturate(5)')">Żółty Miel <span>+3 500 PLN</span></div>
-            </div>
-
-            <div id="s2" class="step">
-                <h2 style="margin-bottom: 25px; font-weight: 900;">2. WYPOSAŻENIE PREMIUM</h2>
+            <div class="scroll-content">
                 
-                <div class="cat-box">
-                    <div class="cat-title">PAKIET ZIMOWY</div>
-                    <div class="option-item"><label><input type="checkbox" onchange="updOpt('Fotele podgrzewane', 1500, this)"> Fotele przednie podgrzewane</label><span>1 500 PLN</span></div>
-                    <div class="option-item"><label><input type="checkbox" onchange="updOpt('Kierownica podgrzewana', 900, this)"> Kierownica podgrzewana</label><span>900 PLN</span></div>
-                    <div class="option-item"><label><input type="checkbox" onchange="updOpt('Szyba przednia grzana', 1200, this)"> Przednia szyba podgrzewana</label><span>1 200 PLN</span></div>
+                <div id="s1" class="step active">
+                    <h2 class="section-title">1. Silnik i Nadwozie</h2>
+                    
+                    <div class="cat-title">WYBIERZ JEDNOSTKĘ NAPĘDOWĄ</div>
+                    <div class="option-item" onclick="setEngine(0, 'TCe 90 KM')">
+                        <label>mild hybrid 140 EDC</label><span>W cenie</span>
+                    </div>
+                    <div class="option-item" onclick="setEngine(12500, 'E-Tech Full Hybrid 145')">
+                        <label>E-Tech Full Hybrid 145</label><span>+12 500 PLN</span>
+                    </div>
+
+                    <div class="cat-title">LAKIER</div>
+                    <div class="option-item" onclick="setBase(0, 'Biel', 'grayscale(0)')">Biel Alpejska <span>0 PLN</span></div>
+                    <div class="option-item" onclick="setBase(2900, 'Czerń', 'brightness(0.3)')">Czerń Etoile <span>+2 900 PLN</span></div>
+                    <div class="option-item" onclick="setBase(3500, 'Żółty', 'sepia(1) saturate(5)')">Żółty Miel <span>+3 500 PLN</span></div>
                 </div>
 
-                <div class="cat-box">
-                    <div class="cat-title">TECHNOLOGIA I DŹWIĘK</div>
-                    <div id="tech-list"></div> 
+                <div id="s2" class="step">
+                    <h2 class="section-title">2. Wygląd Zewnętrzny</h2>
+                    
+                    <div class="cat-title">FELGI ALUMINIOWE</div>
+                    <div class="option-item"><label><input type="checkbox" onchange="updOpt('Felgi 18 cali', 2200, this)"> Felgi 18" black techno</label><span>2 200 PLN</span></div>
+                    
+                    <div class="cat-title">PERSONALIZACJA DACHU</div>
+                    <div class="option-item"><label><input type="checkbox" onchange="updOpt('Dach w innym kolorze', 1800, this)"> Dach w kolorze czarnym</label><span>1 800 PLN</span></div>
+                    <div class="option-item"><label><input type="checkbox" onchange="updOpt('Dach panoramiczny', 4500, this)"> Dach szklany panoramiczny</label><span>4 500 PLN</span></div>
                 </div>
+
+                <div id="s3" class="step">
+                    <h2 class="section-title">3. Wnętrze i Technologie</h2>
+                    
+                    <div class="cat-title">KOMFORT</div>
+                    <div class="option-item"><label><input type="checkbox" onchange="updOpt('Fotele podgrzewane', 1500, this)"> Pakiet Winter (Fotele + Kierownica)</label><span>1 500 PLN</span></div>
+                    <div class="option-item"><label><input type="checkbox" onchange="updOpt('Elektryka foteli', 2800, this)"> Fotele z regulacją elektryczną</label><span>2 800 PLN</span></div>
+                    
+                    <div class="cat-title">MULTIMEDIA</div>
+                    <div class="option-item"><label><input type="checkbox" onchange="updOpt('Harman Kardon', 4200, this)"> Audio Premium Harman Kardon</label><span>4 200 PLN</span></div>
+                    <div class="option-item"><label><input type="checkbox" onchange="updOpt('Ekran 10 cali', 2100, this)"> System OpenR Link 10.4"</label><span>2 100 PLN</span></div>
+                </div>
+
+                <div id="s4" class="step">
+                    <h2 class="section-title">4. Podsumowanie</h2>
+                    <div id="invoice" style="font-size: 0.8rem; line-height: 1.8; background: #f9f9f9; padding: 20px; border: 1px solid #ddd;">
+                        <div id="inv-details"></div>
+                        <hr style="margin: 15px 0;">
+                        <strong>ŁĄCZNIE: <span id="inv-total"></span> PLN</strong>
+                    </div>
+                    <p style="font-size: 0.7rem; margin-top: 15px; color: #666;">* Cena zawiera podatek VAT. Oferta nie stanowi oferty handlowej w rozumieniu KC.</p>
+                </div>
+
             </div>
 
-            <div id="s3" class="step">
-                <h2 style="margin-bottom: 25px; font-weight: 900;">3. FINALIZACJA TRANSAKCJI</h2>
-                <div class="pay-grid">
-                    <div class="pay-card active" onclick="setPay('blik')">BLIK</div>
-                    <div class="pay-card" onclick="setPay('card')">KARTA</div>
-                    <div class="pay-card" onclick="setPay('qr')">KOD QR</div>
-                </div>
-
-                <div id="pay-ui" style="padding: 20px; background: #fff; border: 1px solid #ddd; text-align: center;">
-                    <div id="blik-ui">
-                        <input type="text" id="b-code" maxlength="6" placeholder="KOD BLIK" style="width: 100%; padding: 15px; font-size: 2rem; text-align: center; letter-spacing: 5px;">
-                    </div>
-                    <div id="card-ui" style="display:none;">
-                        <input type="text" placeholder="NUMER KARTY" style="width:100%; padding:10px; margin-bottom:10px;">
-                        <div style="display:flex; gap:10px;"><input type="text" placeholder="MM/YY"><input type="text" placeholder="CVC"></div>
-                    </div>
-                    <div id="qr-ui" style="display:none;">
-                        <div style="width: 150px; height: 150px; background: #000; margin: 0 auto; color: white; display: flex; align-items: center; justify-content: center;">QR SCAN</div>
-                    </div>
-                    <button class="btn" style="margin-top: 20px;" onclick="processOrder()">POTWIERDŹ PŁATNOŚĆ</button>
-                </div>
-            </div>
-
-            <div id="s4" class="step">
-                <div id="invoice">
-                    <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
-                        <h2 style="font-size: 1.2rem;">FAKTURA PROFORMA</h2>
-                        <p>NR: #RN/<span id="inv-rand"></span>/2026</p>
-                    </div>
-                    <div id="inv-details"></div>
-                    <div style="margin-top: 20px; border-top: 2px solid #000; padding-top: 10px; font-weight: 900; font-size: 1rem;">
-                        DO ZAPŁATY: <span id="inv-total"></span> PLN
-                    </div>
-                </div>
-                <button class="btn" style="margin-top: 20px;" onclick="window.print()">POBIERZ FAKTURĘ</button>
-            </div>
-
-            <div id="nav" style="margin-top: 40px; display: flex; gap: 10px; position: relative;">
-                <button class="btn" style="background: #eee; color: #000;" onclick="move(-1)">Wstecz</button>
-                <div style="flex: 1; position: relative;">
-                    <div id="lock" class="lock-btn">PROSZĘ O ZEZWOLENIE</div>
-                    <button class="btn" onclick="move(1)">Dalej</button>
-                </div>
-            </div>
-
-            <div id="fact-slider">
-                <span onclick="prevFact()" style="cursor:pointer">◀</span>
-                <div class="fact-content" id="fact-text">Czy wiesz, że 100% tapicerki pochodzi z recyklingu?</div>
-                <span onclick="nextFact()" style="cursor:pointer">▶</span>
+            <div class="fixed-nav">
+                <button class="btn btn-secondary" onclick="move(-1)">Wstecz</button>
+                <button class="btn" id="next-btn" onclick="move(1)">Dalej</button>
             </div>
         </section>
     </main>
 
     <script>
-        let step = 1;
+        let currentStep = 1;
         let basePrice = 105000;
+        let enginePrice = 0;
+        let paintPrice = 0;
         let optPrice = 0;
         let selectedOpts = [];
         let isCookied = false;
-        let factIdx = 0;
 
-        const facts = [
-            "Wnętrze Captura zawiera 26 kg tworzyw sztucznych pochodzących z recyklingu.",
+        const techFacts = [
             "System E-Tech zapewnia do 80% czasu jazdy miejskiej na silniku elektrycznym.",
-            "Nowe reflektory LED Pure Vision mają o 30% większy zasięg.",
-            "Renault Captur jest produkowany w fabryce Valladolid.",
-            "Nagłośnienie Harman Kardon posiada 9 głośników."
+            "Bagażnik o pojemności do 616 litrów dzięki przesuwanej tylnej kanapie.",
+            "System openR link z wbudowanymi usługami Google.",
+            "26 systemów wspomagających prowadzenie dla Twojego bezpieczeństwa.",
+            "Reflektory Full LED Pure Vision w standardzie od pierwszej wersji."
         ];
-
-        const moreOpts = [
-            "System kamer 360", 2500, "Audio Harman Kardon", 4500, "Ekran OpenR 10.4", 2100, 
-            "Indukcyjna ładowarka", 900, "Asystent martwego pola", 1800, "Relingi dachowe", 1100,
-            "Przyciemniane szyby", 800, "Dach panoramiczny", 5500
-        ];
-
-        function init() {
-            const list = document.getElementById('tech-list');
-            for(let i=0; i<moreOpts.length; i+=2) {
-                list.innerHTML += `
-                    <div class="option-item">
-                        <label><input type="checkbox" onchange="updOpt('${moreOpts[i]}', ${moreOpts[i+1]}, this)"> ${moreOpts[i]}</label>
-                        <span>${moreOpts[i+1].toLocaleString()} PLN</span>
-                    </div>
-                `;
-            }
-            setInterval(nextFact, 6000);
-        }
 
         function acceptCookies() {
             isCookied = true;
             document.getElementById('cookie-overlay').style.display = 'none';
-            document.getElementById('lock').style.display = 'none';
+        }
+
+        function setEngine(p, name) {
+            enginePrice = p;
+            updatePrice();
         }
 
         function setBase(p, name, filter) {
-            basePrice = 105000 + p;
+            paintPrice = p;
             document.getElementById('car-main').style.filter = filter;
             updatePrice();
         }
 
         function updOpt(name, p, el) {
-            if(el.checked) { optPrice += p; selectedOpts.push({name, p}); }
-            else { optPrice -= p; selectedOpts = selectedOpts.filter(o => o.name !== name); }
+            if(el.checked) {
+                optPrice += p;
+                selectedOpts.push({name, p});
+            } else {
+                optPrice -= p;
+                selectedOpts = selectedOpts.filter(o => o.name !== name);
+            }
             updatePrice();
         }
 
         function updatePrice() {
-            let t = basePrice + optPrice;
-            document.getElementById('price-display').innerText = t.toLocaleString();
-            document.getElementById('inv-total').innerText = t.toLocaleString();
+            let total = basePrice + enginePrice + paintPrice + optPrice;
+            document.getElementById('price-display').innerText = total.toLocaleString();
+            document.getElementById('inv-total').innerText = total.toLocaleString();
         }
 
         function move(dir) {
-            if(dir === 1) {
-                if(!isCookied || step >= 4) return;
-                changeStep(1);
+            if(dir === 1 && !isCookied) {
+                alert("Prosimy o akceptację plików cookies przed przejściem dalej.");
+                return;
+            }
+            
+            let newStep = currentStep + dir;
+            if(newStep < 1 || newStep > 4) return;
+
+            document.getElementById(`s${currentStep}`).classList.remove('active');
+            currentStep = newStep;
+            document.getElementById(`s${currentStep}`).classList.add('active');
+            
+            // Aktualizacja paska postępu
+            document.getElementById('s-num').innerText = currentStep;
+            document.getElementById('progress-bar').style.width = (currentStep * 25) + "%";
+            
+            // Zmiana faktu technicznego przy przejściu kroku
+            document.getElementById('tech-fact').innerText = techFacts[currentStep];
+
+            if(currentStep === 4) {
+                generateSummary();
+                document.getElementById('next-btn').innerText = "Zamów";
             } else {
-                if(step <= 1) return;
-                changeStep(-1);
+                document.getElementById('next-btn').innerText = "Dalej";
             }
         }
 
-        function changeStep(dir) {
-            document.getElementById(`s${step}`).classList.remove('active');
-            step += dir;
-            document.getElementById(`s${step}`).classList.add('active');
-            document.getElementById('s-num').innerText = step;
-            document.getElementById('progress-bar').style.width = (step * 25) + "%";
-            if(step === 4) generateInvoice();
-        }
-
-        function setPay(type) {
-            document.querySelectorAll('.pay-card').forEach(c => c.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-            document.getElementById('blik-ui').style.display = (type === 'blik') ? 'block' : 'none';
-            document.getElementById('card-ui').style.display = (type === 'card') ? 'block' : 'none';
-            document.getElementById('qr-ui').style.display = (type === 'qr') ? 'block' : 'none';
-        }
-
-        function processOrder() {
-            changeStep(1);
-            document.getElementById('nav').style.display = 'none';
-        }
-
-        function generateInvoice() {
-            document.getElementById('inv-rand').innerText = Math.floor(Math.random()*99999);
-            let html = `<p>MODEL: RENAULT CAPTUR 2026</p><p>WERSJA BAZOWA: ${basePrice.toLocaleString()} PLN</p><br>`;
-            selectedOpts.forEach(o => { html += `<p>+ ${o.name}: ${o.p.toLocaleString()} PLN</p>`; });
+        function generateSummary() {
+            let html = `<strong>Model:</strong> Renault Captur 2026<br>`;
+            html += `<strong>Cena bazowa:</strong> 105 000 PLN<br>`;
+            if(enginePrice > 0) html += `+ Napęd Hybrid: ${enginePrice.toLocaleString()} PLN<br>`;
+            if(paintPrice > 0) html += `+ Lakier: ${paintPrice.toLocaleString()} PLN<br>`;
+            selectedOpts.forEach(o => {
+                html += `+ ${o.name}: ${o.p.toLocaleString()} PLN<br>`;
+            });
             document.getElementById('inv-details').innerHTML = html;
         }
-
-        function nextFact() { factIdx = (factIdx + 1) % facts.length; document.getElementById('fact-text').innerText = facts[factIdx]; }
-        function prevFact() { factIdx = (factIdx - 1 + facts.length) % facts.length; document.getElementById('fact-text').innerText = facts[factIdx]; }
-
-        init();
     </script>
 </body>
 </html>
