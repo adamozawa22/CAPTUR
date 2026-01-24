@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Renault Captur 2026 - Pełna Konfiguracja</title>
+    <title>Renault Captur 2026 - Wybór Dealera</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --r-yellow: #FFCC33; --r-black: #000000; --r-white: #ffffff; --r-gray: #f4f4f4; }
@@ -12,74 +12,62 @@
 
         /* --- NAWIGACJA GÓRNA --- */
         #progress-wrap { position: fixed; top: 0; left: 0; width: 100%; height: 6px; background: #eee; z-index: 10000; }
-        #progress-bar { height: 100%; width: 25%; background: var(--r-yellow); transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        #progress-bar { height: 100%; width: 20%; background: var(--r-yellow); transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
         #step-tag { position: fixed; top: 15px; left: 50%; transform: translateX(-50%); font-weight: 900; font-size: 0.7rem; z-index: 10001; letter-spacing: 3px; background: white; padding: 2px 10px; border: 1px solid #000; }
 
         /* --- UKŁAD GŁÓWNY --- */
-        main { display: grid; grid-template-columns: 1fr 550px; height: 100vh; padding-top: 6px; }
+        main { display: grid; grid-template-columns: 1fr 600px; height: 100vh; padding-top: 6px; }
         
-        /* LEWA STRONA - WIZUALIZACJA */
         .visual-side { background: var(--r-gray); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; }
-        .car-hero { width: 80%; transition: 0.6s transform ease; filter: drop-shadow(0 30px 50px rgba(0,0,0,0.15)); }
+        .car-hero { width: 75%; transition: 0.6s transform ease; filter: drop-shadow(0 30px 50px rgba(0,0,0,0.15)); }
 
-        /* DOLNE BELKI PO LEWEJ */
         .left-info-container { position: absolute; bottom: 30px; left: 30px; display: flex; flex-direction: column; gap: 10px; }
-        
         .info-bar { background: var(--r-black); color: white; padding: 20px; min-width: 320px; border-radius: 4px; box-shadow: 10px 10px 0 var(--r-yellow); }
         .info-bar h3 { font-weight: 900; font-size: 1.4rem; color: var(--r-yellow); margin-bottom: 5px; }
-        
         .tech-badge { background: rgba(255,255,255,0.9); color: black; padding: 12px 20px; border-left: 5px solid var(--r-yellow); font-size: 0.8rem; font-weight: 700; max-width: 350px; line-height: 1.4; }
 
-        /* PRAWA STRONA - KONFIGURATOR */
-        .config-side { 
-            position: relative; display: flex; flex-direction: column; height: 100%;
-            background: white; border-left: 1px solid #eee;
-        }
-
+        .config-side { position: relative; display: flex; flex-direction: column; height: 100%; background: white; border-left: 1px solid #eee; }
         .scroll-content { flex: 1; overflow-y: auto; padding: 40px; padding-bottom: 120px; }
 
-        /* STAŁA NAWIGACJA NA DOLE */
-        .fixed-nav { 
-            position: absolute; bottom: 0; left: 0; width: 100%; background: white; 
-            padding: 20px 40px; border-top: 1px solid #eee; display: flex; gap: 15px; z-index: 100;
-        }
+        .fixed-nav { position: absolute; bottom: 0; left: 0; width: 100%; background: white; padding: 20px 40px; border-top: 1px solid #eee; display: flex; gap: 15px; z-index: 100; }
 
-        /* MODUŁY WYPOSAŻENIA */
+        /* DEALER CARDS */
+        .dealer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .dealer-card { border: 1px solid #eee; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; }
+        .dealer-card img { width: 100%; height: 120px; object-fit: cover; filter: grayscale(100%); transition: 0.3s; }
+        .dealer-card:hover img, .dealer-card.active img { filter: grayscale(0%); }
+        .dealer-card.active { border: 2px solid var(--r-yellow); background: #fffdf0; }
+        .dealer-info { padding: 10px; font-size: 0.75rem; }
+        .dealer-info strong { display: block; text-transform: uppercase; font-size: 0.8rem; }
+
+        /* TERMINY */
+        .slot-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        .slot { padding: 10px; border: 1px solid #ddd; text-align: center; font-size: 0.8rem; cursor: pointer; transition: 0.2s; }
+        .slot.disabled { background: #f5f5f5; color: #ccc; cursor: not-allowed; border-color: #eee; }
+        .slot:not(.disabled):hover { border-color: var(--r-black); background: #f0f0f0; }
+        .slot.active { background: var(--r-yellow); border-color: var(--r-yellow); font-weight: 900; }
+
         .section-title { font-size: 1.2rem; font-weight: 900; margin: 30px 0 15px 0; text-transform: uppercase; border-bottom: 2px solid var(--r-black); padding-bottom: 5px; }
-        .cat-title { background: #f9f9f9; color: #000; padding: 10px; font-size: 0.75rem; font-weight: 900; margin-top: 20px; display: flex; justify-content: space-between; border: 1px solid #eee; }
-        .option-item { display: flex; justify-content: space-between; padding: 14px 10px; border-bottom: 1px solid #eee; font-size: 0.85rem; cursor: pointer; }
-        .option-item:hover { background: #fffcf0; }
-        .option-item input { accent-color: var(--r-yellow); width: 18px; height: 18px; }
-
-        /* PRZYCISKI */
+        .cat-title { background: #f9f9f9; padding: 10px; font-size: 0.75rem; font-weight: 900; margin-top: 20px; border: 1px solid #eee; }
+        
         .btn { background: #000; color: #fff; padding: 15px 25px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; flex: 1; }
         .btn:hover { background: var(--r-yellow); color: #000; }
         .btn-secondary { background: #eee; color: #000; }
 
         .step { display: none; }
         .step.active { display: block; }
-
-        #cookie-overlay { position: fixed; bottom: 0; left: 0; width: 100%; background: #000; color: #fff; padding: 20px; z-index: 20000; text-align: center; }
     </style>
 </head>
 <body>
 
     <div id="progress-wrap"><div id="progress-bar"></div></div>
-    <div id="step-tag">KONFIGURACJA: <span id="s-num">1</span>/4</div>
-
-    <div id="cookie-overlay">
-        <p>Zaakceptuj pliki cookies, aby zapisać swoją konfigurację Renault. 
-        <button class="btn" style="width: auto; padding: 8px 20px; margin-left: 20px;" onclick="acceptCookies()">AKCEPTUJĘ</button></p>
-    </div>
+    <div id="step-tag">KROK <span id="s-num">1</span>/5</div>
 
     <main>
         <section class="visual-side">
             <img src="https://images.unsplash.com/photo-1595786676378-433f169f14d8?q=80&w=1000" class="car-hero" id="car-main">
-            
             <div class="left-info-container">
-                <div class="tech-badge" id="tech-fact">
-                    System E-Tech zapewnia do 80% czasu jazdy miejskiej na silniku elektrycznym.
-                </div>
+                <div class="tech-badge" id="tech-fact">Innowacyjny napęd hybrydowy E-Tech.</div>
                 <div class="info-bar">
                     <h3>RENAULT CAPTUR</h3>
                     <p>SUMA: <strong id="price-display">105 000</strong> PLN</p>
@@ -91,53 +79,53 @@
             <div class="scroll-content">
                 
                 <div id="s1" class="step active">
-                    <h2 class="section-title">1. Silnik i Nadwozie</h2>
-                    
-                    <div class="cat-title">WYBIERZ JEDNOSTKĘ NAPĘDOWĄ</div>
-                    <div class="option-item" onclick="setEngine(0, 'TCe 90 KM')">
-                        <label>mild hybrid 140 EDC</label><span>W cenie</span>
-                    </div>
-                    <div class="option-item" onclick="setEngine(12500, 'E-Tech Full Hybrid 145')">
+                    <h2 class="section-title">1. Silnik i Kolor</h2>
+                    <div class="cat-title">NAPĘD</div>
+                    <div style="padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; cursor: pointer;" onclick="setEngine(12500)">
                         <label>E-Tech Full Hybrid 145</label><span>+12 500 PLN</span>
                     </div>
-
                     <div class="cat-title">LAKIER</div>
-                    <div class="option-item" onclick="setBase(0, 'Biel', 'grayscale(0)')">Biel Alpejska <span>0 PLN</span></div>
-                    <div class="option-item" onclick="setBase(2900, 'Czerń', 'brightness(0.3)')">Czerń Etoile <span>+2 900 PLN</span></div>
-                    <div class="option-item" onclick="setBase(3500, 'Żółty', 'sepia(1) saturate(5)')">Żółty Miel <span>+3 500 PLN</span></div>
+                    <div style="padding: 10px; border-bottom: 1px solid #eee; cursor: pointer;" onclick="setBase(3500, 'sepia(1) saturate(5)')">Żółty Miel <span>+3 500 PLN</span></div>
                 </div>
 
                 <div id="s2" class="step">
-                    <h2 class="section-title">2. Wygląd Zewnętrzny</h2>
-                    
-                    <div class="cat-title">FELGI ALUMINIOWE</div>
-                    <div class="option-item"><label><input type="checkbox" onchange="updOpt('Felgi 18 cali', 2200, this)"> Felgi 18" black techno</label><span>2 200 PLN</span></div>
-                    
-                    <div class="cat-title">PERSONALIZACJA DACHU</div>
-                    <div class="option-item"><label><input type="checkbox" onchange="updOpt('Dach w innym kolorze', 1800, this)"> Dach w kolorze czarnym</label><span>1 800 PLN</span></div>
-                    <div class="option-item"><label><input type="checkbox" onchange="updOpt('Dach panoramiczny', 4500, this)"> Dach szklany panoramiczny</label><span>4 500 PLN</span></div>
+                    <h2 class="section-title">2. Wyposażenie</h2>
+                    <div class="cat-title">PAKIETY</div>
+                    <div style="padding: 15px; border-bottom: 1px solid #eee;">
+                        <input type="checkbox" onchange="updOpt('Pakiet Harman Kardon', 4500, this)"> Nagłośnienie Premium (+4 500 PLN)
+                    </div>
                 </div>
 
                 <div id="s3" class="step">
-                    <h2 class="section-title">3. Wnętrze i Technologie</h2>
+                    <h2 class="section-title">3. Wybierz Dealera</h2>
+                    <p style="font-size: 0.8rem; color: #666;">Wybierz salon, w którym odbierzesz swój samochód:</p>
                     
-                    <div class="cat-title">KOMFORT</div>
-                    <div class="option-item"><label><input type="checkbox" onchange="updOpt('Fotele podgrzewane', 1500, this)"> Pakiet Winter (Fotele + Kierownica)</label><span>1 500 PLN</span></div>
-                    <div class="option-item"><label><input type="checkbox" onchange="updOpt('Elektryka foteli', 2800, this)"> Fotele z regulacją elektryczną</label><span>2 800 PLN</span></div>
-                    
-                    <div class="cat-title">MULTIMEDIA</div>
-                    <div class="option-item"><label><input type="checkbox" onchange="updOpt('Harman Kardon', 4200, this)"> Audio Premium Harman Kardon</label><span>4 200 PLN</span></div>
-                    <div class="option-item"><label><input type="checkbox" onchange="updOpt('Ekran 10 cali', 2100, this)"> System OpenR Link 10.4"</label><span>2 100 PLN</span></div>
+                    <div class="dealer-grid" id="dealer-container">
+                        </div>
                 </div>
 
                 <div id="s4" class="step">
-                    <h2 class="section-title">4. Podsumowanie</h2>
-                    <div id="invoice" style="font-size: 0.8rem; line-height: 1.8; background: #f9f9f9; padding: 20px; border: 1px solid #ddd;">
-                        <div id="inv-details"></div>
-                        <hr style="margin: 15px 0;">
-                        <strong>ŁĄCZNIE: <span id="inv-total"></span> PLN</strong>
+                    <h2 class="section-title">4. Termin spotkania</h2>
+                    <p style="font-size: 0.8rem; color: #666;">Wybierz dostępną godzinę na finalizację dokumentów:</p>
+                    
+                    <div class="cat-title">DOSTĘPNE TERMINY (LUTY 2026)</div>
+                    <div class="slot-grid">
+                        <div class="slot" onclick="setSlot('12.02', '09:00', this)">12.02 | 09:00</div>
+                        <div class="slot disabled">12.02 | 10:30</div>
+                        <div class="slot" onclick="setSlot('12.02', '14:00', this)">12.02 | 14:00</div>
+                        <div class="slot disabled">13.02 | 09:00</div>
+                        <div class="slot" onclick="setSlot('13.02', '11:00', this)">13.02 | 11:00</div>
+                        <div class="slot" onclick="setSlot('13.02', '16:30', this)">13.02 | 16:30</div>
+                        <div class="slot disabled">14.02 | 10:00</div>
+                        <div class="slot disabled">14.02 | 12:00</div>
+                        <div class="slot" onclick="setSlot('14.02', '15:00', this)">14.02 | 15:00</div>
                     </div>
-                    <p style="font-size: 0.7rem; margin-top: 15px; color: #666;">* Cena zawiera podatek VAT. Oferta nie stanowi oferty handlowej w rozumieniu KC.</p>
+                </div>
+
+                <div id="s5" class="step">
+                    <h2 class="section-title">5. Potwierdzenie</h2>
+                    <div id="final-summary" style="background: #f9f9f9; padding: 25px; border: 1px solid #000; font-size: 0.85rem; line-height: 1.8;">
+                        </div>
                 </div>
 
             </div>
@@ -152,91 +140,97 @@
     <script>
         let currentStep = 1;
         let basePrice = 105000;
-        let enginePrice = 0;
-        let paintPrice = 0;
-        let optPrice = 0;
-        let selectedOpts = [];
-        let isCookied = false;
+        let extraPrice = 0;
+        let selectedDealer = null;
+        let selectedSlot = null;
 
-        const techFacts = [
-            "System E-Tech zapewnia do 80% czasu jazdy miejskiej na silniku elektrycznym.",
-            "Bagażnik o pojemności do 616 litrów dzięki przesuwanej tylnej kanapie.",
-            "System openR link z wbudowanymi usługami Google.",
-            "26 systemów wspomagających prowadzenie dla Twojego bezpieczeństwa.",
-            "Reflektory Full LED Pure Vision w standardzie od pierwszej wersji."
+        const dealers = [
+            { name: "Renault Warszawa Mory", addr: "ul. Poznańska 16, 05-850 Ożarów Maz.", img: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?q=80&w=400" },
+            { name: "Renault Zdunek Gdańsk", addr: "ul. Miałki Szlak 43/45, 80-717 Gdańsk", img: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=400" },
+            { name: "Renault Karlik Poznań", addr: "ul. Poznańska 22, 62-080 Baranowo", img: "https://images.unsplash.com/photo-1589148625905-07a68d03c53d?q=80&w=400" },
+            { name: "Renault Anndora Kraków", addr: "al. 29 Listopada 149, 31-406 Kraków", img: "https://images.unsplash.com/photo-1603386329225-868f9b1ee6c9?q=80&w=400" },
+            { name: "Renault Nawrot Wrocław", addr: "ul. Wrocławska 33b, 55-095 Długołęka", img: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=400" },
+            { name: "Renault Jaszpol Łódź", addr: "ul. Brukowa 2, 91-341 Łódź", img: "https://images.unsplash.com/photo-1517524206127-48bbd363f3d7?q=80&w=400" },
+            { name: "Renault Kozłowski Szczecin", addr: "ul. Struga 73, 70-784 Szczecin", img: "https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=400" },
+            { name: "Renault Nazaruk Lublin", addr: "ul. Słowackiego 1a, 20-210 Lublin", img: "https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=400" },
+            { name: "Renault Pietrzak Katowice", addr: "ul. Bocheńskiego 125, 40-816 Katowice", img: "https://images.unsplash.com/photo-1562612114-cd0c6db208fc?q=80&w=400" },
+            { name: "Renault Pusz Gdynia", addr: "ul. Morska 517, 81-002 Gdynia", img: "https://images.unsplash.com/photo-1574169208507-84376144848b?q=80&w=400" }
         ];
 
-        function acceptCookies() {
-            isCookied = true;
-            document.getElementById('cookie-overlay').style.display = 'none';
+        function initDealers() {
+            const container = document.getElementById('dealer-container');
+            dealers.forEach((d, idx) => {
+                container.innerHTML += `
+                    <div class="dealer-card" onclick="selectDealer(${idx}, this)">
+                        <img src="${d.img}" alt="Salon">
+                        <div class="dealer-info">
+                            <strong>${d.name}</strong>
+                            ${d.addr}
+                        </div>
+                    </div>
+                `;
+            });
         }
 
-        function setEngine(p, name) {
-            enginePrice = p;
-            updatePrice();
+        function selectDealer(idx, el) {
+            document.querySelectorAll('.dealer-card').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            selectedDealer = dealers[idx];
         }
 
-        function setBase(p, name, filter) {
-            paintPrice = p;
-            document.getElementById('car-main').style.filter = filter;
-            updatePrice();
-        }
-
-        function updOpt(name, p, el) {
-            if(el.checked) {
-                optPrice += p;
-                selectedOpts.push({name, p});
-            } else {
-                optPrice -= p;
-                selectedOpts = selectedOpts.filter(o => o.name !== name);
-            }
-            updatePrice();
-        }
-
-        function updatePrice() {
-            let total = basePrice + enginePrice + paintPrice + optPrice;
-            document.getElementById('price-display').innerText = total.toLocaleString();
-            document.getElementById('inv-total').innerText = total.toLocaleString();
+        function setSlot(date, time, el) {
+            document.querySelectorAll('.slot').forEach(s => s.classList.remove('active'));
+            el.classList.add('active');
+            selectedSlot = { date, time };
         }
 
         function move(dir) {
-            if(dir === 1 && !isCookied) {
-                alert("Prosimy o akceptację plików cookies przed przejściem dalej.");
-                return;
+            if(dir === 1) {
+                if(currentStep === 3 && !selectedDealer) { alert("Wybierz dealera!"); return; }
+                if(currentStep === 4 && !selectedSlot) { alert("Wybierz godzinę spotkania!"); return; }
+                if(currentStep === 5) { alert("Dziękujemy! Twoja konfiguracja została wysłana do salonu."); return; }
             }
-            
+
             let newStep = currentStep + dir;
-            if(newStep < 1 || newStep > 4) return;
+            if(newStep < 1 || newStep > 5) return;
 
             document.getElementById(`s${currentStep}`).classList.remove('active');
             currentStep = newStep;
             document.getElementById(`s${currentStep}`).classList.add('active');
             
-            // Aktualizacja paska postępu
             document.getElementById('s-num').innerText = currentStep;
-            document.getElementById('progress-bar').style.width = (currentStep * 25) + "%";
-            
-            // Zmiana faktu technicznego przy przejściu kroku
-            document.getElementById('tech-fact').innerText = techFacts[currentStep];
+            document.getElementById('progress-bar').style.width = (currentStep * 20) + "%";
 
-            if(currentStep === 4) {
-                generateSummary();
-                document.getElementById('next-btn').innerText = "Zamów";
+            if(currentStep === 5) {
+                renderSummary();
+                document.getElementById('next-btn').innerText = "Zatwierdź zamówienie";
             } else {
                 document.getElementById('next-btn').innerText = "Dalej";
             }
         }
 
-        function generateSummary() {
-            let html = `<strong>Model:</strong> Renault Captur 2026<br>`;
-            html += `<strong>Cena bazowa:</strong> 105 000 PLN<br>`;
-            if(enginePrice > 0) html += `+ Napęd Hybrid: ${enginePrice.toLocaleString()} PLN<br>`;
-            if(paintPrice > 0) html += `+ Lakier: ${paintPrice.toLocaleString()} PLN<br>`;
-            selectedOpts.forEach(o => {
-                html += `+ ${o.name}: ${o.p.toLocaleString()} PLN<br>`;
-            });
-            document.getElementById('inv-details').innerHTML = html;
+        function renderSummary() {
+            let html = `
+                <h3 style="margin-bottom:10px;">PODSUMOWANIE REZERWACJI</h3>
+                <p><strong>Samochód:</strong> Renault Captur 2026</p>
+                <p><strong>Cena całkowita:</strong> ${document.getElementById('price-display').innerText} PLN</p>
+                <hr style="margin:15px 0;">
+                <p><strong>Wybrany Salon:</strong><br>${selectedDealer.name}<br>${selectedDealer.addr}</p>
+                <p style="margin-top:10px;"><strong>Termin odbioru:</strong><br>${selectedSlot.date}.2026, godzina ${selectedSlot.time}</p>
+                <div style="margin-top:20px; padding:10px; border:1px dashed #666; font-size:0.7rem;">
+                    Prosimy o zabranie dowodu osobistego na spotkanie w salonie.
+                </div>
+            `;
+            document.getElementById('final-summary').innerHTML = html;
         }
+
+        // Pozostałe funkcje logiki ceny
+        function setEngine(p) { extraPrice = p; updatePrice(); }
+        function setBase(p, filter) { document.getElementById('car-main').style.filter = filter; updatePrice(); }
+        function updatePrice() { document.getElementById('price-display').innerText = (basePrice + extraPrice).toLocaleString(); }
+        function updOpt(name, p, el) { if(el.checked) extraPrice += p; else extraPrice -= p; updatePrice(); }
+
+        initDealers();
     </script>
 </body>
 </html>
