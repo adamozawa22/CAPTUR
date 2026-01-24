@@ -106,4 +106,164 @@
                     <div class="color-dot active" onclick="setCol(0, 'grayscale(0)', 'Biel Alpejska', this)" style="background:#fff;"><span>Biel</span></div>
                     <div class="color-dot" onclick="setCol(2500, 'hue-rotate(200deg) brightness(0.6)', 'Niebieski Iron', this)" style="background:#2b52a2;"><span>Blue</span></div>
                     <div class="color-dot" onclick="setCol(2500, 'hue-rotate(340deg) saturate(2) brightness(0.8)', 'Czerwony Flamme', this)" style="background:#a22b2b;"><span>Red</span></div>
-                    <div class="color-dot" onclick="setCol
+                    <div class="color-dot" onclick="setCol(2900, 'brightness(0.2)', 'Czerń Etoile', this)" style="background:#111;"><span>Black</span></div>
+                    <div class="color-dot" onclick="setCol(2500, 'contrast(0.5) brightness(0.8)', 'Szary Cassiopee', this)" style="background:#777;"><span>Grey</span></div>
+                </div>
+            </div>
+
+            <div class="step-page" id="pg-2">
+                <h2 class="title">Personalizacja</h2>
+                <div id="opt-container"></div>
+            </div>
+
+            <div class="step-page" id="pg-3">
+                <h2 class="title">Wybór Salonu</h2>
+                <div id="dealer-container"></div>
+            </div>
+
+            <div class="step-page" id="pg-4">
+                <h2 class="title">Gotowe!</h2>
+                <div id="final-card" style="background:#f4f4f4; padding:30px; border-radius:15px; border: 2px dashed #000;">
+                    <p>Twoja konfiguracja została wygenerowana. Możesz teraz pobrać specjalny dokument PDF z pełną specyfikacją.</p>
+                    <button class="btn btn-black" style="margin-top:20px; width:100%;" onclick="generatePDF()">POBIERZ SPECYFIKACJĘ PDF</button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="config-footer">
+            <button class="btn btn-gray" onclick="move(-1)">Wstecz</button>
+            <button class="btn btn-black" id="next-btn" onclick="move(1)">Dalej</button>
+        </div>
+    </section>
+
+    <section class="preview-side">
+        <img src="https://images.unsplash.com/photo-1626847037657-fd36226133dd?q=80&w=1000" id="car-view" class="car-img">
+        <div class="info-overlay">
+            <div class="price-tag">
+                <span style="font-size: 0.8rem; font-weight: 900; opacity: 0.6;">CENA TOTAL</span>
+                <h2><span id="total-price">89 900</span> PLN</h2>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    let currentStep = 1;
+    let basePrice = 89900;
+    let engPrice = 0, colPrice = 0, optPrice = 0;
+    let selectedEng = "TCe 90 (Benzyna)";
+    let selectedCol = "Biel Alpejska";
+    let selectedOpts = [];
+    let selectedDealer = "";
+
+    const extras = [
+        ["Felgi 18 Pasadena", 2600], ["Dach panoramiczny", 4500], ["Audio Bose", 3200],
+        ["Kamery 360", 2500], ["Podgrzewane fotele", 1300], ["Podgrzewana kierownica", 900],
+        ["Skóra Riviera", 5200], ["Indukcja", 700], ["Blind Spot", 1600],
+        ["Tempomat aktywny", 3000], ["Park Assist", 1900], ["Przyciemniane szyby", 1000],
+        ["Dach Black", 2000], ["LED Pure Vision", 3500], ["Bagażnik Double", 500],
+        ["Alarm", 1200], ["Dywaniki", 300], ["Hak", 3800], ["Winter Pack", 2100], ["Ekran 10 cali", 2800]
+    ];
+
+    function init() {
+        const optBox = document.getElementById('opt-container');
+        extras.forEach((ex, i) => {
+            optBox.innerHTML += `
+                <div class="card" onclick="toggleOpt('${ex[0]}', ${ex[1]}, this)">
+                    <img src="https://picsum.photos/id/${30+i}/80/60">
+                    <div class="card-info"><b>${ex[0]}</b><i>Wyposażenie premium</i></div>
+                    <b>+${ex[1]} PLN</b>
+                </div>`;
+        });
+
+        const dealBox = document.getElementById('dealer-container');
+        ["Warszawa Mory", "Kraków Anndora", "Wrocław Nawrot", "Gdańsk Zdunek", "Poznań Karlik"].forEach(d => {
+            dealBox.innerHTML += `
+                <div class="card" onclick="setDealer('${d}', this)">
+                    <div class="card-info"><b>Renault ${d}</b><i>Autoryzowany Partner</i></div>
+                    <b>Wybierz</b>
+                </div>`;
+        });
+    }
+
+    function setEng(p, name, el) {
+        engPrice = p; selectedEng = name;
+        selectOnly(el); updateUI();
+    }
+
+    function setCol(p, filter, name, el) {
+        colPrice = p; selectedCol = name;
+        document.getElementById('car-view').style.filter = filter;
+        document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+        el.classList.add('active'); updateUI();
+    }
+
+    function toggleOpt(name, p, el) {
+        if(el.classList.contains('selected')) {
+            optPrice -= p; selectedOpts = selectedOpts.filter(o => o !== name);
+            el.classList.remove('selected');
+        } else {
+            optPrice += p; selectedOpts.push(name);
+            el.classList.add('selected');
+        }
+        updateUI();
+    }
+
+    function setDealer(name, el) {
+        selectedDealer = name; selectOnly(el);
+    }
+
+    function selectOnly(el) {
+        el.parentNode.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+    }
+
+    function updateUI() {
+        const total = basePrice + engPrice + colPrice + optPrice;
+        document.getElementById('total-price').innerText = total.toLocaleString();
+    }
+
+    function move(dir) {
+        let next = currentStep + dir;
+        if(next < 1 || next > 4) return;
+        document.getElementById(`pg-${currentStep}`).classList.remove('active');
+        currentStep = next;
+        document.getElementById(`pg-${currentStep}`).classList.add('active');
+        document.getElementById('s-num').innerText = currentStep;
+        document.getElementById('p-bar').style.width = (currentStep * 25) + "%";
+        
+        if(currentStep === 4) document.getElementById('next-btn').style.display = 'none';
+        else document.getElementById('next-btn').style.display = 'block';
+    }
+
+    function generatePDF() {
+        const total = document.getElementById('total-price').innerText;
+        const docContent = `
+            RENAULT CAPTUR 2026 - KONFIGURACJA KLIENTA
+            ------------------------------------------
+            WERSJA SILNIKOWA: ${selectedEng}
+            KOLOR NADWOZIA: ${selectedCol}
+            
+            WYPOSAŻENIE DODATKOWE:
+            ${selectedOpts.length > 0 ? selectedOpts.join('\n- ') : 'Brak dodatków'}
+            
+            DEALER ODBIORU: Renault ${selectedDealer || 'Nie wybrano'}
+            ------------------------------------------
+            SUMA KOŃCOWA: ${total} PLN
+            
+            Dokument wygenerowany: ${new Date().toLocaleDateString()}
+        `;
+        
+        const blob = new Blob([docContent], { type: 'text/plain' });
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = `Renault_Captur_2026_Konfiguracja.txt`;
+        link.click();
+        alert("Pobieranie specyfikacji... (W realnym systemie tutaj generuje się PDF z grafikami)");
+    }
+
+    init();
+</script>
+</body>
+</html>
