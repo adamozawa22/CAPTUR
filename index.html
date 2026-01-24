@@ -1,191 +1,440 @@
-<script>
-        // --- INICJALIZACJA AOS ---
-        AOS.init({
-            duration: 800,
-            once: true
-        });
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konfigurator Renault Captur 2025 - Premium</title>
+    
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
-        // --- STAN APLIKACJI ---
-        let currentStep = 1;
-        const totalSteps = 5;
-        let configState = {
-            basePrice: 105000,
-            colorPrice: 0,
-            colorName: 'Biel Alpejska',
-            wheelPrice: 0,
-            wheelName: '17" Bahamas',
-            totalPrice: 105000,
-            salon: ''
-        };
+    <style>
+        /* --- ZMIENNE --- */
+        :root {
+            --renault-yellow: #FFCC33;
+            --renault-black: #000000;
+            --renault-white: #ffffff;
+            --renault-gray: #f4f4f4;
+            --text-main: #333333;
+            --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --header-height: 80px;
+        }
 
-        // --- OBSŁUGA KROKÓW ---
-        const steps = document.querySelectorAll('.step-content');
-        const dots = document.querySelectorAll('.step-dot');
-        const btnNext = document.getElementById('btn-next');
-        const btnPrev = document.getElementById('btn-prev');
-        const navBtns = document.getElementById('nav-btns');
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-        function changeStep(direction) {
-            // Walidacja KROKU 3 (Zgody)
-            if(direction === 1 && currentStep === 3 && !validateStep3(true)) {
-                return;
+        /* --- LAYOUT GLOBALNY (ZABLOKOWANY SCROLL STRONY) --- */
+        body, html {
+            height: 100%;
+            overflow: hidden; /* Blokuje przewijanie całej strony */
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--renault-white);
+            color: var(--text-main);
+        }
+
+        /* --- HEADER --- */
+        header {
+            height: var(--header-height);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 5%;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #eee;
+        }
+
+        .logo { font-size: 1.5rem; font-weight: 800; text-transform: uppercase; }
+        .logo span { color: var(--renault-yellow); }
+        .price-tag { font-size: 1.2rem; font-weight: 600; }
+
+        /* --- MAIN GRID SYSTEM --- */
+        main {
+            margin-top: var(--header-height);
+            height: calc(100% - var(--header-height)); /* Pełna wysokość minus header */
+            display: grid;
+            grid-template-columns: 1fr 450px; /* Lewa: auto, Prawa: sztywna szerokość */
+        }
+
+        /* --- SEKCJA LEWA: PODGLĄD (STAŁA) --- */
+        .preview-section {
+            background: var(--renault-gray);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            /* Brak overflow, bo ta sekcja ma stać w miejscu */
+        }
+
+        .car-visual {
+            width: 85%;
+            max-width: 900px;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .car-img {
+            width: 100%;
+            height: auto;
+            display: block;
+            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.2));
+            transition: filter 0.5s ease; 
+        }
+
+        .car-label {
+            margin-top: 30px;
+            font-size: 2.5rem;
+            text-align: center;
+            opacity: 0;
+            animation: fadeIn 1s forwards 0.5s;
+        }
+
+        /* --- SEKCJA PRAWA: PANEL (SCROLLOWALNY WEWNĘTRZNIE) --- */
+        .config-panel {
+            background: var(--renault-white);
+            height: 100%;
+            overflow-y: auto; /* To sprawia, że tylko prawa strona się przewija */
+            padding: 40px;
+            border-left: 1px solid #eee;
+            /* Stylowanie scrollbara */
+            scrollbar-width: thin;
+            scrollbar-color: var(--renault-yellow) #f0f0f0;
+        }
+
+        /* Webkit scrollbar (Chrome/Safari) */
+        .config-panel::-webkit-scrollbar { width: 8px; }
+        .config-panel::-webkit-scrollbar-track { background: #f0f0f0; }
+        .config-panel::-webkit-scrollbar-thumb { background: var(--renault-yellow); border-radius: 4px; }
+
+        /* --- STEPPER --- */
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            position: relative;
+            padding: 0 10px;
+        }
+        .step-indicator::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #eee;
+            z-index: 0;
+            transform: translateY(-50%);
+        }
+        .step-dot {
+            width: 35px;
+            height: 35px;
+            background: var(--renault-white);
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        .step-dot.active {
+            border-color: var(--renault-yellow);
+            background: var(--renault-yellow);
+            color: var(--renault-black);
+            box-shadow: 0 0 10px rgba(255, 204, 51, 0.5);
+        }
+        .step-dot.completed {
+            background: var(--renault-black);
+            border-color: var(--renault-black);
+            color: var(--renault-yellow);
+        }
+
+        /* --- TREŚĆ KROKÓW --- */
+        .step-content { display: none; animation: slideIn 0.4s ease; padding-bottom: 20px; }
+        .step-content.active { display: block; }
+
+        h2 { margin-bottom: 15px; font-size: 1.8rem; }
+        p.desc { color: #666; margin-bottom: 30px; line-height: 1.5; font-size: 0.95rem; }
+
+        /* --- ELEMENTY UI --- */
+        .btn {
+            background: var(--renault-black);
+            color: var(--renault-white);
+            padding: 15px 30px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            text-transform: uppercase;
+            transition: var(--transition);
+            width: 100%; /* Przyciski na całą szerokość panelu */
+            margin-top: 10px;
+        }
+        .btn:hover { background: var(--renault-yellow); color: var(--renault-black); }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
+        .btn-outline { background: transparent; border: 2px solid var(--renault-black); color: var(--renault-black); }
+        .btn-outline:hover { background: var(--renault-black); color: var(--renault-white); }
+
+        /* KROK 1: GRID KOLORÓW */
+        .color-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .option-card {
+            border: 1px solid #eee;
+            padding: 20px 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            border-radius: 8px;
+        }
+        .option-card:hover, .option-card.selected { border-color: var(--renault-yellow); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .option-card.selected { background: rgba(255, 204, 51, 0.1); }
+        .color-circle { width: 50px; height: 50px; border-radius: 50%; margin: 0 auto 10px; border: 1px solid rgba(0,0,0,0.1); }
+
+        /* KROK 2: LISTA FELG */
+        .wheel-list { display: flex; flex-direction: column; gap: 10px; }
+        .wheel-option {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px; border: 1px solid #eee; border-radius: 8px;
+            cursor: pointer; transition: var(--transition);
+        }
+        .wheel-option:hover, .wheel-option.selected { border-color: var(--renault-yellow); background: #fafafa; }
+
+        /* KROK 3: WERYFIKACJA (NOWY STYL) */
+        .verification-group {
+            background: #fff;
+            border: 1px solid #eee;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .checkbox-wrapper {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 4px;
+            transition: 0.2s;
+        }
+        .checkbox-wrapper:hover { background: #f9f9f9; }
+        .checkbox-wrapper input {
+            margin-top: 4px;
+            margin-right: 15px;
+            min-width: 20px;
+            min-height: 20px;
+            accent-color: var(--renault-yellow);
+        }
+        .checkbox-wrapper span { font-size: 0.9rem; line-height: 1.4; }
+
+        /* KROK 4: PŁATNOŚĆ */
+        .payment-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .pay-btn {
+            padding: 20px; border: 2px solid #eee; background: #fff;
+            cursor: pointer; text-align: center; transition: var(--transition); border-radius: 8px;
+        }
+        .pay-btn.active { border-color: var(--renault-black); background: var(--renault-black); color: var(--renault-yellow); }
+
+        /* BLIK */
+        #blik-interface {
+            display: none; text-align: center; background: #f8f8f8;
+            padding: 20px; border-radius: 10px; margin-top: 20px; border: 1px solid #eee;
+        }
+        .blik-input {
+            width: 200px; height: 60px; font-size: 30px; letter-spacing: 8px;
+            text-align: center; border: 2px solid #ccc; border-radius: 8px;
+            margin: 15px 0; font-family: 'Roboto Mono', monospace;
+        }
+        .spinner {
+            display: none; width: 40px; height: 40px;
+            border: 4px solid #ddd; border-left-color: var(--renault-yellow);
+            border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto;
+        }
+
+        /* PARAGON */
+        .receipt-container { perspective: 1000px; margin-top: 20px; display: flex; justify-content: center; padding-bottom: 50px;}
+        .receipt {
+            background: #fff; width: 100%; padding: 30px;
+            font-family: 'Roboto Mono', monospace; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            transform-origin: top; transform: rotateX(-90deg); opacity: 0;
+            border-top: 5px solid var(--renault-yellow);
+        }
+        .receipt.printing { animation: printReceipt 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        .receipt-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; }
+        .receipt-total { border-top: 2px dashed #000; padding-top: 15px; margin-top: 20px; font-weight: 800; font-size: 1.2rem; }
+
+        .nav-buttons {
+            display: flex; gap: 10px; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;
+        }
+
+        /* ANIMACJE */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes printReceipt { 0% { transform: rotateX(-90deg); opacity: 0; } 100% { transform: rotateX(0deg); opacity: 1; } }
+
+        /* RESPONSYWNOŚĆ (MOBILE) */
+        @media (max-width: 900px) {
+            body, html { overflow: auto; height: auto; } /* Przywracamy scroll na mobile */
+            main { grid-template-columns: 1fr; margin-top: 60px; height: auto; display: block; }
+            
+            .preview-section {
+                height: 50vh; /* Auto na pół ekranu */
+                position: relative;
             }
-
-            // POPRAWKA: Usunięto blokadę kroku 4, aby BLIK mógł wywołać przejście dalej
-
-            // Aktualizacja UI (ukrycie obecnego)
-            steps[currentStep - 1].classList.remove('active');
+            .car-img { width: 90%; }
+            .car-label { font-size: 1.8rem; margin-top: 10px; }
             
-            // Zmiana numeru kroku
-            currentStep += direction;
-            
-            // Pokazanie nowego kroku
-            steps[currentStep - 1].classList.add('active');
-
-            // Aktualizacja przycisków nawigacji
-            btnPrev.disabled = currentStep === 1;
-            
-            // Logika wyświetlania przycisku "Dalej"
-            if(currentStep === 4) {
-                // W kroku płatności ukrywamy guzik "Dalej", bo przejście wymusza BLIK
-                btnNext.style.display = 'none'; 
-            } else if (currentStep === 5) {
-                // W podsumowaniu ukrywamy całą nawigację
-                navBtns.style.display = 'none'; 
-                generateReceipt();
-            } else {
-                // W pozostałych krokach guzik jest widoczny
-                btnNext.style.display = 'inline-block';
+            .config-panel {
+                height: auto; /* Panel rozciąga się w dół */
+                overflow-y: visible;
+                padding: 20px;
+                padding-bottom: 80px;
             }
+            .checkbox-wrapper input { transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body>
 
-            // Aktualizacja paska postępu (kropek)
-            updateDots();
+    <header data-aos="fade-down">
+        <div class="logo">Renault <span>Captur</span></div>
+        <div class="price-tag"><span id="header-price">105 000</span> PLN</div>
+    </header>
+
+    <main>
+        <section class="preview-section">
+            <div class="car-visual" data-aos="zoom-in">
+                <img src="https://images.unsplash.com/photo-1595786676378-433f169f14d8?q=80&w=1000&auto=format&fit=crop" 
+                     alt="Renault Captur" 
+                     class="car-img" 
+                     id="car-preview">
+            </div>
+            <h1 class="car-label">Captur 2025</h1>
+        </section>
+
+        <section class="config-panel" data-aos="fade-left">
             
-            // Przewinięcie do góry
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+            <div class="step-indicator">
+                <div class="step-dot active">1</div>
+                <div class="step-dot">2</div>
+                <div class="step-dot">3</div>
+                <div class="step-dot">4</div>
+                <div class="step-dot">5</div>
+            </div>
 
-        function updateDots() {
-            dots.forEach((dot, index) => {
-                dot.classList.remove('active', 'completed');
-                if (index + 1 === currentStep) {
-                    dot.classList.add('active');
-                } else if (index + 1 < currentStep) {
-                    dot.classList.add('completed');
-                    dot.innerHTML = '<i class="fas fa-check"></i>';
-                } else {
-                    dot.innerHTML = index + 1;
-                }
-            });
-        }
-
-        // --- KROK 1: KOLOR ---
-        function selectColor(element, name, price, filterVal) {
-            document.querySelectorAll('#step-1 .option-card').forEach(el => el.classList.remove('selected'));
-            element.classList.add('selected');
-
-            configState.colorName = name;
-            configState.colorPrice = price;
-            
-            const carImg = document.getElementById('car-preview');
-            carImg.style.opacity = 0.7; 
-            setTimeout(() => {
-                carImg.style.filter = filterVal;
-                carImg.style.opacity = 1;
-            }, 200);
-
-            updateTotal();
-        }
-
-        // --- KROK 2: FELGI ---
-        function selectWheels(element, name, price) {
-            document.querySelectorAll('.wheel-option').forEach(el => el.classList.remove('selected'));
-            element.classList.add('selected');
-
-            configState.wheelName = name;
-            configState.wheelPrice = price;
-            updateTotal();
-        }
-
-        // --- KROK 3: WERYFIKACJA ---
-        function validateStep3(triggerError = false) {
-            const c1 = document.getElementById('check-criminal').checked;
-            const c2 = document.getElementById('check-license').checked;
-            const c3 = document.getElementById('check-bik').checked;
-            const msg = document.getElementById('validation-msg');
-
-            // Jeśli wszystkie checkboxy są zaznaczone
-            if (c1 && c2 && c3) {
-                if(msg) msg.textContent = "";
-                return true;
-            } else {
-                if(triggerError && msg) msg.textContent = "Musisz zaznaczyć wszystkie zgody, aby kontynuować.";
-                return false;
-            }
-        }
-
-        // --- KROK 4: PŁATNOŚĆ ---
-        function selectPayment(method) {
-            document.querySelectorAll('.pay-btn').forEach(btn => btn.classList.remove('active'));
-            
-            if (method === 'card') {
-                alert('System kartowy w budowie. Proszę wybrać BLIK.');
-            } else if (method === 'blik') {
-                event.currentTarget.classList.add('active');
-                document.getElementById('blik-interface').style.display = 'block';
+            <form id="config-form" onsubmit="return false;">
                 
-                // Mały timeout żeby input był widoczny przed focusem
-                setTimeout(() => {
-                    document.getElementById('blik-code').focus();
-                }, 100);
-            }
-        }
+                <div class="step-content active" id="step-1">
+                    <h2>Wybierz Styl</h2>
+                    <p class="desc">Zdefiniuj charakter swojego Captura.</p>
+                    <div class="color-grid">
+                        <div class="option-card selected" onclick="selectColor(this, 'Biel Alpejska', 0, 'brightness(1.1) grayscale(0.2)')">
+                            <div class="color-circle" style="background: #f4f4f4;"></div>
+                            <h4>Biel Alpejska</h4>
+                            <p>W cenie</p>
+                        </div>
+                        <div class="option-card" onclick="selectColor(this, 'Czerń Etoilé', 2500, 'brightness(0.4) contrast(1.2)')">
+                            <div class="color-circle" style="background: #111;"></div>
+                            <h4>Czerń Etoilé</h4>
+                            <p>+2 500 PLN</p>
+                        </div>
+                        <div class="option-card" onclick="selectColor(this, 'Szary Highland', 2800, 'sepia(0) saturate(0) brightness(0.7)')">
+                            <div class="color-circle" style="background: #777;"></div>
+                            <h4>Szary Highland</h4>
+                            <p>+2 800 PLN</p>
+                        </div>
+                        <div class="option-card" onclick="selectColor(this, 'Żółty Miel', 3200, 'sepia(1) saturate(5) hue-rotate(5deg) brightness(1.2)')">
+                            <div class="color-circle" style="background: var(--renault-yellow);"></div>
+                            <h4>Żółty Miel</h4>
+                            <p>+3 200 PLN</p>
+                        </div>
+                    </div>
+                </div>
 
-        function processBlik() {
-            const codeInput = document.getElementById('blik-code');
-            const spinner = document.getElementById('blik-spinner');
-            
-            // Walidacja długości kodu
-            if (codeInput.value.length !== 6) {
-                alert("Wpisz poprawny, 6-cyfrowy kod BLIK");
-                return;
-            }
+                <div class="step-content" id="step-2">
+                    <h2>Wybierz Felgi</h2>
+                    <p class="desc">Design i osiągi.</p>
+                    <div class="wheel-list">
+                        <div class="wheel-option selected" onclick="selectWheels(this, '17 cali Bahamas', 0)">
+                            <div class="wheel-info">
+                                <h4>17" Bahamas</h4>
+                                <span>Seryjne, diamentowane</span>
+                            </div>
+                            <div class="wheel-price">0 PLN</div>
+                        </div>
+                        <div class="wheel-option" onclick="selectWheels(this, '18 cali Pasadena', 2000)">
+                            <div class="wheel-info">
+                                <h4>18" Pasadena</h4>
+                                <span>Aluminiowe, czarny połysk</span>
+                            </div>
+                            <div class="wheel-price">+2 000 PLN</div>
+                        </div>
+                        <div class="wheel-option" onclick="selectWheels(this, '19 cali Initiale Paris', 4500)">
+                            <div class="wheel-info">
+                                <h4>19" Initiale</h4>
+                                <span>Premium, wzór Eiffela</span>
+                            </div>
+                            <div class="wheel-price">+4 500 PLN</div>
+                        </div>
+                    </div>
+                </div>
 
-            // UI: Zablokuj input i pokaż spinner
-            codeInput.disabled = true;
-            spinner.style.display = 'block';
+                <div class="step-content" id="step-3">
+                    <h2>Weryfikacja Klienta</h2>
+                    <p class="desc">Wymagane zgody prawne (wymagane 5 zgód).</p>
+                    
+                    <div class="verification-group">
+                        <label class="checkbox-wrapper">
+                            <input type="checkbox" class="verify-check" onchange="validateStep3()">
+                            <span>Oświadczam, że jestem osobą niekaraną.</span>
+                        </label>
+                        <label class="checkbox-wrapper">
+                            <input type="checkbox" class="verify-check" onchange="validateStep3()">
+                            <span>Posiadam ważne prawo jazdy kat. B.</span>
+                        </label>
+                        <label class="checkbox-wrapper">
+                            <input type="checkbox" class="verify-check" onchange="validateStep3()">
+                            <span>Akceptuję weryfikację w BIK (Biuro Informacji Kredytowej).</span>
+                        </label>
+                        <label class="checkbox-wrapper">
+                            <input type="checkbox" class="verify-check" onchange="validateStep3()">
+                            <span>Oświadczam, że jestem rezydentem podatkowym w Polsce.</span>
+                        </label>
+                        <label class="checkbox-wrapper">
+                            <input type="checkbox" class="verify-check" onchange="validateStep3()">
+                            <span>Akceptuję Regulamin sprzedaży internetowej Renault.</span>
+                        </label>
+                    </div>
+                    <p id="validation-msg" style="color: #d9534f; font-weight:600; font-size: 0.8rem; margin-top:10px; min-height: 20px;"></p>
+                </div>
 
-            // Symulacja procesu (3 sekundy)
-            setTimeout(() => {
-                spinner.style.display = 'none';
-                
-                // Pobierz wybrany salon przed przejściem dalej
-                const salonSelect = document.getElementById('showroom-select');
-                if(salonSelect) {
-                    configState.salon = salonSelect.value;
-                } else {
-                    configState.salon = "Warszawa - Centrala"; // Fallback
-                }
+                <div class="step-content" id="step-4">
+                    <h2>Finalizacja</h2>
+                    <p class="desc">Wybierz miejsce odbioru i zapłać zaliczkę.</p>
+                    
+                    <label style="display:block; margin-bottom: 8px; font-weight:600; font-size:0.9rem;">Salon Odbioru:</label>
+                    <select id="showroom-select" style="width: 100%; padding: 15px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 25px; font-family:inherit;">
+                        <option value="Warszawa - Aleje Jerozolimskie">Warszawa - Aleje Jerozolimskie</option>
+                        <option value="Kraków - Zakopiańska">Kraków - Zakopiańska</option>
+                        <option value="Gdańsk - Grunwaldzka">Gdańsk - Grunwaldzka</option>
+                        <option value="Wrocław - Karkonoska">Wrocław - Karkonoska</option>
+                    </select>
 
-                // PRZEJŚCIE DO KROKU 5 (Paragon)
-                changeStep(1); 
-            }, 3000);
-        }
-
-        // --- LOGIKA CENOWA ---
-        function updateTotal() {
-            configState.totalPrice = configState.basePrice + configState.colorPrice + configState.wheelPrice;
-            const formatted = configState.totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-            document.getElementById('header-price').textContent = formatted;
-        }
-
-        // --- KROK 5: GENEROWANIE PARAGONU ---
-        function generateReceipt() {
-            document.getElementById('rec-color').textContent = configState.colorName;
-            document.getElementById('rec-wheels').textContent = configState.wheelName;
-            
-            // Wyciągnięcie samego miasta z nazwy salonu
-            const salonFull = configState.salon || "Nie wybrano";
-            document.getElementById('rec-salon').textContent = salonFull.split('-')[0];
-            
-            document.getElementById('rec-total').textContent = configState.totalPrice.toString
+                    <h3 style="font-size:1.1rem; margin-bottom:15px;">Metoda Płatności</h3>
+                    <div class="payment-methods">
+                        <div class="pay-btn" onclick="selectPayment('card')">
+                            <i class="fas fa-credit-card" style="font-size: 1.8rem; margin-bottom: 10px;"></i>
+                            <p>Karta</p>
+                        </div>
+                        <div class="pay-btn" onclick="selectPayment('blik')">
+                            <i class="fas fa-mobile-alt" style="
