@@ -3,144 +3,257 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SCAMPPLE - Płać więcej, miej mniej</title>
+    <title>Renault Captur 2026 - Oficjalny Konfigurator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body {
-            margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #fff;
-            color: #1d1d1f;
-        }
+        :root { --r-yellow: #FFCC33; --r-black: #000000; --r-white: #ffffff; --r-gray: #f4f4f4; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body, html { height: 100vh; width: 100vw; overflow: hidden; font-family: 'Montserrat', sans-serif; background: white; }
 
-        /* Menu górne */
-        nav {
-            background: rgba(251, 251, 253, 0.8);
-            backdrop-filter: blur(20px);
-            height: 44px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid #d2d2d7;
-        }
+        /* --- LAYOUT --- */
+        .wrapper { display: grid; grid-template-columns: 1fr 650px; height: 100vh; }
 
-        nav a {
-            color: #1d1d1f;
-            text-decoration: none;
-            font-size: 12px;
-            margin: 0 20px;
-            opacity: 0.8;
-            transition: opacity 0.3s;
-        }
+        /* LEWA STRONA */
+        .preview-side { background: var(--r-gray); position: relative; display: flex; align-items: center; justify-content: center; border-right: 1px solid #ddd; }
+        .car-img { width: 85%; transition: 0.5s ease-in-out; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.1)); }
+        
+        .info-overlay { position: absolute; bottom: 30px; left: 30px; display: flex; flex-direction: column; gap: 10px; }
+        .price-tag { background: var(--r-black); color: white; padding: 25px; border-radius: 4px; box-shadow: 10px 10px 0 var(--r-yellow); }
+        .price-tag h2 { font-weight: 900; color: var(--r-yellow); font-size: 2rem; }
 
-        nav a:hover { opacity: 1; }
+        /* PRAWA STRONA */
+        .config-side { display: flex; flex-direction: column; height: 100vh; background: #fff; }
 
-        /* Sekcja Hero */
-        .hero {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            background-color: #f5f5f7;
-            padding-top: 44px;
-        }
+        /* GÓRNY PASEK */
+        .config-header { padding: 30px 40px 15px; border-bottom: 1px solid #eee; background: #fff; }
+        .progress-track { height: 16px; background: #eee; border-radius: 20px; overflow: hidden; margin-bottom: 8px; border: 1px solid #ddd; }
+        .progress-fill { height: 100%; width: 25%; background: var(--r-yellow); transition: 0.5s ease; }
+        .step-label { font-weight: 900; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; }
 
-        .hero h1 {
-            font-size: 56px;
-            font-weight: 600;
-            margin-bottom: 0;
-        }
+        /* ŚRODEK (SCROLL) - TERAZ DZIAŁA NA 100% */
+        .config-main { flex: 1; overflow-y: auto; padding: 20px 40px 40px; }
+        
+        /* DOLNA NAWIGACJA */
+        .config-footer { padding: 25px 40px; border-top: 1px solid #eee; display: flex; gap: 15px; background: white; }
 
-        .hero p {
-            font-size: 26px;
-            margin-top: 10px;
-        }
+        /* ELEMENTY UI */
+        .title { font-weight: 900; font-size: 1.8rem; margin-bottom: 25px; text-transform: uppercase; border-left: 8px solid var(--r-yellow); padding-left: 15px; }
+        .section-name { background: #000; color: #fff; padding: 6px 12px; font-size: 0.7rem; font-weight: 900; display: inline-block; margin: 20px 0 10px; }
+        
+        .card { display: flex; align-items: center; border: 1px solid #ddd; border-radius: 12px; padding: 15px; margin-bottom: 12px; cursor: pointer; transition: 0.2s; }
+        .card:hover { border-color: var(--r-yellow); background: #fafafa; }
+        .card.selected { border: 3px solid var(--r-black); background: #fffdf5; }
+        .card img { width: 80px; height: 60px; object-fit: cover; border-radius: 6px; margin-right: 15px; }
+        .card-info { flex: 1; }
+        .card-info b { display: block; font-size: 1rem; }
+        .card-info i { font-style: normal; font-size: 0.8rem; color: #666; }
 
-        .cta {
-            margin-top: 20px;
-        }
+        /* KOLORY */
+        .color-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 10px; }
+        .color-dot { height: 70px; border: 2px solid #eee; border-radius: 10px; cursor: pointer; transition: 0.2s; position: relative; }
+        .color-dot.active { border-color: var(--r-black); transform: scale(1.05); }
+        .color-dot span { position: absolute; bottom: 5px; width: 100%; text-align: center; font-size: 0.6rem; font-weight: 900; text-transform: uppercase; }
 
-        .cta a {
-            color: #0066cc;
-            text-decoration: none;
-            font-size: 21px;
-            margin: 0 15px;
-        }
+        /* PRZYCISKI */
+        .btn { flex: 1; padding: 20px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; border-radius: 4px; }
+        .btn-black { background: black; color: white; }
+        .btn-black:hover { background: var(--r-yellow); color: black; }
+        .btn-gray { background: #eee; color: black; }
 
-        .cta a:hover { text-decoration: underline; }
-
-        /* Sekcja produktu */
-        .product-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            padding: 12px;
-        }
-
-        .product-card {
-            background: #fafafa;
-            height: 500px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 40px;
-        }
-
-        .product-card h2 { font-size: 40px; margin: 0; }
-        .product-card p { font-size: 20px; }
-
-        /* Stopka */
-        footer {
-            padding: 60px 20px;
-            background: #f5f5f7;
-            color: #6e6e73;
-            font-size: 12px;
-            text-align: center;
-        }
+        .step-page { display: none; }
+        .step-page.active { display: block; }
     </style>
 </head>
 <body>
 
-    <nav>
-        <a href="#">Store</a>
-        <a href="#">iScam</a>
-        <a href="#">scAirPods</a>
-        <a href="#">Support (Wait 4h)</a>
-    </nav>
-
-    <section class="hero">
-        <h1>iPhone 17 Pro Max Scam Edition</h1>
-        <p>Najcieńszy portfel, jakiego kiedykolwiek doświadczysz.</p>
-        <div class="cta">
-            <a href="#">Learn more ></a>
-            <a href="#">Buy (Give us money) ></a>
+<div class="wrapper">
+    <section class="preview-side">
+        <img src="https://images.unsplash.com/photo-1595786676378-433f169f14d8?q=80&w=1000" id="car-view" class="car-img">
+        <div class="info-overlay">
+            <div class="price-tag">
+                <span style="font-size: 0.8rem; font-weight: 900; opacity: 0.6;">CENA TOTAL</span>
+                <h2><span id="total-price">89 900</span> PLN</h2>
+            </div>
         </div>
     </section>
 
-    <div class="product-grid">
-        <div class="product-card">
-            <h2>scAirPods Pro</h2>
-            <p>Słyszysz tylko to, co chcemy Ci sprzedać.</p>
-            <a href="#" style="color:#0066cc; text-decoration:none;">Learn more ></a>
+    <section class="config-side">
+        <div class="config-header">
+            <div class="progress-track"><div class="progress-fill" id="p-bar"></div></div>
+            <div class="step-label">Etap <span id="s-num">1</span> / 4</div>
         </div>
-        <div class="product-card" style="background-color: #000; color: #fff;">
-            <h2>MacBook Air-Head</h2>
-            <p>Lżejszy niż Twoje oszczędności.</p>
-            <a href="#" style="color:#2997ff; text-decoration:none;">Learn more ></a>
+
+        <div class="config-main">
+            
+            <div class="step-page active" id="pg-1">
+                <h2 class="title">Silnik i Kolor</h2>
+                <div class="section-name">JEDNOSTKA NAPĘDOWA</div>
+                <div class="card selected" onclick="setEng(0, 'TCe 90 (Benzyna)', this)">
+                    <div class="card-info"><b>TCe 90</b><i>Klasyczna benzyna, 6-biegowy manual</i></div>
+                    <b>W cenie</b>
+                </div>
+                <div class="card" onclick="setEng(5500, 'TCe 100 LPG', this)">
+                    <div class="card-info"><b>TCe 100 LPG</b><i>Fabryczny GAZ, zasięg 1100km</i></div>
+                    <b>+5 500 PLN</b>
+                </div>
+                <div class="card" onclick="setEng(18500, 'Hybrid 145', this)">
+                    <div class="card-info"><b>E-Tech Full Hybrid</b><i>Automat, niskie spalanie</i></div>
+                    <b>+18 500 PLN</b>
+                </div>
+
+                <div class="section-name">LAKIER NADWOZIA</div>
+                <div class="color-grid">
+                    <div class="color-dot active" onclick="setCol(0, 'grayscale(0)', 'Biel Alpejska', this)" style="background:#fff;"><span>Biel</span></div>
+                    <div class="color-dot" onclick="setCol(2500, 'hue-rotate(200deg) brightness(0.6)', 'Niebieski Iron', this)" style="background:#2b52a2;"><span>Blue</span></div>
+                    <div class="color-dot" onclick="setCol(2500, 'hue-rotate(340deg) saturate(2) brightness(0.8)', 'Czerwony Flamme', this)" style="background:#a22b2b;"><span>Red</span></div>
+                    <div class="color-dot" onclick="setCol(2900, 'brightness(0.2)', 'Czerń Etoile', this)" style="background:#111;"><span>Black</span></div>
+                    <div class="color-dot" onclick="setCol(2500, 'contrast(0.5) brightness(0.8)', 'Szary Cassiopee', this)" style="background:#777;"><span>Grey</span></div>
+                </div>
+            </div>
+
+            <div class="step-page" id="pg-2">
+                <h2 class="title">Personalizacja</h2>
+                <div id="opt-container"></div>
+            </div>
+
+            <div class="step-page" id="pg-3">
+                <h2 class="title">Wybór Salonu</h2>
+                <div id="dealer-container"></div>
+            </div>
+
+            <div class="step-page" id="pg-4">
+                <h2 class="title">Gotowe!</h2>
+                <div id="final-card" style="background:#f4f4f4; padding:30px; border-radius:15px; border: 2px dashed #000;">
+                    <p>Twoja konfiguracja została wygenerowana. Możesz teraz pobrać specjalny dokument PDF z pełną specyfikacją.</p>
+                    <button class="btn btn-black" style="margin-top:20px; width:100%;" onclick="generatePDF()">POBIERZ SPECYFIKACJĘ PDF</button>
+                </div>
+            </div>
+
         </div>
-    </div>
 
-    <footer>
-        <p>Copyright © 2026 Scammple Inc. Wszelkie prawa do Twoich pieniędzy zastrzeżone.</p>
-        <p>Ten sklep nie bierze odpowiedzialności za brak produktów w pudełkach.</p>
-    </footer>
+        <div class="config-footer">
+            <button class="btn btn-gray" onclick="move(-1)">Wstecz</button>
+            <button class="btn btn-black" id="next-btn" onclick="move(1)">Dalej</button>
+        </div>
+    </section>
+</div>
 
+<script>
+    let currentStep = 1;
+    let basePrice = 89900;
+    let engPrice = 0, colPrice = 0, optPrice = 0;
+    let selectedEng = "TCe 90 (Benzyna)";
+    let selectedCol = "Biel Alpejska";
+    let selectedOpts = [];
+    let selectedDealer = "";
+
+    const extras = [
+        ["Felgi 18 Pasadena", 2600], ["Dach panoramiczny", 4500], ["Audio Bose", 3200],
+        ["Kamery 360", 2500], ["Podgrzewane fotele", 1300], ["Podgrzewana kierownica", 900],
+        ["Skóra Riviera", 5200], ["Indukcja", 700], ["Blind Spot", 1600],
+        ["Tempomat aktywny", 3000], ["Park Assist", 1900], ["Przyciemniane szyby", 1000],
+        ["Dach Black", 2000], ["LED Pure Vision", 3500], ["Bagażnik Double", 500],
+        ["Alarm", 1200], ["Dywaniki", 300], ["Hak", 3800], ["Winter Pack", 2100], ["Ekran 10 cali", 2800]
+    ];
+
+    function init() {
+        const optBox = document.getElementById('opt-container');
+        extras.forEach((ex, i) => {
+            optBox.innerHTML += `
+                <div class="card" onclick="toggleOpt('${ex[0]}', ${ex[1]}, this)">
+                    <img src="https://picsum.photos/id/${30+i}/80/60">
+                    <div class="card-info"><b>${ex[0]}</b><i>Wyposażenie premium</i></div>
+                    <b>+${ex[1]} PLN</b>
+                </div>`;
+        });
+
+        const dealBox = document.getElementById('dealer-container');
+        ["Warszawa Mory", "Kraków Anndora", "Wrocław Nawrot", "Gdańsk Zdunek", "Poznań Karlik"].forEach(d => {
+            dealBox.innerHTML += `
+                <div class="card" onclick="setDealer('${d}', this)">
+                    <div class="card-info"><b>Renault ${d}</b><i>Autoryzowany Partner</i></div>
+                    <b>Wybierz</b>
+                </div>`;
+        });
+    }
+
+    function setEng(p, name, el) {
+        engPrice = p; selectedEng = name;
+        selectOnly(el); updateUI();
+    }
+
+    function setCol(p, filter, name, el) {
+        colPrice = p; selectedCol = name;
+        document.getElementById('car-view').style.filter = filter;
+        document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+        el.classList.add('active'); updateUI();
+    }
+
+    function toggleOpt(name, p, el) {
+        if(el.classList.contains('selected')) {
+            optPrice -= p; selectedOpts = selectedOpts.filter(o => o !== name);
+            el.classList.remove('selected');
+        } else {
+            optPrice += p; selectedOpts.push(name);
+            el.classList.add('selected');
+        }
+        updateUI();
+    }
+
+    function setDealer(name, el) {
+        selectedDealer = name; selectOnly(el);
+    }
+
+    function selectOnly(el) {
+        el.parentNode.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+    }
+
+    function updateUI() {
+        const total = basePrice + engPrice + colPrice + optPrice;
+        document.getElementById('total-price').innerText = total.toLocaleString();
+    }
+
+    function move(dir) {
+        let next = currentStep + dir;
+        if(next < 1 || next > 4) return;
+        document.getElementById(`pg-${currentStep}`).classList.remove('active');
+        currentStep = next;
+        document.getElementById(`pg-${currentStep}`).classList.add('active');
+        document.getElementById('s-num').innerText = currentStep;
+        document.getElementById('p-bar').style.width = (currentStep * 25) + "%";
+        
+        if(currentStep === 4) document.getElementById('next-btn').style.display = 'none';
+        else document.getElementById('next-btn').style.display = 'block';
+    }
+
+    function generatePDF() {
+        const total = document.getElementById('total-price').innerText;
+        const docContent = `
+            RENAULT CAPTUR 2026 - KONFIGURACJA KLIENTA
+            ------------------------------------------
+            WERSJA SILNIKOWA: ${selectedEng}
+            KOLOR NADWOZIA: ${selectedCol}
+            
+            WYPOSAŻENIE DODATKOWE:
+            ${selectedOpts.length > 0 ? selectedOpts.join('\n- ') : 'Brak dodatków'}
+            
+            DEALER ODBIORU: Renault ${selectedDealer || 'Nie wybrano'}
+            ------------------------------------------
+            SUMA KOŃCOWA: ${total} PLN
+            
+            Dokument wygenerowany: ${new Date().toLocaleDateString()}
+        `;
+        
+        const blob = new Blob([docContent], { type: 'text/plain' });
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = `Renault_Captur_2026_Konfiguracja.txt`;
+        link.click();
+        alert("Pobieranie specyfikacji... (W realnym systemie tutaj generuje się PDF z grafikami)");
+    }
+
+    init();
+</script>
 </body>
 </html>
