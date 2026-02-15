@@ -3,120 +3,642 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Windows Upgrade Simulation</title>
+    <title>Windows Upgrade Nostalgia</title>
     <style>
-        :root {
-            --aero-border: rgba(255, 255, 255, 0.4);
-            --aero-bg: rgba(255, 255, 255, 0.15);
-            --win-blue: #0078d7;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        body, html {
-            height: 100%;
-            margin: 0;
+        body {
+            overflow: hidden;
+            height: 100vh;
+            background: linear-gradient(135deg, #1a6dcc 0%, #0d4a96 100%);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Light streaks background effect */
+        body::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.08) 0%, transparent 25%),
+                radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.12) 0%, transparent 30%),
+                radial-gradient(circle at 40% 80%, rgba(255, 255, 255, 0.07) 0%, transparent 35%),
+                radial-gradient(circle at 60% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 40%);
+            animation: moveStreaks 25s linear infinite;
+            z-index: -2;
+        }
+
+        @keyframes moveStreaks {
+            0% { transform: rotate(0deg) scale(1); }
+            100% { transform: rotate(360deg) scale(1.1); }
+        }
+
+        /* Desktop elements */
+        .desktop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            z-index: 1;
+        }
+
+        .taskbar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: rgba(240, 240, 240, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-top: 1px solid rgba(255, 255, 255, 0.6);
+            border-left: 1px solid rgba(255, 255, 255, 0.4);
+            border-right: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            z-index: 100;
+        }
+
+        .start-button {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #e0e8f0, #b8c4d4);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
-            /* Iconic Blue Streaks Wallpaper */
-            background: radial-gradient(circle at 20% 30%, #4facfe 0%, #00f2fe 100%);
-            background-image: url('https://images.wallpapersden.com/image/download/windows-7-official-hd_a2htZ2aUmZqaraWkpJRmbmdlrWZlbWU.jpg');
-            background-size: cover;
+            margin-right: 10px;
+            box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.7);
+            position: relative;
             overflow: hidden;
         }
 
-        /* The "Aero" Glass Window */
-        .window {
-            width: 450px;
-            padding: 2px;
-            background: var(--aero-bg);
-            backdrop-filter: blur(15px) saturate(150%);
-            -webkit-backdrop-filter: blur(15px) saturate(150%);
-            border: 1px solid var(--aero-border);
-            border-radius: 8px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3), inset 0 0 10px rgba(255,255,255,0.2);
-            animation: fadeIn 0.8s ease-out;
+        .start-button::after {
+            content: "";
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(45deg, #0078d7, #50a1e8);
+            clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
         }
 
-        .content {
-            background: white;
-            margin: 1px;
-            padding: 30px;
-            border-radius: 0 0 6px 6px;
-            text-align: center;
+        .taskbar-icons {
+            display: flex;
+            gap: 8px;
+            margin-left: 15px;
         }
 
-        .title-bar {
-            height: 30px;
+        .taskbar-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #e6eef7, #d1ddea);
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            border-radius: 4px;
+            box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.6);
             display: flex;
             align-items: center;
-            padding-left: 10px;
-            color: white;
-            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+            justify-content: center;
+            font-weight: bold;
+            color: #0066cc;
             font-size: 14px;
         }
 
-        h2 { color: #333; margin-bottom: 5px; font-weight: 400; }
-        p { color: #666; margin-bottom: 30px; font-size: 0.9em; }
-
-        .logo {
-            width: 60px;
-            margin-bottom: 20px;
+        .time-display {
+            position: absolute;
+            right: 20px;
+            color: #1a1a1a;
+            font-size: 13px;
+            font-weight: 500;
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
         }
 
-        /* Buttons & Progress */
-        .controls {
+        /* Aero Glass Popup */
+        .popup-container {
+            position: relative;
+            z-index: 50;
+            opacity: 0;
+            transform: scale(0.95);
+            animation: popupAppear 0.8s ease-out forwards 1.2s;
+        }
+
+        @keyframes popupAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0.92);
+                filter: blur(4px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+                filter: blur(0);
+            }
+        }
+
+        .popup {
+            background: rgba(245, 249, 252, 0.78);
+            backdrop-filter: blur(12px) saturate(180%);
+            -webkit-backdrop-filter: blur(12px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            border-radius: 14px;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.35),
+                0 0 30px rgba(255, 255, 255, 0.25) inset,
+                0 0 45px rgba(70, 150, 255, 0.18);
+            width: 520px;
+            padding: 32px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Glass edge glow effect */
+        .popup::before {
+            content: "";
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, 
+                rgba(255, 255, 255, 0.3) 0%, 
+                rgba(255, 255, 255, 0.1) 25%, 
+                transparent 50%, 
+                rgba(255, 255, 255, 0.15) 75%, 
+                rgba(255, 255, 255, 0.25) 100%);
+            border-radius: 16px;
+            z-index: -1;
+            opacity: 0.7;
+            animation: edgeGlow 4s infinite alternate;
+        }
+
+        @keyframes edgeGlow {
+            0% { opacity: 0.6; }
+            100% { opacity: 0.9; }
+        }
+
+        /* OS Logo - Generic "NewOS" flag icon */
+        .os-logo {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 24px;
+            position: relative;
+            animation: floatLogo 3s ease-in-out infinite;
+        }
+
+        @keyframes floatLogo {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .logo-flag {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #00a8ff, #0077cc);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 120, 255, 0.4);
+            transform: rotate(45deg);
+            top: 20px;
+            left: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 28px;
+            animation: pulseLogo 2s infinite;
+        }
+
+        @keyframes pulseLogo {
+            0% { box-shadow: 0 4px 15px rgba(0, 120, 255, 0.4); }
+            50% { box-shadow: 0 4px 25px rgba(0, 168, 255, 0.7); }
+            100% { box-shadow: 0 4px 15px rgba(0, 120, 255, 0.4); }
+        }
+
+        .logo-flag::after {
+            content: "8";
+            transform: rotate(-45deg);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo-base {
+            position: absolute;
+            bottom: 15px;
+            left: 35px;
+            width: 30px;
+            height: 25px;
+            background: linear-gradient(to bottom, #e0e6ed, #b8c4d4);
+            border-radius: 4px 4px 0 0;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.6);
+        }
+
+        .popup h1 {
+            font-size: 28px;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+            letter-spacing: -0.5px;
+            position: relative;
+        }
+
+        .popup h1::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 2px;
+            background: linear-gradient(to right, transparent, rgba(0, 120, 255, 0.6), transparent);
+            border-radius: 2px;
+        }
+
+        .popup p {
+            font-size: 21px;
+            color: #2d3748;
+            margin: 35px 0 30px;
+            font-weight: 500;
+            letter-spacing: -0.3px;
+            text-shadow: 0 1px 1px rgba(255, 255, 255, 0.7);
+            background: linear-gradient(to right, #1a3a6c, #2d5da1, #1a3a6c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            position: relative;
+        }
+
+        .popup p::after {
+            content: "Fast, Fluid, Refreshing";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to right, #0078d7, #50a1e8, #0078d7);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: shimmerText 3s infinite;
+            opacity: 0.9;
+        }
+
+        @keyframes shimmerText {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+
+        /* Spinner container */
+        .spinner-container {
+            margin: 25px 0 30px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Circular loading bar */
+        .spinner {
+            width: 70px;
+            height: 70px;
+            border: 6px solid rgba(200, 220, 255, 0.3);
+            border-top: 6px solid #0078d7;
+            border-radius: 50%;
+            position: relative;
+            animation: spin 1.8s linear infinite;
+            box-shadow: 0 0 15px rgba(0, 120, 215, 0.4);
+        }
+
+        .spinner::after {
+            content: "";
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            bottom: 5px;
+            border: 3px solid transparent;
+            border-top: 3px solid rgba(255, 255, 255, 0.85);
+            border-radius: 50%;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Glowing button */
+        .update-btn {
+            background: linear-gradient(120deg, #0078d7, #0063b1);
+            color: white;
+            border: none;
+            padding: 16px 65px;
+            font-size: 20px;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 4px 15px rgba(0, 100, 200, 0.45),
+                0 0 25px rgba(0, 150, 255, 0.35);
+            letter-spacing: -0.5px;
+            margin-top: 5px;
+            z-index: 10;
+        }
+
+        .update-btn:hover {
+            background: linear-gradient(120deg, #0085f0, #006ecc);
+            box-shadow: 
+                0 6px 20px rgba(0, 100, 200, 0.6),
+                0 0 35px rgba(0, 165, 255, 0.55);
+            transform: translateY(-1px);
+        }
+
+        .update-btn:active {
+            transform: translateY(2px);
+            box-shadow: 
+                0 2px 10px rgba(0, 100, 200, 0.4),
+                0 0 20px rgba(0, 150, 255, 0.3);
+        }
+
+        .update-btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+            transition: left 0.7s;
+            z-index: -1;
+        }
+
+        .update-btn:hover::before {
+            left: 100%;
+        }
+
+        /* Button glow animation */
+        .update-btn::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.25) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s;
+            z-index: -1;
+            border-radius: 50%;
+        }
+
+        .update-btn:hover::after {
+            opacity: 1;
+        }
+
+        /* Ripple effect */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.7);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            z-index: -1;
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Desktop icons for authenticity */
+        .desktop-icons {
+            display: flex;
+            gap: 30px;
+            padding-top: 40px;
+            opacity: 0.85;
+        }
+
+        .desktop-icon {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
-        }
-
-        .btn-start {
-            background: linear-gradient(to bottom, #4facfe 0%, #0078d7 100%);
             color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-            box-shadow: 0 0 15px rgba(0, 120, 215, 0.4);
-            transition: transform 0.2s, box-shadow 0.2s;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+            font-size: 14px;
+            width: 80px;
         }
 
-        .btn-start:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(0, 120, 215, 0.6);
+        .icon-image {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #4da6ff, #0078d7);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+            font-size: 24px;
         }
 
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--win-blue);
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
+        /* Cinematic vignette */
+        .vignette {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 10, 30, 0.65) 100%);
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0.7;
         }
 
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .popup {
+                width: 90%;
+                padding: 25px;
+            }
+            
+            .os-logo {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .logo-flag {
+                width: 45px;
+                height: 45px;
+                font-size: 20px;
+            }
+            
+            .popup h1 {
+                font-size: 24px;
+            }
+            
+            .popup p {
+                font-size: 18px;
+            }
+            
+            .update-btn {
+                padding: 14px 50px;
+                font-size: 18px;
+            }
+        }
     </style>
 </head>
 <body>
-
-<div class="window">
-    <div class="title-bar">Windows Anytime Upgrade</div>
-    <div class="content">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a8/Windows_8_square_logo.png" alt="Windows 8" class="logo">
-        <h2>Upgrade to Windows 8</h2>
-        <p>Fast, Fluid, Perfect</p>
+    <!-- Desktop background with light streaks -->
+    <div class="desktop">
+        <div class="desktop-icons">
+            <div class="desktop-icon">
+                <div class="icon-image">💻</div>
+                <div>My Computer</div>
+            </div>
+            <div class="desktop-icon">
+                <div class="icon-image">📁</div>
+                <div>Documents</div>
+            </div>
+            <div class="desktop-icon">
+                <div class="icon-image">🌐</div>
+                <div>Network</div>
+            </div>
+            <div class="desktop-icon">
+                <div class="icon-image">⚙️</div>
+                <div>Control Panel</div>
+            </div>
+        </div>
         
-        <div class="controls">
-            <div class="loader"></div>
-            <button class="btn-start" onclick="alert('Starting the transition...')">Start Update</button>
+        <div class="taskbar">
+            <div class="start-button"></div>
+            <div class="taskbar-icons">
+                <div class="taskbar-icon">1</div>
+                <div class="taskbar-icon">2</div>
+                <div class="taskbar-icon">3</div>
+                <div class="taskbar-icon">4</div>
+            </div>
+            <div class="time-display" id="time-display">2:45 PM</div>
         </div>
     </div>
-</div>
 
+    <!-- Upgrade Popup -->
+    <div class="popup-container">
+        <div class="popup">
+            <div class="os-logo">
+                <div class="logo-flag"></div>
+                <div class="logo-base"></div>
+            </div>
+            <h1>Upgrade to NewOS 8</h1>
+            <p>Fast, Fluid, Refreshing</p>
+            
+            <div class="spinner-container">
+                <div class="spinner"></div>
+            </div>
+            
+            <button class="update-btn" id="updateBtn">Start Update</button>
+        </div>
+    </div>
+
+    <!-- Cinematic vignette overlay -->
+    <div class="vignette"></div>
+
+    <script>
+        // Update time display
+        function updateTime() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            document.getElementById('time-display').textContent = `${hours}:${minutes} ${ampm}`;
+        }
+        
+        // Initialize and update time
+        updateTime();
+        setInterval(updateTime, 60000);
+        
+        // Button ripple effect
+        document.getElementById('updateBtn').addEventListener('click', function(e) {
+            // Create ripple effect
+            const ripple = document.createElement('span');
+            ripple.classList.add('ripple');
+            this.appendChild(ripple);
+            
+            // Position ripple at click position
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size/2;
+            const y = e.clientY - rect.top - size/2;
+            
+            ripple.style.width = ripple.style.height = `${size}px`;
+            ripple.style.left = `${x}px`;
+            ripple.style.top = `${y}px`;
+            
+            // Change button state
+            const originalText = this.textContent;
+            this.textContent = 'Updating...';
+            this.disabled = true;
+            this.style.background = 'linear-gradient(120deg, #5c9dff, #3a85e6)';
+            this.style.boxShadow = '0 4px 15px rgba(60, 130, 220, 0.4), 0 0 25px rgba(80, 150, 255, 0.3)';
+            
+            // Simulate update process
+            setTimeout(() => {
+                this.textContent = 'Complete!';
+                this.style.background = 'linear-gradient(120deg, #28a745, #208637)';
+                this.style.boxShadow = '0 4px 15px rgba(40, 167, 69, 0.4), 0 0 25px rgba(50, 200, 100, 0.35)';
+                
+                // Reset after delay
+                setTimeout(() => {
+                    this.textContent = originalText;
+                    this.style.background = 'linear-gradient(120deg, #0078d7, #0063b1)';
+                    this.style.boxShadow = '0 4px 15px rgba(0, 100, 200, 0.45), 0 0 25px rgba(0, 150, 255, 0.35)';
+                    this.disabled = false;
+                    
+                    // Remove ripple elements
+                    const ripples = this.querySelectorAll('.ripple');
+                    ripples.forEach(r => r.remove());
+                }, 2500);
+            }, 2200);
+            
+            // Remove ripple after animation completes
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        });
+        
+        // Add subtle floating animation to desktop icons
+        document.addEventListener('DOMContentLoaded', () => {
+            const icons = document.querySelectorAll('.desktop-icon');
+            icons.forEach((icon, index) => {
+                icon.style.animation = `floatLogo 6s ease-in-out ${index * 0.5}s infinite`;
+                icon.style.animationDirection = index % 2 === 0 ? 'normal' : 'reverse';
+            });
+        });
+    </script>
 </body>
 </html>
