@@ -2,294 +2,46 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Microsoft - Świat PC | 2011 Edition</title>
+    <title>Microsoft Windows 7 Era - Experience PC</title>
     <style>
         body {
-            font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+            font-family: "Segoe UI", "Tahoma", sans-serif;
             margin: 0;
             padding: 0;
-            background: #ffffff;
-            color: #333;
-            line-height: 1.5;
+            background: url('https://wallpaperaccess.com/full/1567665.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #222;
         }
 
-        /* Efekt Kropli / Asymetrycznego paska */
-        .top-accent {
-            position: absolute;
-            top: 0;
-            right: 10%;
-            width: 300px;
-            height: 450px;
-            background: linear-gradient(135deg, #0078d4 0%, #005a9e 100%);
-            z-index: -1;
-            border-bottom-left-radius: 100% 50%;
-            border-bottom-right-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        /* EFEKT AERO GLASS DLA CAŁEJ STRONY */
+        .glass-overlay {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            min-height: 2000px; /* Bardzo długa strona */
+            border-left: 1px solid rgba(255, 255, 255, 0.5);
+            border-right: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 50px rgba(0,0,0,0.2);
         }
 
         .container {
-            width: 980px;
+            width: 1000px;
             margin: 0 auto;
             position: relative;
         }
 
-        header {
-            padding: 20px 0;
+        /* KROPLA ZJEŻDŻAJĄCA NA DÓŁ (STICKY) */
+        .droplet-nav {
+            position: sticky;
+            top: 0;
+            float: right;
+            width: 280px;
+            height: 600px;
+            background: linear-gradient(135deg, rgba(0, 120, 212, 0.9) 0%, rgba(0, 78, 152, 0.9) 100%);
+            margin-right: -150px;
+            z-index: 100;
+            border-bottom-left-radius: 150px 300px;
+            border-bottom-right-radius: 150px 300px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3), inset 0 10px 20px rgba(255,255,255,0.4);
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 28px;
-            font-weight: 600;
-            color: #5e5e5e;
-            text-decoration: none;
-        }
-
-        nav a {
-            color: #333;
-            text-decoration: none;
-            margin-right: 25px;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        /* Hero Section */
-        .hero-section {
-            padding: 60px 0;
-            display: flex;
-            align-items: center;
-        }
-
-        .hero-text {
-            width: 550px;
-        }
-
-        .hero-text h1 {
-            font-size: 48px;
-            font-weight: lighter;
-            margin-bottom: 10px;
-            color: #000;
-        }
-
-        /* Sekcje z dużą ilością info */
-        .content-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 30px;
-            margin-top: 50px;
-        }
-
-        .section-title {
-            grid-column: span 3;
-            border-bottom: 1px solid #ccc;
-            padding-bottom: 10px;
-            font-size: 24px;
-            font-weight: lighter;
-            color: #0078d4;
-        }
-
-        .info-card {
-            background: #fdfdfd;
-            border: 1px solid #e5e5e5;
-            padding: 15px;
-            transition: box-shadow 0.3s;
-        }
-
-        .info-card:hover {
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        }
-
-        .info-card h3 {
-            margin-top: 0;
-            color: #000;
-        }
-
-        /* Styl przycisków 2011 */
-        .btn-cta {
-            background: #0078d4;
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            display: inline-block;
-            margin-top: 20px;
-            text-decoration: none;
-        }
-
-        /* Długość strony - dodatkowe sekcje */
-        .feature-row {
-            display: flex;
-            margin: 60px 0;
-            align-items: center;
-            background: #f4f4f4;
-            padding: 40px;
-        }
-
-        .feature-image {
-            width: 400px;
-            height: 250px;
-            background: #ddd; /* Tu byłoby zdjęcie PC */
-            margin-right: 40px;
-        }
-
-        footer {
-            background: #f2f2f2;
-            padding: 50px 0;
-            border-top: 1px solid #ddd;
-            margin-top: 100px;
-        }
-
-        .footer-cols {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            font-size: 13px;
-        }
-
-        .footer-cols ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .footer-cols li {
-            margin-bottom: 8px;
-        }
-
-        .footer-cols a {
-            color: #666;
-            text-decoration: none;
-        }
-    </style>
-</head>
-<body>
-
-<div class="top-accent"></div>
-
-<div class="container">
-    <header>
-        <a href="#" class="logo">Microsoft</a>
-        <nav>
-            <a href="#">Produkty</a>
-            <a href="#">Sklep</a>
-            <a href="#">Wsparcie</a>
-            <a href="#">Szukaj</a>
-        </nav>
-    </header>
-
-    <section class="hero-section">
-        <div class="hero-text">
-            <h1>Piękno PC.</h1>
-            <p>Windows 7 łączy w sobie wydajność z elegancją. Zobacz, jak nowe komputery z procesorami Intel® Core™ drugiej generacji zmieniają sposób, w jaki pracujesz i bawisz się.</p>
-            <a href="#" class="btn-cta">Znajdź swój ideał</a>
-        </div>
-    </section>
-
-    <div class="content-grid">
-        <h2 class="section-title">Komputery bez kompromisów</h2>
-        
-        <div class="info-card">
-            <h3>Laptopy dla graczy</h3>
-            <p>DirectX 11 wprowadza nową jakość realizmu. Modele z serii Alienware i ASUS ROG wyposażone w Windows 7 Home Premium zapewniają płynność, jakiej nie widziałeś.</p>
-            <a href="#">Więcej o DX11 ></a>
-        </div>
-
-        <div class="info-card">
-            <h3>Ultrabooki - nowa era</h3>
-            <p>Cienkie, lekkie i gotowe do pracy w sekundę. Dzięki technologii Rapid Start, Twój komputer wybudza się natychmiast, gdy go potrzebujesz.</p>
-            <a href="#">Zobacz modele ></a>
-        </div>
-
-        <div class="info-card">
-            <h3>Rodzina Office 2010</h3>
-            <p>Pracuj nad dokumentami w Wordzie, Excelu i PowerPoincie z każdego miejsca dzięki usługom Office Web Apps.</p>
-            <a href="#">Kup teraz ></a>
-        </div>
-    </div>
-
-    <div class="feature-row">
-        <div class="feature-image"></div>
-        <div>
-            <h2>Internet Explorer 9: Szybkość na pierwszym miejscu</h2>
-            <p>Twoje ulubione witryny wyglądają jak programy na pulpicie. Przypnij je do paska zadań i ciesz się czystym interfejsem, który nie zasłania treści. Sprzętowa akceleracja grafiki sprawia, że sieć działa szybciej.</p>
-        </div>
-    </div>
-
-    <div class="content-grid">
-        <h2 class="section-title">Rozrywka i Praca</h2>
-        
-        <div class="info-card">
-            <h3>Kinect dla Windows</h3>
-            <p>Twoje ciało staje się kontrolerem. Odkryj innowacyjne aplikacje biznesowe i edukacyjne wykorzystujące sensor ruchu.</p>
-        </div>
-
-        <div class="info-card">
-            <h3>Windows Phone 7</h3>
-            <p>Idealny kompan dla Twojego PC. Integracja z Outlookiem, Xbox LIVE i pakietem Office w zasięgu kciuka.</p>
-        </div>
-
-        <div class="info-card">
-            <h3>Zestaw Essentials 2011</h3>
-            <p>Pobierz Windows Live Movie Maker i twórz filmy HD w kilka minut. Galeria fotografii pomoże Ci uporządkować wspomnienia.</p>
-        </div>
-        
-        <div class="info-card">
-            <h3>Serwer domowy</h3>
-            <p>Windows Home Server 2011 to najbezpieczniejszy sposób na kopię zapasową wszystkich plików w Twojej sieci lokalnej.</p>
-        </div>
-
-        <div class="info-card">
-            <h3>Bezpieczeństwo</h3>
-            <p>Microsoft Security Essentials zapewnia darmową i skuteczną ochronę przed wirusami dla legalnych użytkowników systemu Windows.</p>
-        </div>
-
-        <div class="info-card">
-            <h3>Dla firm</h3>
-            <p>Poznaj Windows Intune - zarządzaj komputerami w chmurze i uprość pracę działu IT.</p>
-        </div>
-    </div>
-</div>
-
-<footer>
-    <div class="container">
-        <div class="footer-cols">
-            <div>
-                <strong>Popularne zasoby</strong>
-                <ul>
-                    <li><a href="#">Pobierz Windows 7</a></li>
-                    <li><a href="#">Sklep z aplikacjami</a></li>
-                    <li><a href="#">Aktualizacje sterowników</a></li>
-                </ul>
-            </div>
-            <div>
-                <strong>Dla studentów</strong>
-                <ul>
-                    <li><a href="#">Office University</a></li>
-                    <li><a href="#">DreamSpark</a></li>
-                    <li><a href="#">Zniżki na PC</a></li>
-                </ul>
-            </div>
-            <div>
-                <strong>Dla programistów</strong>
-                <ul>
-                    <li><a href="#">MSDN</a></li>
-                    <li><a href="#">Visual Studio 2010</a></li>
-                    <li><a href="#">Silverlight</a></li>
-                </ul>
-            </div>
-            <div>
-                <strong>Kontakt</strong>
-                <ul>
-                    <li><a href="#">Wsparcie Microsoft</a></li>
-                    <li><a href="#">Centrum prasowe</a></li>
-                    <li><a href="#">Kariera</a></li>
-                </ul>
-            </div>
-        </div>
-        <p style="margin-top: 30px; color: #999;">&copy; 2011 Microsoft. Wszystkie dane o procesorach i systemach są aktualne na dzień publikacji.</p>
-    </div>
-</footer>
-
-</body>
-</html>
+            flex-direction: column;
