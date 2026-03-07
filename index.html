@@ -1,14 +1,32 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Moja Wyszukiwarka</title>
+    <title>Mapa Ząbek</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        #map { height: 600px; width: 100%; }
+        body { font-family: sans-serif; margin: 0; }
+    </style>
 </head>
 <body>
-    <h2>Wyszukiwarka artykułów</h2>
-    <form action="wyniki.php" method="GET">
-        <input type="text" name="fraza" placeholder="Wpisz słowo..." required>
-        <button type="submit">Szukaj</button>
-    </form>
+    <h1 style="text-align:center">Moja Mapa Ząbek</h1>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Centrowanie na Ząbki [szerokość, długość]
+        var map = L.map('map').setView([52.29, 21.11], 14);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        // DODAWANIE PUNKTÓW (Kopiuj te linie, by dodać więcej)
+        L.marker([52.292, 21.112]).addTo(map)
+            .bindPopup('<b>Urząd Miasta Ząbki</b><br>Tu załatwisz sprawy.');
+            
+        L.marker([52.295, 21.105]).addTo(map)
+            .bindPopup('<b>Park Miejski</b><br>Miejsce na spacer.');
+    </script>
 </body>
 </html>
