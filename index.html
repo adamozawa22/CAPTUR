@@ -2,247 +2,76 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Microsoft 2011 - Aero Liquid Experience</title>
+    <title>Windows 7 Aero Ultimate Experience</title>
     <style>
         :root {
-            --aero-blue: rgba(0, 120, 212, 0.85);
-            --aero-gloss: linear-gradient(to bottom, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 51%, rgba(255,255,255,0.1) 100%);
+            --glass: rgba(255, 255, 255, 0.3);
+            --aero-blue: rgba(0, 162, 255, 0.6);
+            --reflection: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 51%, rgba(255,255,255,0.1) 100%);
         }
 
         body {
-            font-family: "Segoe UI", Tahoma, sans-serif;
             margin: 0;
             padding: 0;
-            background: url('https://wallpaperaccess.com/full/1567665.jpg') no-repeat center center fixed;
+            font-family: "Segoe UI", Tahoma, sans-serif;
+            /* Kultowa tapeta Windows 7 Aurora */
+            background: #004e8c url('https://wallpaperaccess.com/full/1567665.jpg') no-repeat center center fixed;
             background-size: cover;
-            color: #111;
+            color: #fff;
             overflow-x: hidden;
         }
 
-        /* TŁO SZKLANE DLA TREŚCI */
-        .glass-container {
-            width: 900px;
+        /* CAŁA STRONA JAKO JEDNO WIELKIE AERO */
+        .aero-page-wrapper {
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(25px) saturate(150%);
+            -webkit-backdrop-filter: blur(25px) saturate(150%);
+            min-height: 4000px; /* Bardzo długa strona */
+            border-left: 1px solid rgba(255,255,255,0.2);
+            border-right: 1px solid rgba(255,255,255,0.2);
+            width: 1000px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            min-height: 3000px; /* Długa strona */
-            padding: 40px;
-            box-shadow: 0 0 100px rgba(0,0,0,0.3);
-            border-left: 1px solid rgba(255,255,255,0.5);
-            border-right: 1px solid rgba(255,255,255,0.5);
+            box-shadow: 0 0 100px rgba(0,0,0,0.5);
+            position: relative;
         }
 
-        /* GÓRNA KROPLA (STARTOWA) */
-        .top-blob {
+        /* PASEK GÓRNY - SCALA SIĘ NA POCZĄTKU */
+        .top-aero-bar {
             position: absolute;
             top: 0;
-            right: 50px;
-            width: 250px;
-            height: 120px;
+            left: 0;
+            width: 100%;
+            height: 80px;
             background: var(--aero-blue);
-            border-bottom-left-radius: 60px;
-            border-bottom-right-radius: 60px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            z-index: 1000;
+            background-image: var(--reflection);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.4);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            font-size: 24px;
             font-weight: bold;
-            border: 1px solid rgba(255,255,255,0.3);
+            text-shadow: 0 0 10px rgba(255,255,255,0.8);
+            z-index: 3000;
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
-        /* PŁYWAJĄCE KROPLE-IKONY (WIDOCZNE PRZY SCROLLU) */
+        /* KROPLE - UKRYTE NA GÓRZE W PASKU */
         .floating-nav {
             position: fixed;
-            right: 30px;
-            top: 150px;
-            z-index: 2000;
+            right: 50px;
+            top: 100px;
+            z-index: 4000;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
         }
 
-        .drop-icon {
-            width: 60px;
-            height: 60px;
+        .drop {
+            width: 70px;
+            height: 70px;
             background: var(--aero-blue);
+            background-image: var(--reflection);
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            position: relative;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.3), inset 0 2px 10px rgba(255,255,255,0.6);
-            border: 1px solid rgba(255,255,255,0.4);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s;
-            opacity: 0; /* Ukryte na początku */
-            transform: scale(0);
-        }
-
-        /* Połysk na każdej kropli */
-        .drop-icon::after {
-            content: "";
-            position: absolute;
-            top: 5%; left: 15%; width: 70%; height: 40%;
-            background: linear-gradient(to bottom, rgba(255,255,255,0.5), transparent);
-            border-radius: 50% 50% 10% 10%;
-        }
-
-        /* TOOLTIP (POJAWIA SIĘ PO NAJECHANIU) */
-        .drop-icon .label {
-            position: absolute;
-            right: 80px;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 5px;
-            font-size: 14px;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s, transform 0.3s;
-            transform: translateX(20px);
-        }
-
-        .drop-icon:hover .label {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .drop-icon:hover {
-            transform: scale(1.1);
-            background: rgba(0, 150, 255, 0.9);
-        }
-
-        /* ANIMACJA POJAWIANIA SIĘ PRZY PRZEWIJANIU */
-        .show-drops {
-            opacity: 1 !important;
-            transform: scale(1) !important;
-        }
-
-        /* TREŚĆ STRONY */
-        .content-section {
-            margin-bottom: 150px;
-        }
-
-        h1 { font-size: 45px; font-weight: lighter; color: #004e8c; margin-top: 100px; }
-        h2 { color: #0078d4; border-bottom: 1px solid #ccc; padding-bottom: 10px; }
-        
-        .card-aero {
-            background: rgba(255,255,255,0.5);
-            border: 1px solid white;
-            padding: 30px;
-            border-radius: 15px;
-            margin: 20px 0;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        }
-
-        .icon-placeholder {
-            font-size: 24px;
-            color: white;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-        }
-    </style>
-</head>
-<body>
-
-<div class="top-blob" id="mainBlob">
-    MENU NAWIGACJI
-</div>
-
-<nav class="floating-nav">
-    <div class="drop-icon" id="drop1">
-        <span class="icon-placeholder">W</span>
-        <div class="label">Windows 7 Home</div>
-    </div>
-    <div class="drop-icon" id="drop2">
-        <span class="icon-placeholder">O</span>
-        <div class="label">Office 2010</div>
-    </div>
-    <div class="drop-icon" id="drop3">
-        <span class="icon-placeholder">E</span>
-        <div class="label">Explorer 9</div>
-    </div>
-    <div class="drop-icon" id="drop4">
-        <span class="icon-placeholder">?</span>
-        <div class="label">Wsparcie Techniczne</div>
-    </div>
-</nav>
-
-<div class="glass-container">
-    <header>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Microsoft_logo.svg/512px-Microsoft_logo.svg.png" width="150" alt="Microsoft">
-    </header>
-
-    <section class="content-section">
-        <h1>Komputer to Twoje okno na świat.</h1>
-        <p>Przewiń w dół, aby zobaczyć, jak menu zmienia się w interaktywne krople Aero.</p>
-        
-        <div class="card-aero">
-            <h2>Windows Aero: Więcej niż wygląd</h2>
-            <p>Interfejs Aero Glass to szczytowe osiągnięcie designu Windows 7. Przezroczyste paski tytułu pozwalają skupić się na tym, co ważne, a funkcja Shake pozwala zminimalizować wszystkie zbędne okna jednym potrząśnięciem myszy.</p>
-        </div>
-    </section>
-
-    <section class="content-section">
-        <h2>Najlepsze laptopy 2011 roku</h2>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-            <div class="card-aero">
-                <h3>Samsung Series 9</h3>
-                <p>Niezwykle cienki, wykonany z duraluminium. To przyszłość, która mieści się w Twojej teczce.</p>
-            </div>
-            <div class="card-aero">
-                <h3>Dell XPS 15z</h3>
-                <p>Potęga multimediów z głośnikami wysokiej klasy i ekranem Full HD.</p>
-            </div>
-        </div>
-    </section>
-
-    <section class="content-section">
-        <h2>Internet bez granic</h2>
-        <p>Internet Explorer 9 to nie tylko przeglądarka. To silnik, który napędza Twoje doświadczenia online. Przypinaj ulubione strony jak Facebook czy Allegro bezpośrednio do paska zadań i odbieraj powiadomienia na żywo.</p>
-        <div class="card-aero" style="background: linear-gradient(135deg, #e1f5fe, #ffffff);">
-            <p><strong>Ciekawostka:</strong> IE9 jako pierwsza przeglądarka w pełni wykorzystuje moc Twojego GPU do renderowania tekstu i grafiki.</p>
-        </div>
-    </section>
-
-    <section class="content-section" style="height: 1000px;">
-        <h2>Wsparcie i Bezpieczeństwo</h2>
-        <p>Z Windows Defender i Microsoft Security Essentials Twój PC jest chroniony 24/7 przed zagrożeniami z sieci.</p>
-    </section>
-</div>
-
-<script>
-    // Logika animacji kropli przy przewijaniu
-    window.onscroll = function() {
-        const drops = document.querySelectorAll('.drop-icon');
-        const mainBlob = document.getElementById('mainBlob');
-        
-        if (window.scrollY > 100) {
-            // Ukrywamy górną dużą kroplę
-            mainBlob.style.opacity = '0';
-            mainBlob.style.transform = 'translateY(-100px)';
-            mainBlob.style.transition = '0.5s';
-            
-            // Pokazujemy małe kropelki jedna po drugiej
-            drops.forEach((drop, index) => {
-                setTimeout(() => {
-                    drop.classList.add('show-drops');
-                }, index * 150); // Efekt fali
-            });
-        } else {
-            // Wracamy do stanu początkowego
-            mainBlob.style.opacity = '1';
-            mainBlob.style.transform = 'translateY(0)';
-            
-            drops.forEach((drop) => {
-                drop.classList.remove('show-drops');
-            });
-        }
-    };
-</script>
-
-</body>
-</html>
+            border: 1px solid rgba(255,255,255,0.5);
+            box-shadow: 0 10px 20px rgba(0
