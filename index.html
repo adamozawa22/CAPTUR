@@ -2,109 +2,220 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa Wejść - Ząbki</title>
-    
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    
+    <title>Microsoft – Komputery i Oprogramowanie (2011)</title>
     <style>
-        body { margin: 0; font-family: 'Inter', sans-serif; background: #1a1a1a; color: white; }
-        #map { height: 100vh; width: 100%; z-index: 1; }
-        
-        /* Panel boczny / Wyszukiwarka */
-        .ui-overlay {
-            position: absolute; top: 20px; left: 20px; z-index: 1000;
-            background: rgba(30, 30, 30, 0.9); padding: 15px;
-            border-radius: 12px; backdrop-filter: blur(10px);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5); width: 300px;
+        body {
+            font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            color: #333;
         }
-        input {
-            width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444;
-            background: #222; color: white; box-sizing: border-box;
+
+        /* Górny pasek nawigacji */
+        header {
+            background: #fff;
+            border-bottom: 4px solid #0078d4;
+            padding: 10px 0;
         }
-        .instruction { font-size: 0.8em; color: #aaa; margin-top: 10px; }
-        .badge { background: #007bff; padding: 2px 8px; border-radius: 4px; font-size: 0.7em; }
+
+        .container {
+            width: 960px;
+            margin: 0 auto;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: bold;
+            font-size: 24px;
+            color: #737373;
+            margin-right: 40px;
+            text-decoration: none;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #505050;
+            margin-right: 20px;
+            font-size: 14px;
+        }
+
+        nav a:hover {
+            color: #0078d4;
+        }
+
+        /* Banner Hero */
+        .hero {
+            background: linear-gradient(to bottom, #ffffff 0%, #e1e1e1 100%);
+            padding: 40px 0;
+            border-bottom: 1px solid #ccc;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 36px;
+            font-weight: lighter;
+            color: #000;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: #666;
+        }
+
+        /* Główne sekcje */
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            padding: 20px 0;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid #dcdcdc;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            color: #0078d4;
+            font-size: 20px;
+            margin-top: 0;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .product-item {
+            border: 1px solid #efefef;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .product-item img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Przycisk w stylu Windows 7 */
+        .btn-win7 {
+            background: linear-gradient(to bottom, #ffffff 0%, #e1e1e1 100%);
+            border: 1px solid #999;
+            padding: 8px 15px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .btn-win7:hover {
+            background: linear-gradient(to bottom, #e1e1e1 0%, #cccccc 100%);
+        }
+
+        /* Sidebar */
+        aside .card {
+            background: #f9f9f9;
+        }
+
+        footer {
+            background: #404040;
+            color: #ccc;
+            padding: 30px 0;
+            font-size: 12px;
+            margin-top: 40px;
+        }
+
+        footer a {
+            color: #fff;
+            text-decoration: none;
+            margin-right: 15px;
+        }
     </style>
 </head>
 <body>
 
-    <div class="ui-overlay">
-        <h2 style="margin-top:0">Ząbki <span class="badge">Live Map</span></h2>
-        <input type="text" id="search" placeholder="Szukaj wejścia lub punktu..." oninput="searchPoints()">
-        <p class="instruction">Kliknij na mapę w granicach Ząbek, aby dodać nowy punkt.</p>
-        <div id="results-list"></div>
+<header>
+    <div class="container">
+        <nav>
+            <a href="#" class="logo">Microsoft</a>
+            <a href="#">Windows</a>
+            <a href="#">Office</a>
+            <a href="#">Xbox</a>
+            <a href="#">Internet Explorer</a>
+            <a href="#">Pomoc</a>
+        </nav>
     </div>
+</header>
 
-    <div id="map"></div>
+<section class="hero">
+    <div class="container">
+        <h1>Windows 7. Twój świat, szybciej.</h1>
+        <p>Odkryj komputery PC zaprojektowane tak, aby ułatwić Ci codzienne zadania.</p>
+        <button class="btn-win7">Dowiedz się więcej</button>
+    </div>
+</section>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<div class="container main-content">
+    <main>
+        <div class="card">
+            <h2>Nowości sprzętowe: Sandy Bridge</h2>
+            <p>Druga generacja procesorów Intel® Core™ zmienia zasady gry. Dzięki technologii Turbo Boost 2.0 Twój laptop dostosuje się do każdej aplikacji, od edycji wideo HD po najbardziej wymagające gry.</p>
+            <div class="product-grid">
+                <div class="product-item">
+                    <strong>Ultrabooki</strong>
+                    <p>Nowa kategoria lekkich i wydajnych komputerów przenośnych.</p>
+                </div>
+                <div class="product-item">
+                    <strong>Komputery All-in-One</strong>
+                    <p>Oszczędność miejsca i dotykowa obsługa Windows 7 Touch.</p>
+                </div>
+            </div>
+        </div>
 
-    <script>
-        // 1. KONFIGURACJA SUPABASE
-        const SUPABASE_URL = 'https://cngkikcpgtsicmqnqwpe.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_3GisfOZboDAcEtyq1dPV0g_zOcRUPBj'; // <--- WKLEJ TUTAJ SWÓJ KLUCZ ANON Z PANELU SUPABASE
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        <div class="card">
+            <h2>Internet Explorer 9</h2>
+            <p>Szybszy niż kiedykolwiek. Poznaj przeglądarkę, która pozwala stronom internetowym lśnić jak natywne aplikacje w Twoim systemie.</p>
+            <button class="btn-win7">Pobierz teraz</button>
+        </div>
+    </main>
 
-        // 2. INICJALIZACJA MAPY (Ząbki)
-        const map = L.map('map').setView([52.292, 21.112], 14);
-        
-        // Nowoczesny ciemny styl mapy (CartoDB Dark Matter)
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
+    <aside>
+        <div class="card">
+            <h2>Sklep Microsoft</h2>
+            <ul>
+                <li>Kup Office 2010</li>
+                <li>Windows 7 Professional</li>
+                <li>Akcesoria Hardware</li>
+            </ul>
+        </div>
 
-        let allMarkers = [];
+        <div class="card">
+            <h2>Wsparcie techniczne</h2>
+            <p>Masz pytania dotyczące aktualizacji? Odwiedź Microsoft Answers lub pobierz narzędzie sprawdzania zgodności.</p>
+        </div>
+    </aside>
+</div>
 
-        // 3. POBIERANIE PUNKTÓW Z BAZY
-        async function fetchPoints() {
-            const { data, error } = await supabase.from('punkty_zabki').select('*');
-            if (data) {
-                data.forEach(p => addMarkerToMap(p));
-            }
-        }
+<footer>
+    <div class="container">
+        <p>&copy; 2011 Microsoft Corporation. Wszelkie prawa zastrzeżone.</p>
+        <nav>
+            <a href="#">Prywatność</a>
+            <a href="#">Warunki użytkowania</a>
+            <a href="#">Znaki towarowe</a>
+        </nav>
+    </div>
+</footer>
 
-        function addMarkerToMap(p) {
-            const marker = L.marker([p.lat, p.lng]).addTo(map)
-                .bindPopup(`<b>${p.nazwa}</b><br>${p.opis || ''}`);
-            allMarkers.push({ marker, nazwa: p.nazwa.toLowerCase() });
-        }
-
-        // 4. DODAWANIE PUNKTU (KLIKNIĘCIE)
-        map.on('click', async (e) => {
-            const { lat, lng } = e.latlng;
-
-            // Prosty Geofencing (Granice Ząbek - przybliżone)
-            if (lat < 52.27 || lat > 52.32 || lng < 21.08 || lng > 21.15) {
-                alert("Punkt musi znajdować się w granicach Ząbek!");
-                return;
-            }
-
-            const name = prompt("Podaj nazwę nowego wejścia/punktu:");
-            if (!name) return;
-
-            const { data, error } = await supabase
-                .from('punkty_zabki')
-                .insert([{ nazwa: name, lat: lat, lng: lng, opis: "Dodane przez użytkownika" }])
-                .select();
-
-            if (data) addMarkerToMap(data[0]);
-        });
-
-        // 5. WYSZUKIWARKA
-        function searchPoints() {
-            const term = document.getElementById('search').value.toLowerCase();
-            allMarkers.forEach(m => {
-                if (m.nazwa.includes(term)) {
-                    m.marker.addTo(map);
-                } else {
-                    map.removeLayer(m.marker);
-                }
-            });
-        }
-
-        fetchPoints();
-    </script>
 </body>
 </html>
