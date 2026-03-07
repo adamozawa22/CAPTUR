@@ -1,32 +1,110 @@
 <!DOCTYPE html>
-<html>
+<html lang="pl">
 <head>
-    <title>Mapa Ząbek</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa Wejść - Ząbki</title>
+    
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    
     <style>
-        #map { height: 600px; width: 100%; }
-        body { font-family: sans-serif; margin: 0; }
+        body { margin: 0; font-family: 'Inter', sans-serif; background: #1a1a1a; color: white; }
+        #map { height: 100vh; width: 100%; z-index: 1; }
+        
+        /* Panel boczny / Wyszukiwarka */
+        .ui-overlay {
+            position: absolute; top: 20px; left: 20px; z-index: 1000;
+            background: rgba(30, 30, 30, 0.9); padding: 15px;
+            border-radius: 12px; backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5); width: 300px;
+        }
+        input {
+            width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444;
+            background: #222; color: white; box-sizing: border-box;
+        }
+        .instruction { font-size: 0.8em; color: #aaa; margin-top: 10px; }
+        .badge { background: #007bff; padding: 2px 8px; border-radius: 4px; font-size: 0.7em; }
     </style>
 </head>
 <body>
-    <h1 style="text-align:center">Moja Mapa Ząbek</h1>
+
+    <div class="ui-overlay">
+        <h2 style="margin-top:0">Ząbki <span class="badge">Live Map</span></h2>
+        <input type="text" id="search" placeholder="Szukaj wejścia lub punktu..." oninput="searchPoints()">
+        <p class="instruction">Kliknij na mapę w granicach Ząbek, aby dodać nowy punkt.</p>
+        <div id="results-list"></div>
+    </div>
+
     <div id="map"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script>
-        // Centrowanie na Ząbki [szerokość, długość]
-        var map = L.map('map').setView([52.29, 21.11], 14);
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    <script>
+        // 1. KONFIGURACJA SUPABASE
+        const SUPABASE_URL = 'https://cngkikcpgtsicmqnqwpe.supabase.co';
+        const SUPABASE_KEY = 'https://cngkikcpgtsicmqnqwpe.supabase.co'; // <--- WKLEJ TUTAJ SWÓJ KLUCZ ANON Z PANELU SUPABASE
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // 2. INICJALIZACJA MAPY (Ząbki)
+        const map = L.map('map').setView([52.292, 21.112], 14);
+        
+        // Nowoczesny ciemny styl mapy (CartoDB Dark Matter)
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
             attribution: '© OpenStreetMap'
         }).addTo(map);
 
-        // DODAWANIE PUNKTÓW (Kopiuj te linie, by dodać więcej)
-        L.marker([52.292, 21.112]).addTo(map)
-            .bindPopup('<b>Urząd Miasta Ząbki</b><br>Tu załatwisz sprawy.');
-            
-        L.marker([52.295, 21.105]).addTo(map)
-            .bindPopup('<b>Park Miejski</b><br>Miejsce na spacer.');
+        let allMarkers = [];
+
+        // 3. POBIERANIE PUNKTÓW Z BAZY
+        async function fetchPoints() {
+            const { data, error } = await supabase.from('punkty_zabki').select('*');
+            if (data) {
+                data.forEach(p => addMarkerToMap(p));
+            }
+        }
+
+        function addMarkerToMap(p) {
+            const marker = L.marker([p.lat, p.lng]).addTo(map)
+                .bindPopup(`<b>${p.nazwa}</b><br>${p.opis || ''}`);
+            allMarkers.push({ marker, nazwa: p.nazwa.toLowerCase() });
+        }
+
+        // 4. DODAWANIE PUNKTU (KLIKNIĘCIE)
+        map.on('click', async (e) => {
+            const { lat, lng } = e.latlng;
+
+            // Prosty Geofencing (Granice Ząbek - przybliżone)
+            if (lat < 52.27 || lat > 52.32 || lng < 21.08 || lng > 21.15) {
+                alert("Punkt musi znajdować się w granicach Ząbek!");
+                return;
+            }
+
+            const name = prompt("Podaj nazwę nowego wejścia/punktu:");
+            if (!name) return;
+
+            const { data, error } = await supabase
+                .from('punkty_zabki')
+                .insert([{ nazwa: name, lat: lat, lng: lng, opis: "Dodane przez użytkownika" }])
+                .select();
+
+            if (data) addMarkerToMap(data[0]);
+        });
+
+        // 5. WYSZUKIWARKA
+        function searchPoints() {
+            const term = document.getElementById('search').value.toLowerCase();
+            allMarkers.forEach(m => {
+                if (m.nazwa.includes(term)) {
+                    m.marker.addTo(map);
+                } else {
+                    map.removeLayer(m.marker);
+                }
+            });
+        }
+
+        fetchPoints();
     </script>
 </body>
 </html>
