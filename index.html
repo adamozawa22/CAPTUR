@@ -2,236 +2,244 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Microsoft Windows 7 Era - Experience PC</title>
+    <title>Microsoft 2011 - Aero Liquid Experience</title>
     <style>
+        :root {
+            --aero-blue: rgba(0, 120, 212, 0.85);
+            --aero-gloss: linear-gradient(to bottom, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 51%, rgba(255,255,255,0.1) 100%);
+        }
+
         body {
-            font-family: "Segoe UI", "Tahoma", sans-serif;
+            font-family: "Segoe UI", Tahoma, sans-serif;
             margin: 0;
             padding: 0;
             background: url('https://wallpaperaccess.com/full/1567665.jpg') no-repeat center center fixed;
             background-size: cover;
-            color: #222;
+            color: #111;
+            overflow-x: hidden;
         }
 
-        /* EFEKT AERO GLASS DLA CAŁEJ STRONY */
-        .glass-overlay {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            min-height: 2000px; /* Bardzo długa strona */
-            border-left: 1px solid rgba(255, 255, 255, 0.5);
-            border-right: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 0 50px rgba(0,0,0,0.2);
-        }
-
-        .container {
-            width: 1000px;
+        /* TŁO SZKLANE DLA TREŚCI */
+        .glass-container {
+            width: 900px;
             margin: 0 auto;
-            position: relative;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            min-height: 3000px; /* Długa strona */
+            padding: 40px;
+            box-shadow: 0 0 100px rgba(0,0,0,0.3);
+            border-left: 1px solid rgba(255,255,255,0.5);
+            border-right: 1px solid rgba(255,255,255,0.5);
         }
 
-        /* KROPLA ZJEŻDŻAJĄCA NA DÓŁ (STICKY) */
-        .droplet-nav {
-            position: sticky;
+        /* GÓRNA KROPLA (STARTOWA) */
+        .top-blob {
+            position: absolute;
             top: 0;
-            float: right;
-            width: 280px;
-            height: 600px;
-            background: linear-gradient(135deg, rgba(0, 120, 212, 0.9) 0%, rgba(0, 78, 152, 0.9) 100%);
-            margin-right: -150px;
-            z-index: 100;
-            border-bottom-left-radius: 150px 300px;
-            border-bottom-right-radius: 150px 300px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3), inset 0 10px 20px rgba(255,255,255,0.4);
+            right: 50px;
+            width: 250px;
+            height: 120px;
+            background: var(--aero-blue);
+            border-bottom-left-radius: 60px;
+            border-bottom-right-radius: 60px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            z-index: 1000;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            padding-top: 40px;
+            justify-content: center;
             color: white;
+            font-weight: bold;
             border: 1px solid rgba(255,255,255,0.3);
         }
 
-        .droplet-nav a {
-            color: white;
-            text-decoration: none;
-            font-size: 18px;
-            margin: 15px 0;
-            font-weight: lighter;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        /* PŁYWAJĄCE KROPLE-IKONY (WIDOCZNE PRZY SCROLLU) */
+        .floating-nav {
+            position: fixed;
+            right: 30px;
+            top: 150px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
-        header {
-            padding: 30px 0;
-            border-bottom: 1px solid rgba(0,0,0,0.1);
-        }
-
-        .logo-text {
-            font-size: 32px;
-            font-weight: 600;
-            color: #444;
-        }
-
-        /* PANEL HERO Z POŁYSKIEM */
-        .hero {
-            margin-top: 50px;
-            padding: 60px;
-            background: linear-gradient(to bottom, rgba(255,255,255,0.8) 0%, rgba(240,240,240,0.5) 100%);
-            border-radius: 15px;
+        .drop-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--aero-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
             position: relative;
-            overflow: hidden;
-            border: 1px solid white;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.3), inset 0 2px 10px rgba(255,255,255,0.6);
+            border: 1px solid rgba(255,255,255,0.4);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s;
+            opacity: 0; /* Ukryte na początku */
+            transform: scale(0);
         }
 
-        .hero::before {
+        /* Połysk na każdej kropli */
+        .drop-icon::after {
             content: "";
             position: absolute;
-            top: 0; left: 0; right: 0; height: 50%;
-            background: linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 100%);
+            top: 5%; left: 15%; width: 70%; height: 40%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.5), transparent);
+            border-radius: 50% 50% 10% 10%;
         }
 
-        /* DUŻO INFO - SEKCJE */
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            margin-top: 80px;
-        }
-
-        .aero-card {
-            background: rgba(255, 255, 255, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            transition: transform 0.3s;
-        }
-
-        .aero-card:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.6);
-        }
-
-        .aero-card h2 {
-            color: #005a9e;
-            border-bottom: 2px solid #0078d4;
-            padding-bottom: 5px;
-        }
-
-        .win7-button {
-            display: inline-block;
-            margin-top: 15px;
-            padding: 10px 30px;
-            background: linear-gradient(to bottom, #f9f9f9 0%, #e1e1e1 50%, #d5d5d5 51%, #e5e5e5 100%);
-            border: 1px solid #999;
+        /* TOOLTIP (POJAWIA SIĘ PO NAJECHANIU) */
+        .drop-icon .label {
+            position: absolute;
+            right: 80px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px 15px;
             border-radius: 5px;
-            color: #333;
-            text-decoration: none;
             font-size: 14px;
-            box-shadow: inset 0 1px 0 white;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s, transform 0.3s;
+            transform: translateX(20px);
         }
 
-        footer {
-            margin-top: 200px;
-            padding: 100px 0;
-            background: rgba(0,0,0,0.05);
-            text-align: center;
+        .drop-icon:hover .label {
+            opacity: 1;
+            transform: translateX(0);
         }
 
-        .spec-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background: white;
+        .drop-icon:hover {
+            transform: scale(1.1);
+            background: rgba(0, 150, 255, 0.9);
         }
 
-        .spec-table td {
-            padding: 10px;
-            border: 1px solid #ddd;
+        /* ANIMACJA POJAWIANIA SIĘ PRZY PRZEWIJANIU */
+        .show-drops {
+            opacity: 1 !important;
+            transform: scale(1) !important;
+        }
+
+        /* TREŚĆ STRONY */
+        .content-section {
+            margin-bottom: 150px;
+        }
+
+        h1 { font-size: 45px; font-weight: lighter; color: #004e8c; margin-top: 100px; }
+        h2 { color: #0078d4; border-bottom: 1px solid #ccc; padding-bottom: 10px; }
+        
+        .card-aero {
+            background: rgba(255,255,255,0.5);
+            border: 1px solid white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .icon-placeholder {
+            font-size: 24px;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
     </style>
 </head>
 <body>
 
-<div class="container glass-overlay">
-    
-    <div class="droplet-nav">
-        <div style="font-weight: bold; font-size: 24px; margin-bottom: 20px;">Szybki wybór</div>
-        <a href="#windows">Windows 7</a>
-        <a href="#office">Office 2010</a>
-        <a href="#ie9">Internet Explorer 9</a>
-        <a href="#hardware">Sprzęt PC</a>
-        <a href="#support">Pomoc Online</a>
-        <div style="margin-top: 50px; opacity: 0.7;">Wydajność i Styl</div>
-    </div>
-
-    <header>
-        <div style="padding-left: 40px;">
-            <span class="logo-text">Microsoft</span>
-        </div>
-    </header>
-
-    <div style="padding: 0 40px;">
-        <section class="hero">
-            <h1>Odkryj potęgę Windows 7</h1>
-            <p>System, który pokochały miliony. Przejrzystość Aero, szybkość działania i nowa jakość rozrywki na Twoim komputerze PC.</p>
-            <a href="#" class="win7-button">Rozpocznij przygodę</a>
-        </section>
-
-        <div class="info-grid">
-            <div class="aero-card" id="windows">
-                <h2>Interfejs Aero Glass</h2>
-                <p>Dzięki Aero Peek możesz zajrzeć za otwarte okna bezpośrednio na pulpit. Funkcja Aero Snap pozwala błyskawicznie porządkować okna na ekranie, przeciągając je do krawędzi.</p>
-                <p>Efekty przezroczystości wykorzystują moc Twojej karty graficznej, odciążając procesor główny.</p>
-            </div>
-
-            <div class="aero-card" id="ie9">
-                <h2>Internet Explorer 9</h2>
-                <p>Najszybsza przeglądarka w historii Microsoftu. Pełne wykorzystanie akceleracji sprzętowej sprawia, że strony internetowe ładują się błyskawicznie.</p>
-                <table class="spec-table">
-                    <tr><td>Silnik Chakra JScript</td><td>Tak</td></tr>
-                    <tr><td>Wsparcie HTML5</td><td>Pełne</td></tr>
-                    <tr><td>Ochrona Tracking Protection</td><td>Włączona</td></tr>
-                </table>
-            </div>
-
-            <div class="aero-card" id="hardware">
-                <h2>Procesory Intel Core (2011)</h2>
-                <p>Architektura Sandy Bridge to rewolucja. Zintegrowany układ graficzny pozwala na oglądanie filmów Blu-ray bez dodatkowej karty graficznej.</p>
-                <ul>
-                    <li>Intel Core i3 - Do codziennych zadań</li>
-                    <li>Intel Core i5 - Inteligenta wydajność</li>
-                    <li>Intel Core i7 - Ekstremalna moc</li>
-                </ul>
-            </div>
-
-            <div class="aero-card">
-                <h2>Windows Media Center</h2>
-                <p>Zmień swój komputer w centrum domowej rozrywki. Oglądaj telewizję, nagrywaj ulubione seriale i przeglądaj zdjęcia z pilotem w ręku.</p>
-                <a href="#" class="win7-button">Konfiguracja Media Center</a>
-            </div>
-        </div>
-
-        <div style="margin-top: 100px;">
-            <h2 style="font-weight: lighter; font-size: 32px; color: #444;">Wszystko, co musisz wiedzieć o nowym PC</h2>
-            <p>W 2011 roku komputery stały się bardziej osobiste niż kiedykolwiek. Od dotykowych ekranów All-in-One, po ultra-mobilne laptopy.</p>
-            
-            <div class="aero-card" style="margin-top: 20px;">
-                <h3>Specyfikacja Minimalna Windows 7:</h3>
-                <ul style="line-height: 2;">
-                    <li>Procesor 1 GHz lub szybszy (32-bit lub 64-bit)</li>
-                    <li>1 GB pamięci RAM (32-bit) / 2 GB RAM (64-bit)</li>
-                    <li>16 GB wolnego miejsca na dysku (32-bit) / 20 GB (64-bit)</li>
-                    <li>Karta graficzna DirectX 9 ze sterownikiem WDDM 1.0</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <footer>
-        <p>&copy; 2011 Microsoft Corporation. Interfejs Aero Glass jest znakiem towarowym firmy Microsoft.</p>
-        <p>Twoja lokalizacja: Polska | Język: Polski</p>
-    </footer>
+<div class="top-blob" id="mainBlob">
+    MENU NAWIGACJI
 </div>
 
-</body>
-</html>
+<nav class="floating-nav">
+    <div class="drop-icon" id="drop1">
+        <span class="icon-placeholder">W</span>
+        <div class="label">Windows 7 Home</div>
+    </div>
+    <div class="drop-icon" id="drop2">
+        <span class="icon-placeholder">O</span>
+        <div class="label">Office 2010</div>
+    </div>
+    <div class="drop-icon" id="drop3">
+        <span class="icon-placeholder">E</span>
+        <div class="label">Explorer 9</div>
+    </div>
+    <div class="drop-icon" id="drop4">
+        <span class="icon-placeholder">?</span>
+        <div class="label">Wsparcie Techniczne</div>
+    </div>
+</nav>
+
+<div class="glass-container">
+    <header>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Microsoft_logo.svg/512px-Microsoft_logo.svg.png" width="150" alt="Microsoft">
+    </header>
+
+    <section class="content-section">
+        <h1>Komputer to Twoje okno na świat.</h1>
+        <p>Przewiń w dół, aby zobaczyć, jak menu zmienia się w interaktywne krople Aero.</p>
+        
+        <div class="card-aero">
+            <h2>Windows Aero: Więcej niż wygląd</h2>
+            <p>Interfejs Aero Glass to szczytowe osiągnięcie designu Windows 7. Przezroczyste paski tytułu pozwalają skupić się na tym, co ważne, a funkcja Shake pozwala zminimalizować wszystkie zbędne okna jednym potrząśnięciem myszy.</p>
+        </div>
+    </section>
+
+    <section class="content-section">
+        <h2>Najlepsze laptopy 2011 roku</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="card-aero">
+                <h3>Samsung Series 9</h3>
+                <p>Niezwykle cienki, wykonany z duraluminium. To przyszłość, która mieści się w Twojej teczce.</p>
+            </div>
+            <div class="card-aero">
+                <h3>Dell XPS 15z</h3>
+                <p>Potęga multimediów z głośnikami wysokiej klasy i ekranem Full HD.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="content-section">
+        <h2>Internet bez granic</h2>
+        <p>Internet Explorer 9 to nie tylko przeglądarka. To silnik, który napędza Twoje doświadczenia online. Przypinaj ulubione strony jak Facebook czy Allegro bezpośrednio do paska zadań i odbieraj powiadomienia na żywo.</p>
+        <div class="card-aero" style="background: linear-gradient(135deg, #e1f5fe, #ffffff);">
+            <p><strong>Ciekawostka:</strong> IE9 jako pierwsza przeglądarka w pełni wykorzystuje moc Twojego GPU do renderowania tekstu i grafiki.</p>
+        </div>
+    </section>
+
+    <section class="content-section" style="height: 1000px;">
+        <h2>Wsparcie i Bezpieczeństwo</h2>
+        <p>Z Windows Defender i Microsoft Security Essentials Twój PC jest chroniony 24/7 przed zagrożeniami z sieci.</p>
+    </section>
+</div>
+
+<script>
+    // Logika animacji kropli przy przewijaniu
+    window.onscroll = function() {
+        const drops = document.querySelectorAll('.drop-icon');
+        const mainBlob = document.getElementById('mainBlob');
+        
+        if (window.scrollY > 100) {
+            // Ukrywamy górną dużą kroplę
+            mainBlob.style.opacity = '0';
+            mainBlob.style.transform = 'translateY(-100px)';
+            mainBlob.style.transition = '0.5s';
+            
+            // Pokazujemy małe kropelki jedna po drugiej
+            drops.forEach((drop, index) => {
+                setTimeout(() => {
+                    drop.classList.add('show-drops');
+                }, index * 150); // Efekt fali
+            });
+        } else {
+            // Wracamy do stanu początkowego
+            mainBlob.style.opacity = '1';
+            mainBlob.style.transform = 'translateY(0)';
+            
+            drops.forEach((drop) => {
+                drop.classList.remove('show-drops');
+            });
+        }
+    };
+</script
